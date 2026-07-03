@@ -257,7 +257,25 @@ def get_jogos_espn():
                                     state  = "in"
                             except:
                                 pass
-                    # Aceita "in" (ao vivo) — ignora "post" (encerrado)
+                    # Aceita "post" recente (encerrado há menos de 15 min) para janela 80-88
+                    if state == "post":
+                        date_str = e.get("date", "")
+                        if date_str:
+                            try:
+                                from datetime import timezone as _tz
+                                dt_jogo = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+                                agora   = datetime.now(_tz.utc)
+                                diff    = (agora - dt_jogo).total_seconds()
+                                # Jogo de 90min + até 15min de tolerância
+                                if diff <= (90 + 15) * 60:
+                                    minuto = 85  # coloca na janela 80-88
+                                    state  = "in"
+                                else:
+                                    continue
+                            except:
+                                continue
+                        else:
+                            continue
                     if state not in ("in",):
                         continue
                     # Calcula period corretamente
