@@ -486,15 +486,15 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
     ambos_forte = fav_chutes >= LIMIAR and adv_chutes >= LIMIAR
 
     if ambos_forte:
-        pressao = f"Ambas equipes pressionando constantemente em busca do {obj} 🔥"
+        pressao = "Ambas pressionando constantemente 🔥🔥"
     elif fav_chutes >= LIMIAR and fav_chutes > adv_chutes:
-        pressao = f"Favorito pressionando constantemente em busca do {obj} 🔥"
+        pressao = "Favorito pressionando constantemente 🔥🔥"
     elif fav_chutes > adv_chutes:
-        pressao = f"Favorito pressionando em busca do {obj}"
+        pressao = "Favorito pressionando 🔥"
     elif fav_chutes == adv_chutes and fav_chutes > 0:
-        pressao = f"Jogo equilibrado — ambas buscando o {obj} ⚖️"
+        pressao = "Jogo equilibrado ⚖️"
     else:
-        pressao = f"Favorito sob pressão do adversário ⚠️"
+        pressao = "Favorito sob pressão ⚠️"
 
     # Cartão vermelho
     vermelho = ""
@@ -503,8 +503,7 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
 
     return (
         f"{pressao}\n"
-        f"🎯 {chutes_h}({chutes_gol_h}🎯) x {chutes_a}({chutes_gol_a}🎯) | "
-        f"⛳ {cantos_h} x {cantos_a}{vermelho}"
+        f"🎯 Chutes: {chutes_h} x {chutes_a} | No alvo: {chutes_gol_h} x {chutes_gol_a} | ⛳ {cantos_h} x {cantos_a}{vermelho}"
     )
 
 
