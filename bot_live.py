@@ -622,24 +622,23 @@ def run():
 
         print(f"[Analisando] {h} x {a} | {placar} | {m}min")
 
+        # Busca stats UMA vez — reutiliza para tudo
+        stats = get_stats_espn(fid, h, a)
+
         # Determinar favorito pelas odds — usa chutes como fallback se odds não disponível
         fav_final = get_favorito_odds(h, a)
         if not fav_final:
-            # Fallback: favorito pelo placar (time que está vencendo) ou chutes (da ESPN)
-            stats_pre = get_stats_espn(fid, h, a)
-            ch = stats_pre.get("chutes_tot_h", 0)
-            ca = stats_pre.get("chutes_tot_a", 0)
+            ch = stats.get("chutes_tot_h", 0) if stats else 0
+            ca = stats.get("chutes_tot_a", 0) if stats else 0
             if ch > ca:
                 fav_final = "h"
             elif ca > ch:
                 fav_final = "a"
             else:
-                # Sem dados suficientes: trata o time da casa como favorito
                 fav_final = "h"
             print(f"[FAV-FALLBACK] {h} x {a} — favorito definido por chutes/casa: {fav_final}")
 
-        # Buscar cartão vermelho do favorito via ESPN
-        stats = get_stats_espn(fid, h, a)
+        # Cartão vermelho do favorito
         red_fav = stats.get(f"red_cards_{fav_final}", 0) if stats else 0
 
         # Placar do favorito e adversário
