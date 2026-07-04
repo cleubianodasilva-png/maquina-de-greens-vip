@@ -721,6 +721,14 @@ def run():
             (sh == 0 and sa == 1 and fav_final == "h") or
             (sh == 1 and sa == 0 and fav_final == "a")
         )
+        # Over Partida FT: fav empatando OU perdendo por 1 gol, total de gols <= 2
+        # Placares válidos: 0x0, 0x1(fav=h), 1x0(fav=a), 1x1
+        fav_gols_oft = sh if fav_final == "h" else sa
+        adv_gols_oft = sa if fav_final == "h" else sh
+        oft_valido = (
+            (fav_empatando or (adv_gols_oft - fav_gols_oft) == 1) and
+            (sh + sa) <= 2
+        )
 
         # MERCADO 1: OVER 0.5 HT (15-27 min, 0x0, favorito empatando, sem vermelho do fav)
         if p == 1 and 15 <= m <= 27 and stot == 0 and fav_empatando and red_fav == 0:
@@ -740,8 +748,8 @@ def run():
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "BTTS", h, a, mid)
 
-        # MERCADO 3: OVER 1.5 FT (60-75 min, fav perdendo por 1, sem vermelho do fav)
-        if p == 2 and 60 <= m <= 75 and fav_perdendo_1 and red_fav == 0:
+        # MERCADO 3: OVER 1.5 FT (60-75 min, fav empatando ou perdendo por 1, placares: 0x0/1x0/0x1/1x1, sem vermelho do fav)
+        if p == 2 and 60 <= m <= 75 and oft_valido and red_fav == 0:
             key = f"{fid}_oft"
             if key not in sent:
                 mid = send_telegram(msg_universal(h, a, m, liga, 4, "OFT", "Over 1.5 FT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final))
