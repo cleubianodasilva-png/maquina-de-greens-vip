@@ -716,11 +716,11 @@ def run():
             fav_final = "?"  # Sem odds disponível — favorito não identificado
             print(f"[FAV-FALLBACK] {h} x {a} — sem odds disponível")
 
-        # Quando favorito não identificado, usa "h" como fallback
-        if fav_final not in ("h", "a"):
-            fav_final = "h"
+        # Favorito identificado? Usado nos mercados que exigem odds confirmada
+        fav_confirmado = fav_final in ("h", "a")
+        if not fav_confirmado:
+            fav_final = "h"  # fallback só para cálculos internos (não escanteio)
 
-        # Cartão vermelho do favorito
         red_fav = stats.get(f"red_cards_{fav_final}", 0) if stats else 0
 
         # Placar do favorito e adversário
@@ -778,8 +778,8 @@ def run():
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "OVERGOAL", h, a, mid)
 
-        # MERCADO 5: ESCANTEIO LIMITE HT (30-38 min, fav empatando ou perdendo por 1, sem vermelho do fav)
-        if p == 1 and 30 <= m <= 38 and corner_valido and red_fav == 0:
+        # MERCADO 5: ESCANTEIO LIMITE HT (30-38 min, fav confirmado, empatando ou perdendo por 1, sem vermelho)
+        if p == 1 and 30 <= m <= 38 and fav_confirmado and corner_valido and red_fav == 0:
             key = f"{fid}_cht"
             cantos_h = stats.get("escanteios_h", 0) if stats else 0
             cantos_a = stats.get("escanteios_a", 0) if stats else 0
@@ -790,8 +790,8 @@ def run():
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "CORNER_HT", h, a, mid, extra_val=cantos)
 
-        # MERCADO 6: ESCANTEIO LIMITE FT (80-88 min, fav empatando ou perdendo por 1, sem vermelho do fav)
-        if p == 2 and 80 <= m <= 88 and corner_valido and red_fav == 0:
+        # MERCADO 6: ESCANTEIO LIMITE FT (80-88 min, fav confirmado, empatando ou perdendo por 1, sem vermelho)
+        if p == 2 and 80 <= m <= 88 and fav_confirmado and corner_valido and red_fav == 0:
             key = f"{fid}_cft"
             cantos_h = stats.get("escanteios_h", 0) if stats else 0
             cantos_a = stats.get("escanteios_a", 0) if stats else 0
