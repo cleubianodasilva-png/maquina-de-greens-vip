@@ -311,26 +311,37 @@ def get_stats_espn(eid, home, away):
         teams_data = data.get("boxscore", {}).get("teams", [])
         if not teams_data:
             return {}
-        # Identifica qual é home/away pela ordem (ESPN: 0=away, 1=home no summary)
-        # Vamos verificar pelo nome
+        # Identifica home/away pelo campo homeAway dos competitors no header
+        competitors = data.get("header", {}).get("competitions", [{}])[0].get("competitors", [])
+        home_id = None
+        away_id = None
+        for c in competitors:
+            if c.get("homeAway") == "home": home_id = str(c.get("team", {}).get("id", ""))
+            if c.get("homeAway") == "away": away_id = str(c.get("team", {}).get("id", ""))
         for team_box in teams_data:
-            tname = team_box.get("team", {}).get("displayName", "")
-            side  = "h" if tname.lower() == home.lower() else "a"
+            tid  = str(team_box.get("team", {}).get("id", ""))
+            if home_id and away_id:
+                side = "h" if tid == home_id else "a"
+            else:
+                # fallback pelo nome se não tiver id
+                tname = team_box.get("team", {}).get("displayName", "")
+                side  = "h" if tname.lower() == home.lower() else "a"
             for s in team_box.get("statistics", []):
                 label = s.get("label", "").lower()
+                name  = s.get("name", "")
                 val   = s.get("displayValue", "0")
-                try: val = int(val)
-                except: val = 0
+                try: val_int = int(val)
+                except: val_int = 0
                 if "corner"  in label:
-                    stats[f"escanteios_{side}"] = val
+                    stats[f"escanteios_{side}"] = val_int
                     stats[f"corner_data_{side}"] = True
-                if label == "shots":                    stats[f"chutes_tot_{side}"]   = val
-                if "on goal" in label:                  stats[f"chutes_gol_{side}"]   = val
-                if "red"     in label:                  stats[f"red_cards_{side}"]    = val
+                if label == "shots":                     stats[f"chutes_tot_{side}"]      = val_int
+                if "on goal" in label:                   stats[f"chutes_gol_{side}"]      = val_int
+                if "red"     in label:                   stats[f"red_cards_{side}"]       = val_int
                 if "possession" in label:
-                    try: stats[f"posse_{side}"] = float(s.get("displayValue", 0))
+                    try: stats[f"posse_{side}"] = float(val)
                     except: stats[f"posse_{side}"] = 0.0
-                if s.get("name","") == "accuratePasses": stats[f"passes_precisos_{side}"] = val
+                if name == "accuratePasses":             stats[f"passes_precisos_{side}"] = val_int
 
         # Garante defaults
         for side in ["h", "a"]:
