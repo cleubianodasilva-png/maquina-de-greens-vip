@@ -66,18 +66,18 @@ LIGA_NOMES = {
 }
 ESPN_LIGAS = [
     # Europa - 1ª divisão
-    "eng.1","eng.2","eng.3","eng.4",
-    "esp.1","esp.2","ger.1","ger.2","ita.1","ita.2","fra.1","fra.2",
-    "por.1","ned.1","ned.2","bel.1","tur.1","tur.2","sco.1","sco.2",
-    "aut.1","aut.2","sui.1","sui.2","den.1","den.2","swe.1","swe.2",
-    "nor.1","nor.2","gre.1","cze.1","pol.1","fin.1","fin.2",
+    "eng.1","eng.2","eng.3","eng.4","eng.5",
+    "esp.1","esp.2","ger.1","ger.2","ita.1","ita.2","ita.3","ita.4","ita.5","fra.1","fra.2",
+    "por.1","ned.1","ned.2","ned.3","bel.1","tur.1","tur.2","sco.1","sco.2","sco.3","sco.4",
+    "aut.1","aut.2","sui.1","sui.2","den.1","den.2","den.3","den.4","den.5","swe.1","swe.2",
+    "nor.1","nor.2","nor.3","gre.1","cze.1","pol.1","fin.1","fin.2",
     "isr.1","rus.1","irl.1","nir.1","mlt.1","cyp.1",
     # UEFA
     "uefa.champions","uefa.europa","uefa.europa.conf",
     "uefa.nations","uefa.wchampions",
     # América do Sul
     "bra.1","bra.2","bra.3","bra.4",
-    "arg.1","arg.2","arg.3","col.1","col.2","chi.1","chi.2",
+    "arg.1","arg.2","arg.3","arg.4","arg.5","col.1","col.2","chi.1","chi.2",
     "uru.1","uru.2","ecu.1","ecu.2","bol.1",
     "per.1","per.2","ven.1","ven.2","par.1","par.2",
     "conmebol.libertadores","conmebol.sudamericana","conmebol.recopa",
