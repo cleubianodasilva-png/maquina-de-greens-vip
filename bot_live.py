@@ -716,6 +716,10 @@ def run():
             fav_final = "?"  # Sem odds disponível — favorito não identificado
             print(f"[FAV-FALLBACK] {h} x {a} — sem odds disponível")
 
+        # Quando favorito não identificado, usa "h" como fallback
+        if fav_final not in ("h", "a"):
+            fav_final = "h"
+
         # Cartão vermelho do favorito
         red_fav = stats.get(f"red_cards_{fav_final}", 0) if stats else 0
 
@@ -725,11 +729,10 @@ def run():
 
         # Favorito empatando = placar igual
         fav_empatando = (sh == sa)
-        # Favorito perdendo por exatamente 1 gol — placar obrigatório: 0x1 ou 1x0
-        fav_perdendo_1 = (
-            (sh == 0 and sa == 1 and fav_final == "h") or
-            (sh == 1 and sa == 0 and fav_final == "a")
-        )
+        # Favorito perdendo por exatamente 1 gol (qualquer placar)
+        fav_perdendo_1 = (adv_gols - fav_gols) == 1
+        # Condição escanteio: fav empatando OU perdendo por no máximo 1 gol
+        corner_valido = fav_empatando or fav_perdendo_1
         # Over Partida FT: fav empatando OU perdendo por 1 gol, total de gols <= 2
         # Placares válidos: 0x0, 0x1(fav=h), 1x0(fav=a), 1x1
         fav_gols_oft = sh if fav_final == "h" else sa
@@ -776,7 +779,7 @@ def run():
                     registrar_sinal(fid, "OVERGOAL", h, a, mid)
 
         # MERCADO 5: ESCANTEIO LIMITE HT (30-38 min, fav empatando ou perdendo por 1, sem vermelho do fav)
-        if p == 1 and 30 <= m <= 38 and (fav_empatando or fav_perdendo_1) and red_fav == 0:
+        if p == 1 and 30 <= m <= 38 and corner_valido and red_fav == 0:
             key = f"{fid}_cht"
             cantos_h = stats.get("escanteios_h", 0) if stats else 0
             cantos_a = stats.get("escanteios_a", 0) if stats else 0
@@ -788,7 +791,7 @@ def run():
                     registrar_sinal(fid, "CORNER_HT", h, a, mid, extra_val=cantos)
 
         # MERCADO 6: ESCANTEIO LIMITE FT (80-88 min, fav empatando ou perdendo por 1, sem vermelho do fav)
-        if p == 2 and 80 <= m <= 88 and (fav_empatando or fav_perdendo_1) and red_fav == 0:
+        if p == 2 and 80 <= m <= 88 and corner_valido and red_fav == 0:
             key = f"{fid}_cft"
             cantos_h = stats.get("escanteios_h", 0) if stats else 0
             cantos_a = stats.get("escanteios_a", 0) if stats else 0
