@@ -458,54 +458,60 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
     total_cantos = cantos_h + cantos_a
     tem_dados    = total_chutes > 0 or total_cantos > 0
 
-    if fav_final == "h":
-        fav_label    = "🏠 Casa"
-        fav_chutes   = chutes_h
-        fav_chutes_g = chutes_gol_h
-        adv_chutes   = chutes_a
-    elif fav_final == "a":
-        fav_label    = "✈️ Fora"
-        fav_chutes   = chutes_a
-        fav_chutes_g = chutes_gol_a
-        adv_chutes   = chutes_h
-    else:
-        fav_label    = "⚠️ Consultar casa de apostas"
-        fav_chutes   = max(chutes_h, chutes_a)
-        fav_chutes_g = max(chutes_gol_h, chutes_gol_a)
-        adv_chutes   = min(chutes_h, chutes_a)
+    casa  = "Casa"
+    fora  = "Fora"
 
     if not tem_dados:
-        return f"⭐️ Fav: {fav_label} | Estatísticas indisponíveis nesta liga"
+        return "Estatísticas não disponíveis para esta liga"
 
-    # Objeto da pressão varia por mercado
-    eh_canto = mercado in ("CORNER_HT", "CORNER_FT")
-    obj = "escanteio ⛳️" if eh_canto else "gol ⚽️"
-
-    # Limiar para considerar pressão constante (chutes reais)
-    LIMIAR = 8
-    ambos_forte = fav_chutes >= LIMIAR and adv_chutes >= LIMIAR
-
-    if ambos_forte:
-        pressao = "Ambas pressionando constantemente 🔥🔥"
-    elif fav_chutes >= LIMIAR and fav_chutes > adv_chutes:
-        pressao = "Favorito pressionando constantemente 🔥🔥"
-    elif fav_chutes > adv_chutes:
-        pressao = "Favorito pressionando 🔥"
-    elif fav_chutes == adv_chutes and fav_chutes > 0:
-        pressao = "Jogo equilibrado ⚖️"
-    else:
-        pressao = "Favorito sob pressão ⚠️"
-
-    # Cartão vermelho
-    vermelho = ""
     if red_h > 0 or red_a > 0:
-        vermelho = f" | 🟥 Vermelho: {'Casa' if red_h > 0 else 'Fora'}"
+        vermelho = " | 🟥 Vermelho: " + ("Casa" if red_h > 0 else "Fora")
+    else:
+        vermelho = ""
 
-    return (
-        f"{pressao}\n"
-        f"🎯 Chutes: {chutes_h} x {chutes_a} | No alvo: {chutes_gol_h} x {chutes_gol_a} | ⛳ {cantos_h} x {cantos_a}{vermelho}"
-    )
+    # Contexto do placar
+    perdendo_h = sh < sa
+    perdendo_a = sa < sh
+    empate     = sh == sa
 
+    # Ambos chutando muito
+    if chutes_gol_h >= 3 and chutes_gol_a >= 3:
+        return f"Ambos chutando bastante no gol — {chutes_gol_h} finalizações certeiras de {casa}, {chutes_gol_a} de {fora}{vermelho}"
+    if chutes_h >= 8 and chutes_a >= 8:
+        return f"Jogo bastante intenso dos dois lados — {chutes_h} chutes de {casa}, {chutes_a} de {fora}{vermelho}"
+
+    # Casa dominando
+    if chutes_gol_h >= 4 and chutes_gol_h > chutes_gol_a:
+        suffix = f", {casa} em busca da virada" if perdendo_h else ""
+        return f"{casa} chegando constantemente na área — {chutes_h} chutes, {chutes_gol_h} no alvo{suffix}{vermelho}"
+    if chutes_h >= 8 and chutes_h > chutes_a:
+        suffix = f", {casa} em busca da virada" if perdendo_h else ""
+        return f"{casa} chutando bastante — {chutes_h} chutes, adversário com {chutes_a}{suffix}{vermelho}"
+    if chutes_h > chutes_a and cantos_h >= 4:
+        return f"{casa} dominando pelas laterais — {cantos_h} escanteios, {chutes_h} chutes{vermelho}"
+    if chutes_h > chutes_a and chutes_gol_h > 0:
+        suffix = f", {casa} em busca do empate" if perdendo_h else ""
+        return f"{casa} criando mais — {chutes_h} chutes ({chutes_gol_h} no alvo) x {chutes_a} de {fora}{suffix}{vermelho}"
+
+    # Fora dominando
+    if chutes_gol_a >= 4 and chutes_gol_a > chutes_gol_h:
+        suffix = f", {fora} em busca da virada" if perdendo_a else ""
+        return f"{fora} chegando constantemente na área — {chutes_a} chutes, {chutes_gol_a} no alvo{suffix}{vermelho}"
+    if chutes_a >= 8 and chutes_a > chutes_h:
+        suffix = f", {fora} em busca da virada" if perdendo_a else ""
+        return f"{fora} chutando bastante — {chutes_a} chutes, adversário com {chutes_h}{suffix}{vermelho}"
+    if chutes_a > chutes_h and cantos_a >= 4:
+        return f"{fora} dominando pelas laterais — {cantos_a} escanteios, {chutes_a} chutes{vermelho}"
+    if chutes_a > chutes_h and chutes_gol_a > 0:
+        suffix = f", {fora} em busca do empate" if perdendo_a else ""
+        return f"{fora} criando mais — {chutes_a} chutes ({chutes_gol_a} no alvo) x {chutes_h} de {casa}{suffix}{vermelho}"
+
+    # Muitos escanteios
+    if total_cantos >= 6:
+        return f"Jogo bastante movimentado pelas laterais — {total_cantos} escanteios, {total_chutes} chutes{vermelho}"
+
+    # Equilibrado
+    return f"Jogo equilibrado — {chutes_h} chutes de {casa} x {chutes_a} de {fora}{vermelho}"
 
 def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_val=None, cantos_atual=0, stats=None, sh=0, sa=0, fav_final="h"):
     sep    = "━━━━━━━━━━━━━━━━━━━━"
