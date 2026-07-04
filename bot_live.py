@@ -454,44 +454,58 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
     cantos_a     = max(0, stats.get("escanteios_a", 0)) if stats else 0
     red_h        = stats.get("red_cards_h", 0) if stats else 0
     red_a        = stats.get("red_cards_a", 0) if stats else 0
-    fav_chutes   = chutes_h if fav_final == "h" else chutes_a
-    fav_chutes_g = chutes_gol_h if fav_final == "h" else chutes_gol_a
     total_chutes = chutes_h + chutes_a
     total_cantos = cantos_h + cantos_a
     tem_dados    = total_chutes > 0 or total_cantos > 0
 
     if fav_final == "h":
-        fav_label = "🏠 Casa"
+        fav_label    = "🏠 Casa"
+        fav_chutes   = chutes_h
+        fav_chutes_g = chutes_gol_h
+        adv_chutes   = chutes_a
     elif fav_final == "a":
-        fav_label = "✈️ Fora"
+        fav_label    = "✈️ Fora"
+        fav_chutes   = chutes_a
+        fav_chutes_g = chutes_gol_a
+        adv_chutes   = chutes_h
     else:
-        fav_label = "⚠️ Consultar casa de apostas"
+        fav_label    = "⚠️ Consultar casa de apostas"
+        fav_chutes   = max(chutes_h, chutes_a)
+        fav_chutes_g = max(chutes_gol_h, chutes_gol_a)
+        adv_chutes   = min(chutes_h, chutes_a)
 
     if not tem_dados:
-        return f"⭐️ Favorito: {fav_label}\n✅ Estatísticas não disponíveis para esta liga"
+        return f"⭐️ Fav: {fav_label} | Estatísticas indisponíveis nesta liga"
 
-    partes = [f"⭐️ Favorito: {fav_label}"]
+    # Objeto da pressão varia por mercado
+    eh_canto = mercado in ("CORNER_HT", "CORNER_FT")
+    obj = "escanteio ⛳️" if eh_canto else "gol ⚽️"
 
-    # Volume de jogo
-    if total_chutes >= 10:
-        partes.append(f"Jogo intenso com {total_chutes} chutes no total ({chutes_h} casa x {chutes_a} fora)")
-    elif total_chutes > 0:
-        partes.append(f"{total_chutes} chutes no total ({chutes_h} casa x {chutes_a} fora)")
+    # Limiar para considerar pressão constante (chutes reais)
+    LIMIAR = 8
+    ambos_forte = fav_chutes >= LIMIAR and adv_chutes >= LIMIAR
 
-    # Chutes no alvo
-    total_gol = chutes_gol_h + chutes_gol_a
-    if total_gol > 0:
-        partes.append(f"{total_gol} chutes no alvo ({chutes_gol_h} x {chutes_gol_a})")
-
-    # Escanteios
-    if total_cantos > 0:
-        partes.append(f"{total_cantos} escanteios cobrados ({cantos_h} x {cantos_a})")
+    if ambos_forte:
+        pressao = f"Ambas equipes pressionando constantemente em busca do {obj} 🔥"
+    elif fav_chutes >= LIMIAR and fav_chutes > adv_chutes:
+        pressao = f"Favorito ({fav_label}) pressionando constantemente em busca do {obj} 🔥"
+    elif fav_chutes > adv_chutes:
+        pressao = f"Favorito ({fav_label}) pressionando em busca do {obj}"
+    elif fav_chutes == adv_chutes and fav_chutes > 0:
+        pressao = f"Jogo equilibrado — ambas buscando o {obj} ⚖️"
+    else:
+        pressao = f"Favorito ({fav_label}) sob pressão do adversário ⚠️"
 
     # Cartão vermelho
+    vermelho = ""
     if red_h > 0 or red_a > 0:
-        partes.append(f"⚠️ Cartão vermelho: {'Casa' if red_h > 0 else 'Fora'}")
+        vermelho = f" | 🟥 Vermelho: {'Casa' if red_h > 0 else 'Fora'}"
 
-    return "✅ " + " | ".join(partes)
+    return (
+        f"{pressao}\n"
+        f"🎯 {chutes_h}({chutes_gol_h}🎯) x {chutes_a}({chutes_gol_a}🎯) | "
+        f"⛳ {cantos_h} x {cantos_a}{vermelho}"
+    )
 
 
 def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_val=None, cantos_atual=0, stats=None, sh=0, sa=0, fav_final="h"):
