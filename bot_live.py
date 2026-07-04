@@ -65,37 +65,39 @@ LIGA_NOMES = {
     "caf.champions": "CAF Champions League", "afc.champions": "AFC Champions League",
 }
 ESPN_LIGAS = [
-    "eng.1", "esp.1", "ger.1", "ita.1", "fra.1",
-    "por.1", "ned.1", "bel.1", "tur.1", "sco.1", "aut.1", "sui.1", "den.1", "swe.1", "nor.1", "gre.1", "cze.1", "pol.1",
-    "fin.1", "swe.2", "nor.2", "den.2", "isr.1", "rus.1",
-    "uefa.champions", "uefa.europa", "uefa.europa_conf",
-    "bra.1", "bra.2", "bra.3", "bra.4",
-    "arg.1", "col.1", "chi.1", "uru.1", "ecu.1", "bol.1", "per.1", "ven.1", "par.1",
-    "conmebol.libertadores", "conmebol.sudamericana",
-    "usa.1", "usa.2", "usa.usl.l1", "mex.1", "mex.2", "concacaf.champions",
-    "jpn.1", "kor.1", "sau.1", "qat.1",
-    "chn.1", "ind.1", "mys.1", "tha.1", "idn.1", "aus.1",
-    "rsa.1", "egy.1", "nga.1",
-    "caf.champions", "afc.champions",
-    # 2ª Divisões Europa
-    "eng.2", "esp.2", "ger.2", "ita.2", "fra.2", "ned.2", "tur.2", "aut.2", "sui.2", "sco.2", "fin.2",
-    # Europa extra
-    "cyp.1", "mlt.1", "rou.1", "irl.1",
-    # África extra
-    "gha.1", "uga.1", "ken.1", "zim.1", "zam.1", "rsa.2",
-    # Ásia extra
-    "sgp.1", "ind.2",
-    # América do Sul 2ª divisão
-    "arg.2", "col.2", "chi.2", "per.2", "uru.2", "ecu.2",
-    # América Central / Caribe
-    "slv.1", "jam.1", "hon.1",
-    # América do Sul extra
-    "par.2", "ven.2",
-    # Competições
-    "uefa.nations",
-    # Copa do Mundo e Eliminatórias
-    "fifa.world", "fifa.worldq",
-    "club.friendly",
+    # Europa - 1ª divisão
+    "eng.1","eng.2","eng.3","eng.4",
+    "esp.1","esp.2","ger.1","ger.2","ita.1","ita.2","fra.1","fra.2",
+    "por.1","ned.1","ned.2","bel.1","tur.1","tur.2","sco.1","sco.2",
+    "aut.1","aut.2","sui.1","sui.2","den.1","den.2","swe.1","swe.2",
+    "nor.1","nor.2","gre.1","cze.1","pol.1","fin.1","fin.2",
+    "isr.1","rus.1","irl.1","nir.1","mlt.1","cyp.1",
+    # UEFA
+    "uefa.champions","uefa.europa","uefa.europa.conf",
+    "uefa.nations","uefa.wchampions",
+    # América do Sul
+    "bra.1","bra.2","bra.3","bra.4",
+    "arg.1","arg.2","col.1","col.2","chi.1","chi.2",
+    "uru.1","uru.2","ecu.1","ecu.2","bol.1",
+    "per.1","per.2","ven.1","ven.2","par.1","par.2",
+    "conmebol.libertadores","conmebol.sudamericana","conmebol.recopa",
+    # América do Norte/Central/Caribe
+    "usa.1","usa.2","usa.usl.l1","usa.nwsl","usa.open",
+    "mex.1","mex.2","jam.1","slv.1",
+    "concacaf.champions","concacaf.gold","concacaf.nations.league",
+    # Ásia
+    "jpn.1","kor.1","chn.1","ind.1","ind.2",
+    "tha.1","mys.1","idn.1","sgp.1",
+    "afc.champions","afc.cup",
+    # África
+    "rsa.1","rsa.2","egy.1","gha.1","ken.1","uga.1","zim.1","zam.1",
+    "caf.confederation",
+    # Oceania
+    "aus.1",
+    # Mundial / Eliminatórias
+    "fifa.world","fifa.cwc","fifa.olympics","fifa.confederations",
+    "fifa.worldq.uefa","fifa.worldq.conmebol","fifa.worldq.concacaf",
+    "fifa.worldq.afc","fifa.worldq.caf","fifa.worldq.ofc",
 ]
 
 # RapidAPI (fallback de lista)
