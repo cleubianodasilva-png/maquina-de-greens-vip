@@ -11,7 +11,7 @@ BRT             = timezone(timedelta(hours=-3))
 
 # ─── Credenciais ───────────────────────────────────────────────────────────────
 TELEGRAM_TOKEN  = "8925195607:AAEmgjrY0S6bVx95BGSzgHaNxbDlOarcEx8"
-CHAT_IDS        = ["-1003530439409"]
+CHAT_IDS        = ["-1003530439409"]  # BOOT IA INTELIGENTE (Zapia)
 ODDS_API_KEY    = "74e3ecb93cc2333874cb7038b9f682c0"
 RAPIDAPI_KEY    = "f72be1a7cdmsha226030291845afp131cd7jsn00f5979540aa"
 
@@ -356,6 +356,131 @@ def get_jogos_espn():
                     jogos.append(j)
     print(f"[ESPN] {len(jogos)} jogos ao vivo ({len(ESPN_LIGAS)} ligas monitoradas)")
     return jogos
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# API 1B — API-Football: jogos ao vivo (preenche o que a ESPN não cobre)
+# ═══════════════════════════════════════════════════════════════════════════════
+def get_jogos_apifootball(fids_espn):
+    """Busca todos os jogos ao vivo na API-Football e retorna os que ESPN não tem."""
+    for key in API_FOOTBALL_KEYS:
+        try:
+            r = requests.get(
+                f"{API_FOOTBALL_URL}/fixtures",
+                params={"live": "all"},
+                headers={"x-apisports-key": key},
+                timeout=15
+            )
+            rjson = r.json()
+            erros = rjson.get("errors", {})
+            if erros and (erros.get("requests") or erros.get("access") or erros.get("token")):
+                print(f"[API-Football] Chave {key[:8]}... sem acesso: {erros}")
+                continue
+            fixtures = rjson.get("response", [])
+            if not fixtures:
+                print(f"[API-Football] Chave {key[:8]}... retornou 0 jogos")
+                continue
+            jogos = []
+            for f in fixtures:
+                try:
+                    fid    = str(f["fixture"]["id"])
+                    # Pula se ESPN já tem
+                    if fid in fids_espn:
+                        continue
+                    status = f["fixture"]["status"]
+                    state  = status.get("short", "")
+                    # Só jogos ao vivo (1H, HT, 2H, ET, P, BT)
+                    if state not in ("1H", "HT", "2H", "ET", "P", "BT"):
+                        continue
+                    minuto = status.get("elapsed", 0) or 0
+                    period = 1 if state in ("1H", "HT") or minuto <= 45 else 2
+                    home   = f["teams"]["home"]["name"]
+                    away   = f["teams"]["away"]["name"]
+                    sh     = f["goals"]["home"] or 0
+                    sa     = f["goals"]["away"] or 0
+                    liga   = f["league"]["name"]
+                    jogos.append({
+                        "fid": fid, "home": home, "away": away,
+                        "sh": sh, "sa": sa, "minuto": minuto,
+                        "period": period, "liga": liga, "source": "apifootball"
+                    })
+                except:
+                    continue
+            print(f"[API-Football] {len(jogos)} jogos novos (chave {key[:8]}...)")
+            return jogos
+        except Exception as e:
+            print(f"[API-Football] Erro chave {key[:8]}...: {e}")
+            continue
+    print("[API-Football] Todas as chaves falharam")
+    return []
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# API-Football: estatísticas de um jogo específico
+# ═══════════════════════════════════════════════════════════════════════════════
+def get_stats_apifootball_live(fid):
+    """Busca stats ao vivo de um fixture da API-Football."""
+    for key in API_FOOTBALL_KEYS:
+        try:
+            r = requests.get(
+                f"{API_FOOTBALL_URL}/fixtures",
+                params={"id": fid},
+                headers={"x-apisports-key": key},
+                timeout=10
+            )
+            rjson = r.json()
+            data = rjson.get("response", [])
+            if not data:
+                continue
+            f = data[0]
+            stats = {}
+            # Estatísticas detalhadas
+            r2 = requests.get(
+                f"{API_FOOTBALL_URL}/fixtures/statistics",
+                params={"fixture": fid},
+                headers={"x-apisports-key": key},
+                timeout=10
+            )
+            r2json = r2.json()
+            stat_data = r2json.get("response", [])
+            if stat_data:
+                home_id = stat_data[0]["team"]["id"]
+                for team in stat_data:
+                    side = "h" if team["team"]["id"] == home_id else "a"
+                    for s in team["statistics"]:
+                        k   = s["type"].lower().replace(" ", "_")
+                        val = s["value"] or 0
+                        if k == "corner_kicks":  stats[f"escanteios_{side}"] = val
+                        if k == "total_shots":   stats[f"chutes_tot_{side}"]  = val
+                        if k == "shots_on_goal": stats[f"chutes_gol_{side}"]  = val
+                # Cartões vermelhos via events
+                r3 = requests.get(
+                    f"{API_FOOTBALL_URL}/fixtures/events",
+                    params={"fixture": fid},
+                    headers={"x-apisports-key": key},
+                    timeout=10
+                )
+                events = r3.json().get("response", [])
+                red_h, red_a = 0, 0
+                for ev in events:
+                    if ev.get("type") == "Card" and "Red" in (ev.get("detail") or ""):
+                        if ev.get("team", {}).get("id") == home_id: red_h += 1
+                        else: red_a += 1
+                stats["red_cards_h"], stats["red_cards_a"] = red_h, red_a
+            # Garante defaults
+            for side in ["h", "a"]:
+                for k in ["chutes_tot", "chutes_gol", "red_cards"]:
+                    stats.setdefault(f"{k}_{side}", 0)
+                stats.setdefault(f"escanteios_{side}", -1)
+                stats.setdefault(f"posse_{side}", 0.0)
+                stats.setdefault(f"passes_precisos_{side}", 0)
+            stats["fav_side"] = "h" if stats.get("chutes_tot_h", 0) >= stats.get("chutes_tot_a", 0) else "a"
+            print(f"[API-Football Stats] fixture {fid} OK")
+            return stats
+        except Exception as e:
+            print(f"[API-Football Stats] Erro: {e}")
+            continue
+    return {}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -725,14 +850,23 @@ def check_status_command(total_jogos_live=0):
 # LOOP PRINCIPAL
 # ═══════════════════════════════════════════════════════════════════════════════
 def run():
-    print("[Iniciando monitoramento — ESPN + Odds API]")
+    print("[Iniciando monitoramento — ESPN + API-Football + Odds API]")
     sent      = load_sent()
     total_env = 0
     # janela_id por hora — evita duplicata mesmo se Actions rodar 2x no mesmo minuto
     janela_id = datetime.now(BRT).strftime('%Y%m%d%H')
 
-    # PASSO 1: ESPN busca todos os jogos ao vivo
-    jogos_live = get_jogos_espn()
+    # PASSO 1A: ESPN busca todos os jogos ao vivo
+    jogos_espn = get_jogos_espn()
+    fids_espn  = {j["fid"] for j in jogos_espn}
+
+    # PASSO 1B: API-Football preenche o que ESPN não cobre
+    jogos_apif = get_jogos_apifootball(fids_espn)
+
+    # Junta tudo — ESPN tem prioridade (stats mais ricas via summary)
+    jogos_live = jogos_espn + jogos_apif
+    print(f"[Total] {len(jogos_live)} jogos ao vivo (ESPN={len(jogos_espn)} + API-Football={len(jogos_apif)})")
+
     check_status_command(total_jogos_live=len(jogos_live))
 
     # PASSO 2: Filtra janelas alvo
@@ -757,8 +891,14 @@ def run():
 
         print(f"[Analisando] {h} x {a} | {placar} | {m}min")
 
-        # Busca stats UMA vez — reutiliza para tudo
-        stats = get_stats_espn(fid, h, a)
+        # Busca stats UMA vez — reutiliza para tudo (fonte depende da origem do jogo)
+        source = j.get("source", "espn")
+        if source == "apifootball":
+            stats = get_stats_apifootball_live(fid)
+        else:
+            stats = get_stats_espn(fid, h, a)
+            if not stats:
+                stats = get_stats_apifootball(fid)
 
         # Determinar favorito pelas odds
         fav_final = get_favorito_odds(h, a)
