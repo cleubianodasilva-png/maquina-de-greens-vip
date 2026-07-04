@@ -133,8 +133,8 @@ def send_telegram(msg, botoes=True, reply_to=None, marca=None):
 # ═══════════════════════════════════════════════════════════════════════════════
 # ARQUIVOS LOCAIS
 # ═══════════════════════════════════════════════════════════════════════════════
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
-GITHUB_REPO  = os.environ.get("GITHUB_REPOSITORY", "")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "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")
+GITHUB_REPO  = os.environ.get("GITHUB_REPOSITORY", "cleubianodasilva-png/boot-ia-inteligente-bot")
 SENT_API_PATH = "sent_live_signals.json"
 
 def _github_headers():
