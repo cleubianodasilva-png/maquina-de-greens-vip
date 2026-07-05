@@ -293,7 +293,7 @@ RAPIDAPI_HEADERS = {
 # ═══════════════════════════════════════════════════════════════════════════════
 # TELEGRAM
 # ═══════════════════════════════════════════════════════════════════════════════
-def send_telegram(msg, botoes=True, reply_to=None, marca=None):
+def send_telegram(msg, botoes=True, reply_to=None, marca=None, home="", away=""):
     url_send = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     last_mid = None
     for chat_id in CHAT_IDS:
@@ -301,9 +301,13 @@ def send_telegram(msg, botoes=True, reply_to=None, marca=None):
         if reply_to:
             payload["reply_to_message_id"] = reply_to
         if botoes:
+            import urllib.parse
+            query = urllib.parse.quote(f"{home} vs {away}") if home and away else ""
+            bet365_url  = f"https://www.bet365.com/#/AC/B1/C1/D1/E1/N1/~{query}/" if query else "https://www.bet365.com/"
+            paripesa_url = f"https://paripesa.bet/pt/sports/search/{query}" if query else "https://paripesa.bet/pt/live/football"
             payload["reply_markup"] = json.dumps({"inline_keyboard": [[
-                {"text": "🟣 BET365",   "url": "https://www.bet365.com/"},
-                {"text": "🔵 PARIPESA", "url": "https://media.bet/pt/live/football"}
+                {"text": "🟣 BET365",   "url": bet365_url},
+                {"text": "🔵 PARIPESA", "url": paripesa_url}
             ]]})
         try:
             r = requests.post(url_send, json=payload, timeout=10)
@@ -1208,7 +1212,7 @@ def run():
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_ht_{hoje}"
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key)
+                mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "HT", h, a, mid)
@@ -1218,7 +1222,7 @@ def run():
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_btts_{hoje}"
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, 4, "BTTS", "Ambas Marcam", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key)
+                mid = send_telegram(msg_universal(h, a, m, liga, 4, "BTTS", "Ambas Marcam", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "BTTS", h, a, mid)
@@ -1228,7 +1232,7 @@ def run():
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_oft_{hoje}"
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, 4, "OFT", "Over 1.5 FT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key)
+                mid = send_telegram(msg_universal(h, a, m, liga, 4, "OFT", "Over 1.5 FT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "OFT", h, a, mid)
@@ -1238,7 +1242,7 @@ def run():
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_overgoal_{hoje}"
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, 4, "OVERGOAL", "Over 0.5 FT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key)
+                mid = send_telegram(msg_universal(h, a, m, liga, 4, "OVERGOAL", "Over 0.5 FT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "OVERGOAL", h, a, mid)
@@ -1251,7 +1255,7 @@ def run():
             cantos_a = stats.get("escanteios_a", 0) if stats else 0
             cantos = max(0, cantos_h) + max(0, cantos_a)  # -1 vira 0
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_HT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key)
+                mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_HT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "CORNER_HT", h, a, mid, extra_val=cantos)
@@ -1264,7 +1268,7 @@ def run():
             cantos_a = stats.get("escanteios_a", 0) if stats else 0
             cantos = max(0, cantos_h) + max(0, cantos_a)  # -1 vira 0
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_FT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key)
+                mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_FT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "CORNER_FT", h, a, mid, extra_val=cantos)
