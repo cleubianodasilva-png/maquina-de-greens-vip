@@ -583,7 +583,7 @@ def _fetch_liga(liga_slug):
                 resultado.append({
                     "fid": eid, "home": home, "away": away,
                     "sh": sh, "sa": sa, "minuto": minuto,
-                    "period": period, "liga": liga, "source": "espn"
+                    "period": period, "liga": liga, "liga_slug": liga_slug, "source": "espn"
                 })
             except:
                 continue
@@ -1250,7 +1250,7 @@ def run():
         )
 
         # Determinar favorito pelas odds (ESPN primeiro, depois Odds API)
-        fav_final = get_favorito_odds(h, a, fid=fid, league=j.get("liga", ""))
+        fav_final = get_favorito_odds(h, a, fid=fid, league=j.get("liga_slug", j.get("liga", "")))
         fav_por_odds = fav_final in ("h", "a")
 
         # Sem odds = sem favorito confiável, pula o jogo
