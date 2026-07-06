@@ -860,8 +860,15 @@ def get_favorito_odds(home, away, fid=None, league=None):
                         continue
                     ml = odd.get("moneyline", {})
                     if ml:
-                        odd_h = _moneyline_to_decimal(ml.get("home", {}).get("close", {}).get("odds", 99))
-                        odd_a = _moneyline_to_decimal(ml.get("away", {}).get("close", {}).get("odds", 99))
+                        # Tenta current (ao vivo), depois close (pré-jogo), depois open
+                        def _get_ml(side):
+                            for key in ("current", "close", "open"):
+                                v = ml.get(side, {}).get(key, {}).get("odds")
+                                if v:
+                                    return v
+                            return 99
+                        odd_h = _moneyline_to_decimal(_get_ml("home"))
+                        odd_a = _moneyline_to_decimal(_get_ml("away"))
                         if odd_h < 90 and odd_a < 90:
                             fav = "h" if odd_h <= odd_a else "a"
                             print(f"[ODDS-ESPN] {home} x {away} | Casa:{odd_h} Fora:{odd_a} → Fav:{fav}")
