@@ -1265,18 +1265,17 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
         if new_last_id > last_id:
             with open(LAST_UPDATE_FILE, 'w') as f: json.dump({"last_id": new_last_id}, f)
             # Salva no GitHub para persistir entre execuções
-            if GITHUB_TOKEN and GITHUB_REPO:
-                try:
-                    import base64 as _b64
-                    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/last_update.json"
-                    r_get = requests.get(url, headers=_github_headers(), timeout=6)
-                    sha = r_get.json().get("sha", "") if r_get.status_code == 200 else ""
-                    content_b64 = _b64.b64encode(json.dumps({"last_id": new_last_id}).encode()).decode()
-                    payload = {"message": "state: last_update [skip ci]", "content": content_b64}
-                    if sha: payload["sha"] = sha
-                    requests.put(url, headers=_github_headers(), json=payload, timeout=8)
-                except: pass
-    except: pass
+            import base64 as _b64
+            url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/last_update.json"
+            r_get = requests.get(url, headers=_github_headers(), timeout=6)
+            sha_lu = r_get.json().get("sha", "") if r_get.status_code == 200 else ""
+            content_b64 = _b64.b64encode(json.dumps({"last_id": new_last_id}).encode()).decode()
+            payload = {"message": "state: last_update [skip ci]", "content": content_b64}
+            if sha_lu: payload["sha"] = sha_lu
+            r_put = requests.put(url, headers=_github_headers(), json=payload, timeout=8)
+            print(f"[CMD] last_id salvo: {new_last_id} | status: {r_put.status_code} | token_ok: {bool(GITHUB_TOKEN)}")
+    except Exception as e:
+        print(f"[CMD] Erro ao processar comandos: {e}")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # LOOP PRINCIPAL
