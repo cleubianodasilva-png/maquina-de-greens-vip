@@ -1116,8 +1116,8 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
 
     if "CORNER" in mercado:
         return (
-            f"{sep}\n{title}\n⚠️Placar: {placar}\n🌐 Liga: {liga}\n"
-            f"⚔️ <b>{home}</b> x <b>{away}</b>\n🕐 Minuto: <b>{minuto}'</b>\n{sep}\n"
+            f"{sep}\n{title}\n⚽️ Placar: {placar}\n🌏 Liga: {liga}\n"
+            f"📡 <b>{home}</b> x <b>{away}</b>\n⏰️ Minuto: <b>{minuto}'</b>\n{sep}\n"
             f"📊 <b>Análise ao Vivo da Entrada:</b>\n📝 {motivo}\n"
             f"💰 Odd Mínima Recomendada: 1.70\n{sep}\n"
             f"⛳️ Escanteios Atuais: <b>{cantos_atual}</b>\n"
@@ -1126,8 +1126,8 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
             f"⚠️Jogue com responsabilidade⚠️"
         )
     return (
-        f"{sep}\n{title}\n⚠️Placar: {placar}\n🌐 Liga: {liga}\n"
-        f"⚔️ <b>{home}</b> x <b>{away}</b>\n🕐 Minuto: <b>{minuto}'</b>\n{sep}\n"
+        f"{sep}\n{title}\n⚽️ Placar: {placar}\n🌏 Liga: {liga}\n"
+        f"📡 <b>{home}</b> x <b>{away}</b>\n⏰️ Minuto: <b>{minuto}'</b>\n{sep}\n"
         f"📊 <b>Análise ao Vivo da Entrada:</b>\n📝 {motivo}\n"
         f"💰 Odd Mínima Recomendada: 1.70\n{sep}\n"
         f"📌 Entrada: <b>{entrada}</b>\n✅ Critérios: <b>{n}/6</b>\n{sep}\n"
