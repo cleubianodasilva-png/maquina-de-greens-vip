@@ -1381,7 +1381,7 @@ def run():
                     registrar_sinal(fid, "HT", h, a, mid)
 
         # MERCADO 1B: OVER GOL LIMITE HT (15-25 min, 0x0, odd fav ≤ 1.50, prob 1.5 FT ≥ 75%, prob 0.5 HT ≥ 65%, APPM fav ≥ 1)
-        if p == 1 and 15 <= m <= 25 and stot == 0 and red_fav == 0:
+        if p == 1 and 15 <= m <= 25 and red_fav == 0:
             odd_fav_num = get_odd_favorito_num(h, a, fid=fid, league=j.get("liga_slug", j.get("liga", "")))
             chutes_tot_total = (stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0)) if stats else 0
             chutes_gol_total = (stats.get("chutes_gol_h", 0) + stats.get("chutes_gol_a", 0)) if stats else 0
