@@ -3,7 +3,7 @@ name: Bot Zapia - BOOT IA INTELIGENTE
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/1 * * * *'
 
 jobs:
   run-bot:
