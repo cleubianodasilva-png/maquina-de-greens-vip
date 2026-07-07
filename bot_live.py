@@ -1445,10 +1445,12 @@ def run():
         if p == 1 and 30 <= m <= 38 and fav_por_odds and corner_valido and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_cht_{hoje}"
-            cantos_h = stats.get("escanteios_h", 0) if stats else 0
-            cantos_a = stats.get("escanteios_a", 0) if stats else 0
-            cantos = max(0, cantos_h) + max(0, cantos_a)  # -1 vira 0
-            if key not in sent:
+            cantos_h = stats.get("escanteios_h", -1) if stats else -1
+            cantos_a = stats.get("escanteios_a", -1) if stats else -1
+            cantos = (max(0, cantos_h) + max(0, cantos_a)) if (cantos_h >= 0 and cantos_a >= 0) else -1
+            if cantos < 0:
+                print(f"[SKIP-CORNER-HT] {h} x {a} — escanteios sem dado real, pulando")
+            elif key not in sent:
                 mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_HT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
@@ -1458,10 +1460,12 @@ def run():
         if p == 2 and 80 <= m <= 88 and fav_por_odds and corner_valido and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_cft_{hoje}"
-            cantos_h = stats.get("escanteios_h", 0) if stats else 0
-            cantos_a = stats.get("escanteios_a", 0) if stats else 0
-            cantos = max(0, cantos_h) + max(0, cantos_a)  # -1 vira 0
-            if key not in sent:
+            cantos_h = stats.get("escanteios_h", -1) if stats else -1
+            cantos_a = stats.get("escanteios_a", -1) if stats else -1
+            cantos = (max(0, cantos_h) + max(0, cantos_a)) if (cantos_h >= 0 and cantos_a >= 0) else -1
+            if cantos < 0:
+                print(f"[SKIP-CORNER-FT] {h} x {a} — escanteios sem dado real, pulando")
+            elif key not in sent:
                 mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_FT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
