@@ -1455,6 +1455,13 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
     return f"Jogo equilibrado, ambas criando chances — {chutes_h} chutes de Casa x {chutes_a} de Fora{posse_txt}{vermelho}"
 
 def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_val=None, cantos_atual=0, stats=None, sh=0, sa=0, fav_final="h"):
+
+    # DEBUG STATS: Logar o que o bot recebeu
+    if stats:
+        print(f"[DEBUG-STATS] {home} x {away}: {stats}")
+    else:
+        print(f"[DEBUG-STATS] {home} x {away}: SEM ESTATISTICAS NO OBJETO stats")
+
     sep    = "━━━━━━━━━━━━━━━━━━━━"
     motivo = gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual)
     if "CORNER" in mercado:
@@ -1472,7 +1479,7 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
     title = titles.get(mercado, f"⚽️🔥<b>{mercado}</b>🔥⚽️")
     stats_visual = ""
     if stats:
-        ch_h = stats.get("chutes_tot_h", 0); ch_a = stats.get("chutes_tot_a", 0)
+        ch_h = stats.get("chutes_tot_h", sh); ch_a = stats.get("chutes_tot_a", sa)
         cg_h = stats.get("chutes_gol_h", 0); cg_a = stats.get("chutes_gol_a", 0)
         cn_h = max(0, stats.get("escanteios_h", 0)); cn_a = max(0, stats.get("escanteios_a", 0))
         ph_raw = stats.get("posse_h", 0.0); pa_raw = stats.get("posse_a", 0.0)
