@@ -861,30 +861,27 @@ def get_jogos_bzzoiro(fids_existentes):
 
 
 
+
 def get_stats_apifootball_v3(match_id):
     """Busca estatísticas detalhadas no endpoint get_statistics (mais confiável)."""
     url = f"https://apiv3.apifootball.com/?action=get_statistics&match_id={match_id}&APIkey={APIFOOTBALL_COM_KEY}"
     try:
         r = requests.get(url, timeout=10)
         data = r.json()
-        # O retorno é um dict com o ID do jogo como chave: {"ID": {"statistics": [...]}}
-        game_stats = data.get(str(match_id), {})
-        stats_list = game_stats.get("statistics", [])
-        
-        res = {}
-        for s in stats_list:
-            t = s["type"].lower()
-            h, a = s["home"] or 0, s["away"] or 0
-            if "corners" in t: res["escanteios_h"], res["escanteios_a"] = int(h), int(a)
-            if "shots total" in t or "total shots" in t: res["chutes_tot_h"], res["chutes_tot_a"] = int(h), int(a)
-            if "on target" in t: res["chutes_gol_h"], res["chutes_gol_a"] = int(h), int(a)
-        
-        # Se pegou pelo menos cantos ou chutes, retorna
-        if res:
-            return res
-    except Exception as e:
-        print(f"[DEBUG-API] Erro get_statistics: {e}")
+        if isinstance(data, dict):
+            game_stats = data.get(str(match_id), {})
+            stats_list = game_stats.get("statistics", [])
+            res = {}
+            for s in stats_list:
+                t = s["type"].lower()
+                h, a = s["home"] or 0, s["away"] or 0
+                if "corners" in t: res["escanteios_h"], res["escanteios_a"] = int(h), int(a)
+                if "shots total" in t or "total shots" in t: res["chutes_tot_h"], res["chutes_tot_a"] = int(h), int(a)
+                if "on target" in t: res["chutes_gol_h"], res["chutes_gol_a"] = int(h), int(a)
+            if res: return res
+    except: pass
     return None
+
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
