@@ -351,8 +351,8 @@ def send_telegram(msg, botoes=True, reply_to=None, marca=None, home="", away="")
         if reply_to:
             payload["reply_to_message_id"] = reply_to
         if botoes:
-            bet365_url   = "https://www.bet365.com/#/AS/B1/"
-            paripesa_url = "https://paripesa.com/br"
+            bet365_url   = "https://www.bet365.bet.br/#/AZ/"
+            paripesa_url = "https://paripesa.com/pt/live"
             payload["reply_markup"] = {
                 "inline_keyboard": [[
                     {"text": "🟣 BET365",   "url": bet365_url},
