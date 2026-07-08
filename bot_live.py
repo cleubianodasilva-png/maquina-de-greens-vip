@@ -1,3 +1,8 @@
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BOT MÁQUINA DE GREENS / ZAPIA - VERSÃO ELITE 100% AUTOMÁTICA
+# FONTES: ESPN PÚBLICA + BZZOIRO (TOKEN ATIVO) + APIFOOTBALL (V3 ATIVA)
+# ═══════════════════════════════════════════════════════════════════════════════
 import os, json, requests, time
 from datetime import datetime, timezone, timedelta
 
@@ -303,17 +308,32 @@ RAPIDAPI_HEADERS = {
 }
 
 
+
+# URLs Oficiais das APIs (Conforme Documentação)
+BZZOIRO_URL      = "https://sports.bzzoiro.com"
+APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
+
 # APIs Secundárias (Ativas)
 APIFOOTBALL_COM_KEY = "312c2ecc90136b390d19c765711088d8121b195418b9c2e8006b9e8f7ed8e4ed"
 BZZOIRO_TOKEN   = "0c594407931777d114db6c3ccaefea54fa10c0ef"
 BZZOIRO_URL     = "https://sports.bzzoiro.com"
 
 
+
+# URLs Oficiais das APIs (Conforme Documentação)
+BZZOIRO_URL      = "https://sports.bzzoiro.com"
+APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
+
 # APIs Secundárias (Ativas)
 APIFOOTBALL_COM_KEY = "312c2ecc90136b390d19c765711088d8121b195418b9c2e8006b9e8f7ed8e4ed"
 BZZOIRO_TOKEN   = "0c594407931777d114db6c3ccaefea54fa10c0ef"
 BZZOIRO_URL     = "https://sports.bzzoiro.com"
 
+
+
+# URLs Oficiais das APIs (Conforme Documentação)
+BZZOIRO_URL      = "https://sports.bzzoiro.com"
+APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
 
 # APIs Secundárias (Ativas)
 APIFOOTBALL_COM_KEY = "312c2ecc90136b390d19c765711088d8121b195418b9c2e8006b9e8f7ed8e4ed"
@@ -765,6 +785,31 @@ def get_stats_apifootball_live(fid):
 # API 2 — ESPN: estatísticas do jogo (chutes, cantos, cartões)
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
+def get_jogos_apifootball_v3(fids_existentes):
+    try:
+        # action=get_events com match_live=1 retorna jogos ao vivo
+        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_COM_KEY}
+        r = requests.get(APIFOOTBALL_URL, params=params, timeout=15)
+        data = r.json()
+        if not isinstance(data, list): return []
+        jogos = []
+        for ev in data:
+            fid = "apif_" + str(ev.get("match_id", ""))
+            if fid in fids_existentes: continue
+            jogos.append({
+                "fid": fid, "fid_raw": str(ev.get("match_id", "")),
+                "home": ev.get("match_hometeam_name", ""),
+                "away": ev.get("match_awayteam_name", ""),
+                "sh": int(ev.get("match_hometeam_score", 0) or 0),
+                "sa": int(ev.get("match_awayteam_score", 0) or 0),
+                "minuto": int(ev.get("match_status", 0) or 0),
+                "liga": ev.get("league_name", ""),
+                "source": "apifootball"
+            })
+        return jogos
+    except: return []
+
 def get_jogos_bzzoiro(fids_existentes):
     try:
         headers = {"Authorization": "Token " + BZZOIRO_TOKEN}
@@ -789,6 +834,30 @@ def get_jogos_bzzoiro(fids_existentes):
             })
         return jogos
     except: return []
+
+
+def get_stats_apifootball_v3(match_id):
+    try:
+        params = {"action": "get_statistics", "match_id": match_id, "APIkey": APIFOOTBALL_COM_KEY}
+        r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
+        data = r.json()
+        if not data or str(match_id) not in data: return {}
+        raw = data[str(match_id)].get("statistics", [])
+        stats = {}
+        for s in raw:
+            tipo = s.get("type", "").lower()
+            h_val = s.get("home", "0").replace("%", "")
+            a_val = s.get("away", "0").replace("%", "")
+            if "corner" in tipo:
+                stats["escanteios_h"], stats["escanteios_a"] = int(h_val), int(a_val)
+            elif "shots on goal" in tipo:
+                stats["chutes_gol_h"], stats["chutes_gol_a"] = int(h_val), int(a_val)
+            elif "shots total" in tipo:
+                stats["chutes_tot_h"], stats["chutes_tot_a"] = int(h_val), int(a_val)
+            elif "red cards" in tipo:
+                stats["red_cards_h"], stats["red_cards_a"] = int(h_val), int(a_val)
+        return stats
+    except: return {}
 
 def get_stats_bzzoiro(fid_raw, home, away):
     try:
@@ -811,6 +880,31 @@ def get_stats_bzzoiro(fid_raw, home, away):
     except: return {}
 
 
+
+def get_jogos_apifootball_v3(fids_existentes):
+    try:
+        # action=get_events com match_live=1 retorna jogos ao vivo
+        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_COM_KEY}
+        r = requests.get(APIFOOTBALL_URL, params=params, timeout=15)
+        data = r.json()
+        if not isinstance(data, list): return []
+        jogos = []
+        for ev in data:
+            fid = "apif_" + str(ev.get("match_id", ""))
+            if fid in fids_existentes: continue
+            jogos.append({
+                "fid": fid, "fid_raw": str(ev.get("match_id", "")),
+                "home": ev.get("match_hometeam_name", ""),
+                "away": ev.get("match_awayteam_name", ""),
+                "sh": int(ev.get("match_hometeam_score", 0) or 0),
+                "sa": int(ev.get("match_awayteam_score", 0) or 0),
+                "minuto": int(ev.get("match_status", 0) or 0),
+                "liga": ev.get("league_name", ""),
+                "source": "apifootball"
+            })
+        return jogos
+    except: return []
+
 def get_jogos_bzzoiro(fids_existentes):
     try:
         headers = {"Authorization": "Token " + BZZOIRO_TOKEN}
@@ -835,6 +929,30 @@ def get_jogos_bzzoiro(fids_existentes):
             })
         return jogos
     except: return []
+
+
+def get_stats_apifootball_v3(match_id):
+    try:
+        params = {"action": "get_statistics", "match_id": match_id, "APIkey": APIFOOTBALL_COM_KEY}
+        r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
+        data = r.json()
+        if not data or str(match_id) not in data: return {}
+        raw = data[str(match_id)].get("statistics", [])
+        stats = {}
+        for s in raw:
+            tipo = s.get("type", "").lower()
+            h_val = s.get("home", "0").replace("%", "")
+            a_val = s.get("away", "0").replace("%", "")
+            if "corner" in tipo:
+                stats["escanteios_h"], stats["escanteios_a"] = int(h_val), int(a_val)
+            elif "shots on goal" in tipo:
+                stats["chutes_gol_h"], stats["chutes_gol_a"] = int(h_val), int(a_val)
+            elif "shots total" in tipo:
+                stats["chutes_tot_h"], stats["chutes_tot_a"] = int(h_val), int(a_val)
+            elif "red cards" in tipo:
+                stats["red_cards_h"], stats["red_cards_a"] = int(h_val), int(a_val)
+        return stats
+    except: return {}
 
 def get_stats_bzzoiro(fid_raw, home, away):
     try:
@@ -857,6 +975,31 @@ def get_stats_bzzoiro(fid_raw, home, away):
     except: return {}
 
 
+
+def get_jogos_apifootball_v3(fids_existentes):
+    try:
+        # action=get_events com match_live=1 retorna jogos ao vivo
+        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_COM_KEY}
+        r = requests.get(APIFOOTBALL_URL, params=params, timeout=15)
+        data = r.json()
+        if not isinstance(data, list): return []
+        jogos = []
+        for ev in data:
+            fid = "apif_" + str(ev.get("match_id", ""))
+            if fid in fids_existentes: continue
+            jogos.append({
+                "fid": fid, "fid_raw": str(ev.get("match_id", "")),
+                "home": ev.get("match_hometeam_name", ""),
+                "away": ev.get("match_awayteam_name", ""),
+                "sh": int(ev.get("match_hometeam_score", 0) or 0),
+                "sa": int(ev.get("match_awayteam_score", 0) or 0),
+                "minuto": int(ev.get("match_status", 0) or 0),
+                "liga": ev.get("league_name", ""),
+                "source": "apifootball"
+            })
+        return jogos
+    except: return []
+
 def get_jogos_bzzoiro(fids_existentes):
     try:
         headers = {"Authorization": "Token " + BZZOIRO_TOKEN}
@@ -881,6 +1024,30 @@ def get_jogos_bzzoiro(fids_existentes):
             })
         return jogos
     except: return []
+
+
+def get_stats_apifootball_v3(match_id):
+    try:
+        params = {"action": "get_statistics", "match_id": match_id, "APIkey": APIFOOTBALL_COM_KEY}
+        r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
+        data = r.json()
+        if not data or str(match_id) not in data: return {}
+        raw = data[str(match_id)].get("statistics", [])
+        stats = {}
+        for s in raw:
+            tipo = s.get("type", "").lower()
+            h_val = s.get("home", "0").replace("%", "")
+            a_val = s.get("away", "0").replace("%", "")
+            if "corner" in tipo:
+                stats["escanteios_h"], stats["escanteios_a"] = int(h_val), int(a_val)
+            elif "shots on goal" in tipo:
+                stats["chutes_gol_h"], stats["chutes_gol_a"] = int(h_val), int(a_val)
+            elif "shots total" in tipo:
+                stats["chutes_tot_h"], stats["chutes_tot_a"] = int(h_val), int(a_val)
+            elif "red cards" in tipo:
+                stats["red_cards_h"], stats["red_cards_a"] = int(h_val), int(a_val)
+        return stats
+    except: return {}
 
 def get_stats_bzzoiro(fid_raw, home, away):
     try:
@@ -1518,15 +1685,21 @@ def run():
             stats = get_stats_apifootball_live(fid)
         else:
             source = j.get("source", "espn")
-        if source == "bzzoiro":
+        if source == "apifootball":
+            stats = get_stats_apifootball_v3(j["fid_raw"])
+        elif source == "bzzoiro":
             stats = get_stats_bzzoiro(j["fid_raw"], h, a)
         else:
             source = j.get("source", "espn")
-        if source == "bzzoiro":
+        if source == "apifootball":
+            stats = get_stats_apifootball_v3(j["fid_raw"])
+        elif source == "bzzoiro":
             stats = get_stats_bzzoiro(j["fid_raw"], h, a)
         else:
             source = j.get("source", "espn")
-        if source == "bzzoiro":
+        if source == "apifootball":
+            stats = get_stats_apifootball_v3(j["fid_raw"])
+        elif source == "bzzoiro":
             stats = get_stats_bzzoiro(j["fid_raw"], h, a)
         else:
             stats = get_stats_espn(fid, h, a)
