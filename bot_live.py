@@ -2110,7 +2110,7 @@ def run():
                 hoje = datetime.now(BRT).strftime('%Y%m%d')
                 key = f"{fid}_ht_{hoje}"
                 if key not in sent:
-                    mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "HT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                    mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "HT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odds_pre=odds_pre), marca=key, home=h, away=a)
                     if mid:
                         sent.add(key); total_env += 1
                         registrar_sinal(fid, "HT", h, a, mid)
@@ -2129,7 +2129,7 @@ def run():
                 hoje = datetime.now(BRT).strftime('%Y%m%d')
                 key = f"{fid}_limiteht_{hoje}"
                 if key not in sent:
-                    mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "LIMITEHT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                    mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "LIMITEHT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odds_pre=odds_pre), marca=key, home=h, away=a)
                     if mid:
                         sent.add(key); total_env += 1
                         registrar_sinal(fid, "LIMITEHT", h, a, mid)
@@ -2144,7 +2144,7 @@ def run():
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_btts_{hoje}"
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "BTTS", "Ambas Marcam", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "BTTS", "Ambas Marcam", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odds_pre=odds_pre), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "BTTS", h, a, mid)
@@ -2154,7 +2154,7 @@ def run():
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_oft_{hoje}"
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "OFT", "Over 1.5 FT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "OFT", "Over 1.5 FT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odds_pre=odds_pre), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "OFT", h, a, mid)
@@ -2183,7 +2183,7 @@ def run():
                     else: linha_over = f"Over {total_gols + 0.5:.1f} FT"
                     
                     if key not in sent:
-                        mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "OVERGOAL", linha_over, placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                        mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "OVERGOAL", linha_over, placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odds_pre=odds_pre), marca=key, home=h, away=a)
                         if mid:
                             sent.add(key); total_env += 1
                             registrar_sinal(fid, "OVERGOAL", h, a, mid, extra_val=total_gols)
@@ -2204,7 +2204,7 @@ def run():
             if cantos < 0:
                 print(f"[SKIP-CORNER-HT] {h} x {a} — escanteios sem dado real, pulando")
             elif key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "CORNER_HT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "CORNER_HT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odds_pre=odds_pre), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "CORNER_HT", h, a, mid, extra_val=cantos)
@@ -2219,7 +2219,7 @@ def run():
             if cantos < 0:
                 print(f"[SKIP-CORNER-FT] {h} x {a} — escanteios sem dado real, pulando")
             elif key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "CORNER_FT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                mid = send_telegram(msg_universal(h, a, m, liga, n_crit, "CORNER_FT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odds_pre=odds_pre), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "CORNER_FT", h, a, mid, extra_val=cantos)
