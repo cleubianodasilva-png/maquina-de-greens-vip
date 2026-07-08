@@ -20,7 +20,7 @@ CHAT_IDS        = [os.environ.get("TG_GROUP_ID", "")]  # BOOT IA INTELIGENTE (Za
 ODDS_API_KEY    = "74e3ecb93cc2333874cb7038b9f682c0"
 RAPIDAPI_KEY    = "f72be1a7cdmsha226030291845afp131cd7jsn00f5979540aa"
 
-# API-Football (fallback quando ESPN não tiver o jogo)
+# apifootball (fallback quando ESPN não tiver o jogo)
 API_FOOTBALL_KEYS = [
     "77c645149c00ea5bbcca2c348e8a46c8",   # Chave do irmão (principal)
     "7fa6994f1e4103991a95ad53d2e7cc6b",   # Chave própria (fallback)
@@ -657,10 +657,10 @@ def get_jogos_espn():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# API 1B — API-Football: jogos ao vivo (preenche o que a ESPN não cobre)
+# API 1B — apifootball: jogos ao vivo (preenche o que a ESPN não cobre)
 # ═══════════════════════════════════════════════════════════════════════════════
 def get_jogos_apifootball(fids_espn):
-    """Busca todos os jogos ao vivo na API-Football e retorna os que ESPN não tem."""
+    """Busca todos os jogos ao vivo na apifootball e retorna os que ESPN não tem."""
     for key in API_FOOTBALL_KEYS:
         try:
             r = requests.get(
@@ -672,11 +672,11 @@ def get_jogos_apifootball(fids_espn):
             rjson = r.json()
             erros = rjson.get("errors", {})
             if erros and (erros.get("requests") or erros.get("access") or erros.get("token")):
-                print(f"[API-Football] Chave {key[:8]}... sem acesso: {erros}")
+                print(f"[apifootball] Chave {key[:8]}... sem acesso: {erros}")
                 continue
             fixtures = rjson.get("response", [])
             if not fixtures:
-                print(f"[API-Football] Chave {key[:8]}... retornou 0 jogos")
+                print(f"[apifootball] Chave {key[:8]}... retornou 0 jogos")
                 continue
             jogos = []
             for f in fixtures:
@@ -704,20 +704,20 @@ def get_jogos_apifootball(fids_espn):
                     })
                 except:
                     continue
-            print(f"[API-Football] {len(jogos)} jogos novos (chave {key[:8]}...)")
+            print(f"[apifootball] {len(jogos)} jogos novos (chave {key[:8]}...)")
             return jogos
         except Exception as e:
-            print(f"[API-Football] Erro chave {key[:8]}...: {e}")
+            print(f"[apifootball] Erro chave {key[:8]}...: {e}")
             continue
-    print("[API-Football] Todas as chaves falharam")
+    print("[apifootball] Todas as chaves falharam")
     return []
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# API-Football: estatísticas de um jogo específico
+# apifootball: estatísticas de um jogo específico
 # ═══════════════════════════════════════════════════════════════════════════════
 def get_stats_apifootball_live(fid):
-    """Busca stats ao vivo de um fixture da API-Football."""
+    """Busca stats ao vivo de um fixture da apifootball."""
     for key in API_FOOTBALL_KEYS:
         try:
             r = requests.get(
@@ -773,10 +773,10 @@ def get_stats_apifootball_live(fid):
                 stats.setdefault(f"posse_{side}", 0.0)
                 stats.setdefault(f"passes_precisos_{side}", 0)
             stats["fav_side"] = "h" if stats.get("chutes_tot_h", 0) >= stats.get("chutes_tot_a", 0) else "a"
-            print(f"[API-Football Stats] fixture {fid} OK")
+            print(f"[apifootball Stats] fixture {fid} OK")
             return stats
         except Exception as e:
-            print(f"[API-Football Stats] Erro: {e}")
+            print(f"[apifootball Stats] Erro: {e}")
             continue
     return {}
 
@@ -1127,7 +1127,7 @@ def get_stats_espn(eid, home, away):
         return {}
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FALLBACK — API-Football: estatísticas (usado se ESPN falhar)
+# FALLBACK — apifootball: estatísticas (usado se ESPN falhar)
 # ═══════════════════════════════════════════════════════════════════════════════
     for key in API_FOOTBALL_KEYS:
         try:
@@ -1138,7 +1138,7 @@ def get_stats_espn(eid, home, away):
             if (r.headers.get("x-ratelimit-requests-remaining") == "0"
                     or (isinstance(rjson.get("errors"), dict) and rjson.get("errors", {}).get("requests"))
                     or (isinstance(rjson.get("errors"), dict) and rjson.get("errors", {}).get("access"))):
-                print(f"[API-Football] Chave {key[:8]}... indisponível")
+                print(f"[apifootball] Chave {key[:8]}... indisponível")
                 continue
             data = rjson.get("response", [])
             if not data: continue
@@ -1163,7 +1163,7 @@ def get_stats_espn(eid, home, away):
                     else: red_a += 1
             stats["red_cards_h"], stats["red_cards_a"] = red_h, red_a
             stats["fav_side"] = "h" if stats.get("chutes_tot_h", 0) >= stats.get("chutes_tot_a", 0) else "a"
-            print(f"[API-Football] Stats OK chave {key[:8]}...")
+            print(f"[apifootball] Stats OK chave {key[:8]}...")
             return stats
         except:
             continue
@@ -1667,7 +1667,7 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
 # LOOP PRINCIPAL
 # ═══════════════════════════════════════════════════════════════════════════════
 def run():
-    print("[Iniciando monitoramento — ESPN + API-Football + Odds API]")
+    print("[Iniciando monitoramento — ESPN + apifootball + Odds API]")
     sent      = load_sent()
     total_env = 0
     # janela_id por hora — evita duplicata mesmo se Actions rodar 2x no mesmo minuto
@@ -1677,12 +1677,12 @@ def run():
     jogos_espn = get_jogos_espn()
     fids_espn  = {j["fid"] for j in jogos_espn}
 
-    # PASSO 1B: API-Football preenche o que ESPN não cobre
+    # PASSO 1B: apifootball preenche o que ESPN não cobre
     jogos_apif = get_jogos_apifootball(fids_espn)
 
     # Junta tudo — ESPN tem prioridade (stats mais ricas via summary)
     jogos_live = jogos_espn + jogos_apif
-    print(f"[Total] {len(jogos_live)} jogos ao vivo (ESPN={len(jogos_espn)} + API-Football=0)")
+    print(f"[Total] {len(jogos_live)} jogos ao vivo (ESPN={len(jogos_espn)} + apifootball=0)")
 
     # PASSO 2: Filtra janelas alvo
     jogos_na_janela = filtrar_janelas(jogos_live)
@@ -1818,26 +1818,115 @@ def run():
             (sh + sa) == 1
         )
 
-        # MERCADO 1: OVER 0.5 HT (15-27 min, 0x0, favorito empatando, sem vermelho do fav)
-        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0:
-            hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{fid}_ht_{hoje}"
-            if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
-                if mid:
-                    sent.add(key); total_env += 1
-                    registrar_sinal(fid, "HT", h, a, mid)
+        
+        # --- DEFINIÇÃO DE PRESSÃO (APPM E CHUTES) ---
+        chutes_gol_h = stats.get("chutes_gol_h", 0) if stats else 0
+        chutes_gol_a = stats.get("chutes_gol_a", 0) if stats else 0
+        chutes_tot_h = stats.get("chutes_tot_h", 0) if stats else 0
+        chutes_tot_a = stats.get("chutes_tot_a", 0) if stats else 0
+        
+        # Pressão do Favorito (conforme definido anteriormente)
+        chutes_gol_fav = chutes_gol_h if fav_final == "h" else chutes_gol_a
+        chutes_tot_fav = chutes_tot_h if fav_final == "h" else chutes_tot_a
+        
+        # Critério: Ambas as equipes pressionando (mínimo de chutes e volume)
+        # Se ambas têm chutes no gol e o volume total de chutes é alto
+        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        
+        # Critério: Favorito amassando (mesmo que a odd seja maior que 1.50)
+        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
 
-        # MERCADO 1B: OVER GOL LIMITE HT (15-25 min, 0x0, odd fav ≤ 1.50, prob 1.5 FT ≥ 75%, prob 0.5 HT ≥ 65%, APPM fav ≥ 1)
-        if p == 1 and 15 <= m <= 25 and red_fav == 0:
+        
+        # --- DEFINIÇÃO DE PRESSÃO (APPM E CHUTES) ---
+        chutes_gol_h = stats.get("chutes_gol_h", 0) if stats else 0
+        chutes_gol_a = stats.get("chutes_gol_a", 0) if stats else 0
+        chutes_tot_h = stats.get("chutes_tot_h", 0) if stats else 0
+        chutes_tot_a = stats.get("chutes_tot_a", 0) if stats else 0
+        
+        # Pressão do Favorito (conforme definido anteriormente)
+        chutes_gol_fav = chutes_gol_h if fav_final == "h" else chutes_gol_a
+        chutes_tot_fav = chutes_tot_h if fav_final == "h" else chutes_tot_a
+        
+        # Critério: Ambas as equipes pressionando (mínimo de chutes e volume)
+        # Se ambas têm chutes no gol e o volume total de chutes é alto
+        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        
+        # Critério: Favorito amassando (mesmo que a odd seja maior que 1.50)
+        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
+
+        
+        # --- DEFINIÇÃO DE PRESSÃO (APPM E CHUTES) ---
+        chutes_gol_h = stats.get("chutes_gol_h", 0) if stats else 0
+        chutes_gol_a = stats.get("chutes_gol_a", 0) if stats else 0
+        chutes_tot_h = stats.get("chutes_tot_h", 0) if stats else 0
+        chutes_tot_a = stats.get("chutes_tot_a", 0) if stats else 0
+        
+        # Pressão do Favorito
+        chutes_gol_fav = chutes_gol_h if fav_final == "h" else chutes_gol_a
+        chutes_tot_fav = chutes_tot_h if fav_final == "h" else chutes_tot_a
+        
+        # Critério: Ambas as equipes pressionando
+        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        
+        # Critério: Favorito amassando
+        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
+
+        
+        # --- DEFINIÇÃO DE PRESSÃO (APPM E CHUTES) ---
+        chutes_gol_h = stats.get("chutes_gol_h", 0) if stats else 0
+        chutes_gol_a = stats.get("chutes_gol_a", 0) if stats else 0
+        chutes_tot_h = stats.get("chutes_tot_h", 0) if stats else 0
+        chutes_tot_a = stats.get("chutes_tot_a", 0) if stats else 0
+        
+        # Pressão do Favorito
+        chutes_gol_fav = chutes_gol_h if fav_final == "h" else chutes_gol_a
+        chutes_tot_fav = chutes_tot_h if fav_final == "h" else chutes_tot_a
+        
+        # Critério: Ambas as equipes pressionando
+        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        
+        # Critério: Favorito amassando
+        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
+
+        
+        # --- DEFINICAO DE PRESSAO (APPM E CHUTES) ---
+        chutes_gol_h = stats.get("chutes_gol_h", 0) if stats else 0
+        chutes_gol_a = stats.get("chutes_gol_a", 0) if stats else 0
+        chutes_tot_h = stats.get("chutes_tot_h", 0) if stats else 0
+        chutes_tot_a = stats.get("chutes_tot_a", 0) if stats else 0
+        
+        # Pressao do Favorito
+        chutes_gol_fav = chutes_gol_h if fav_final == "h" else chutes_gol_a
+        chutes_tot_fav = chutes_tot_h if fav_final == "h" else chutes_tot_a
+        
+        # Criterio: Ambas as equipes pressionando
+        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        
+        # Criterio: Favorito amassando
+        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
+
+        # MERCADO 1: OVER 0.5 HT (15-27 min, 0x0, red_fav == 0)
+        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and red_fav == 0:
+            if fav_amassando or ambas_pressionando:
+                hoje = datetime.now(BRT).strftime('%Y%m%d')
+                key = f"{fid}_ht_{hoje}"
+                if key not in sent:
+                    mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                    if mid:
+                        sent.add(key); total_env += 1
+                        registrar_sinal(fid, "HT", h, a, mid)
+
+        # MERCADO 1B: OVER GOL LIMITE HT (15-25 min, 0x0, red_fav == 0)
+        if p == 1 and 15 <= m <= 25 and sh == 0 and sa == 0 and red_fav == 0:
             odd_fav_num = get_odd_favorito_num(h, a, fid=fid, league=j.get("liga_slug", j.get("liga", "")))
-            chutes_tot_total = (stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0)) if stats else 0
-            chutes_gol_total = (stats.get("chutes_gol_h", 0) + stats.get("chutes_gol_a", 0)) if stats else 0
-            chutes_gol_fav   = stats.get(f"chutes_gol_{fav_final}", 0) if stats else 0
+            chutes_tot_total = (chutes_tot_h + chutes_tot_a)
+            chutes_gol_total = (chutes_gol_h + chutes_gol_a)
             prob_15_ft, prob_05_ht = calcular_prob_gols_ht(chutes_tot_total, chutes_gol_total, m)
-            appm_fav = chutes_gol_fav
-            print(f"[LIMITE-HT] {h} x {a} | odd_fav={odd_fav_num} | prob_15ft={prob_15_ft}% | prob_05ht={prob_05_ht}% | appm={appm_fav}")
-            if (odd_fav_num <= 1.50 and prob_15_ft >= 75 and prob_05_ht >= 65 and appm_fav >= 1):
+            
+            criterio_analitico = (odd_fav_num <= 1.55 and prob_15_ft >= 75 and prob_05_ht >= 60)
+            criterio_pressao   = (fav_amassando or ambas_pressionando)
+            
+            if criterio_analitico or criterio_pressao:
                 hoje = datetime.now(BRT).strftime('%Y%m%d')
                 key = f"{fid}_limiteht_{hoje}"
                 if key not in sent:
@@ -1845,6 +1934,11 @@ def run():
                     if mid:
                         sent.add(key); total_env += 1
                         registrar_sinal(fid, "LIMITEHT", h, a, mid)
+
+
+
+
+
 
         # MERCADO 2: AMBAS MARCAM BTTS (60-75 min, fav perdendo por 1, sem vermelho do fav)
         if p == 2 and 60 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0:
