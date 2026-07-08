@@ -1325,14 +1325,17 @@ def run():
         placar = f"{sh}x{sa}"
         source = j.get("source", "espn")
 
-        # BUSCA DE ESTATÍSTICAS PROFUNDAS (Obrigatória para as 3 APIs)
-        stats = None
-        if source == "apifootball":
-            stats = get_stats_apifootball_v3(j["fid_raw"])
-        elif source == "bzzoiro":
-            stats = get_stats_bzzoiro(j["fid_raw"], h, a)
-        else: # ESPN
-            stats = get_stats_espn(fid, h, a)
+        
+        # BUSCA DE ESTATÍSTICAS PROFUNDAS (Prioridade: apifootball)
+        stats = get_stats_apifootball_v3(j.get("fid_raw", fid))
+        
+        # Fallback para outras fontes caso a Mestre não tenha os detalhes
+        if not stats:
+            if source == "bzzoiro":
+                stats = get_stats_bzzoiro(j["fid_raw"], h, a)
+            else:
+                stats = get_stats_espn(fid, h, a)
+
 
         # Se falhar na fonte primária, tenta apifootball (maior cobertura de stats)
         if not stats and source != "apifootball":
