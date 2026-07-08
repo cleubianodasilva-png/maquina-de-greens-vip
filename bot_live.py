@@ -1662,27 +1662,31 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
 # ═══════════════════════════════════════════════════════════════════════════════
 # LOOP PRINCIPAL
 # ═══════════════════════════════════════════════════════════════════════════════
+
 def run():
-    print("[Iniciando monitoramento — ESPN + apifootball + Odds API]")
+    print("[Iniciando monitoramento — TRIPLA VARREDURA (ESPN + BZZOIRO + APIFOOTBALL)]")
     sent      = load_sent()
     total_env = 0
-    # janela_id por hora — evita duplicata mesmo se Actions rodar 2x no mesmo minuto
-    janela_id = datetime.now(BRT).strftime('%Y%m%d%H')
-
-    # PASSO 1A: ESPN busca todos os jogos ao vivo
-    jogos_espn = get_jogos_espn()
-    fids_espn  = {j["fid"] for j in jogos_espn}
-
-    # PASSO 1B: apifootball preenche o que ESPN não cobre
-    jogos_apif = get_jogos_apifootball(fids_espn)
-
-    # Junta tudo — ESPN tem prioridade (stats mais ricas via summary)
-    jogos_live = jogos_espn + jogos_apif
-    print(f"[Total] {len(jogos_live)} jogos ao vivo (ESPN={len(jogos_espn)} + apifootball=0)")
+    
+    # --- PASSO 1: BUSCA DE JOGOS ---
+    # 1A. ESPN (Global Summary)
+    jogos_espn = get_jogos_espn_global()
+    fids_existentes = {j["fid"] for j in jogos_espn}
+    
+    # 1B. Bzzoiro
+    jogos_bzz = get_jogos_bzzoiro(fids_existentes)
+    fids_existentes.update({j["fid"] for j in jogos_bzz})
+    
+    # 1C. apifootball (v3 direct)
+    jogos_apif = get_jogos_apifootball_v3(fids_existentes)
+    
+    jogos_live = jogos_espn + jogos_bzz + jogos_apif
+    print(f"[SCAN] ESPN: {len(jogos_espn)} | Bzzoiro: {len(jogos_bzz)} | apifootball: {len(jogos_apif)} | Total: {len(jogos_live)}")
 
     # PASSO 2: Filtra janelas alvo
     jogos_na_janela = filtrar_janelas(jogos_live)
     print(f"[Janela] {len(jogos_na_janela)} jogos nas janelas alvo")
+
 
     check_status_command(total_jogos_live=len(jogos_live), jogos_live=jogos_live, jogos_na_janela=jogos_na_janela)
 
