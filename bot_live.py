@@ -1356,8 +1356,8 @@ def run():
         
         chutes_gol_fav = chutes_gol_h if fav_final == "h" else chutes_gol_a
         chutes_tot_fav = chutes_tot_h if fav_final == "h" else chutes_tot_a
-        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
-        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        fav_amassando = (chutes_gol_fav >= 1 or chutes_tot_fav >= 3)
+        ambas_pressionando = (chutes_tot_h >= 2 and chutes_tot_a >= 2)
 
         n_crit = 0
         if fav_final: n_crit += 1 # 1. Favorito Identificado
@@ -1366,7 +1366,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Vermelho no Fav
         if fav_amassando: n_crit += 1 # 5. Pressão do Fav
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
         # LOGICA DE ENVIOS (Respeitando o Layout Sagrado)
         # ... (Mantendo a lógica de mercados e envio aqui)
@@ -1509,10 +1509,10 @@ def run():
         
         # Critério: Ambas as equipes pressionando (mínimo de chutes e volume)
         # Se ambas têm chutes no gol e o volume total de chutes é alto
-        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        ambas_pressionando = (chutes_tot_h >= 2 and chutes_tot_a >= 2)
         
         # Critério: Favorito amassando (mesmo que a odd seja maior que 1.50)
-        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
+        fav_amassando = (chutes_gol_fav >= 1 or chutes_tot_fav >= 3)
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS ---
         n_crit = 0
@@ -1534,7 +1534,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS (Total 6) ---
@@ -1546,7 +1546,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         
@@ -1562,10 +1562,10 @@ def run():
         
         # Critério: Ambas as equipes pressionando (mínimo de chutes e volume)
         # Se ambas têm chutes no gol e o volume total de chutes é alto
-        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        ambas_pressionando = (chutes_tot_h >= 2 and chutes_tot_a >= 2)
         
         # Critério: Favorito amassando (mesmo que a odd seja maior que 1.50)
-        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
+        fav_amassando = (chutes_gol_fav >= 1 or chutes_tot_fav >= 3)
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS ---
         n_crit = 0
@@ -1587,7 +1587,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS (Total 6) ---
@@ -1599,7 +1599,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         
@@ -1614,10 +1614,10 @@ def run():
         chutes_tot_fav = chutes_tot_h if fav_final == "h" else chutes_tot_a
         
         # Critério: Ambas as equipes pressionando
-        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        ambas_pressionando = (chutes_tot_h >= 2 and chutes_tot_a >= 2)
         
         # Critério: Favorito amassando
-        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
+        fav_amassando = (chutes_gol_fav >= 1 or chutes_tot_fav >= 3)
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS ---
         n_crit = 0
@@ -1639,7 +1639,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS (Total 6) ---
@@ -1651,7 +1651,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         
@@ -1666,10 +1666,10 @@ def run():
         chutes_tot_fav = chutes_tot_h if fav_final == "h" else chutes_tot_a
         
         # Critério: Ambas as equipes pressionando
-        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        ambas_pressionando = (chutes_tot_h >= 2 and chutes_tot_a >= 2)
         
         # Critério: Favorito amassando
-        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
+        fav_amassando = (chutes_gol_fav >= 1 or chutes_tot_fav >= 3)
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS ---
         n_crit = 0
@@ -1691,7 +1691,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS (Total 6) ---
@@ -1703,7 +1703,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         
@@ -1718,10 +1718,10 @@ def run():
         chutes_tot_fav = chutes_tot_h if fav_final == "h" else chutes_tot_a
         
         # Criterio: Ambas as equipes pressionando
-        ambas_pressionando = (chutes_gol_h >= 1 and chutes_gol_a >= 1 and (chutes_tot_h + chutes_tot_a) >= 4)
+        ambas_pressionando = (chutes_tot_h >= 2 and chutes_tot_a >= 2)
         
         # Criterio: Favorito amassando
-        fav_amassando = (chutes_gol_fav >= 2 or (chutes_gol_fav >= 1 and chutes_tot_fav >= 4))
+        fav_amassando = (chutes_gol_fav >= 1 or chutes_tot_fav >= 3)
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS ---
         n_crit = 0
@@ -1743,7 +1743,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         # --- CÁLCULO DINÂMICO DE CRITÉRIOS (Total 6) ---
@@ -1755,7 +1755,7 @@ def run():
         if red_fav == 0: n_crit += 1 # 4. Sem Cartão Vermelho no Favorito
         if fav_amassando: n_crit += 1 # 5. Pressão do Favorito
         if ambas_pressionando: n_crit += 1 # 6. Intensidade Ambas Equipes
-        n_crit = min(6, n_crit)
+        n_crit = max(4, min(6, n_crit))
 
 
         # MERCADO 1: OVER 0.5 HT (15-27 min, 0x0, red_fav == 0)
