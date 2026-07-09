@@ -93,6 +93,8 @@ def gerar_layout_radar(jogos_ao_vivo, jogos_na_janela):
     return corpo
 \nimport requests\n
 def processar_comandos_pendentes(token, chat_id):
+    print(f"[DEBUG] Iniciando busca de comandos no chat {chat_id}...")
+
     import time
     url = f"https://api.telegram.org/bot{token}/getUpdates"
     try:
