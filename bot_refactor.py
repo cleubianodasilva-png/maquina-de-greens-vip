@@ -1810,11 +1810,11 @@ def run():
     fids_espn  = {j["fid"] for j in jogos_espn}
 
     # PASSO 1B: apifootball preenche o que ESPN não cobre
-    jogos_apif = get_jogos_apifootball(fids_espn)
+    jogos_apif = get_jogos_apifootball_v3(fids_espn)
 
     # Junta tudo — ESPN tem prioridade (stats mais ricas via summary)
     jogos_live = jogos_espn + jogos_apif
-    print(f"[Total] {len(jogos_live)} jogos ao vivo (ESPN={len(jogos_espn)} + apifootball=0)")
+    print(f"[Total] {len(jogos_live)} jogos ao vivo (ESPN={len(jogos_espn)} + apifootball={len(jogos_apif)})")
 
     # PASSO 2: Filtra janelas alvo
     jogos_na_janela = filtrar_janelas(jogos_live)
