@@ -1103,7 +1103,7 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
     titles = {
         "HT"       : "⚽️🔥<b>OVER GOL INTERVALO</b>🔥⚽️",
         "BTTS"     : "⚽️🔥<b>AMBAS MARCAM</b>🔥⚽️",
-        "OFT"      : "⚽️🔥<b>OVER GOL PARTIDA</b>🔥⚽️",
+        "OFT"      : "⚽️🔥<b>OVER 1.5 GOLS PARTIDA</b>🔥⚽️",
         "OVERGOAL" : "⚽️🔥<b>OVER GOL PARTIDA</b>🔥⚽️",
         "LIMITEHT" : "⚽️🔥<b>OVER GOL LIMITE HT</b>🔥⚽️",
         "CORNER_HT": "⛳️🔥<b>ESCANTEIO LIMITE HT</b>🔥⛳️",
