@@ -127,7 +127,9 @@ BRT             = timezone(timedelta(hours=-3))
 
 # ─── Credenciais ───────────────────────────────────────────────────────────────
 TELEGRAM_TOKEN  = os.getenv("TG_TOKEN", "")
-CHAT_IDS = [os.environ.get("TG_GROUP_ID", "")]  # BOOT IA INTELIGENTE (Zapia)
+TG_TOKEN = TELEGRAM_TOKEN
+CHAT_IDS = [os.environ.get("TG_GROUP_ID", "")]
+CHAT_ID = CHAT_IDS[0] if CHAT_IDS else ""  # BOOT IA INTELIGENTE (Zapia)
 
 # apifootball (fallback quando ESPN não tiver o jogo)
 API_FOOTBALL_KEYS = [
