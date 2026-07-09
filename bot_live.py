@@ -1347,14 +1347,18 @@ def run():
             # Fallback seguro para evitar NameError
             stats = {}
 
+        
         # FAVORITO
-        fav_final = None
-        try:
-            fav_final = get_odd_favorito_num(h, a, fid=fid, league=j.get("liga_slug", liga))
-        except:
-            pass
-            
+        fav_final = get_odd_favorito_num(h, a, fid=fid, league=j.get("liga_slug", liga))
+        
+        # Se as Odds falharem, identificamos o favorito por performance (Pressão)
         if not fav_final:
+            ch_h = stats.get("chutes_tot_h", 0)
+            ch_a = stats.get("chutes_tot_a", 0)
+            if ch_h > ch_a + 1: fav_final = "h"
+            elif ch_a > ch_h + 1: fav_final = "a"
+            if fav_final: print(f"  [AUTO-FAV] {h if fav_final=='h' else a} definido por pressão.")
+
             print(f"  [SKIP] {h} x {a} - Favorito não identificado.")
             continue
 
