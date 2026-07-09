@@ -4,6 +4,10 @@
 # FONTES: ESPN PÚBLICA + BZZOIRO (TOKEN ATIVO) + APIFOOTBALL (V3 ATIVA)
 # ═══════════════════════════════════════════════════════════════════════════════
 import os, json, requests, time
+
+print("🚀 [DEBUG] Iniciando execução do Robô Elite...")
+print(f"⏰ [DEBUG] Hora atual: {datetime.now()}")
+
 from datetime import datetime, timezone, timedelta
 
 # ─── Caminhos e Fuso ───────────────────────────────────────────────────────────
