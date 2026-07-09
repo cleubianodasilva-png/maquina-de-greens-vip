@@ -1362,29 +1362,13 @@ def run():
             stats = {}
 
         
-        # FAVORITO
+        
+        # FAVORITO (FORÇADO)
         fav_final = get_odd_favorito_num(h, a, fid=fid, league=j.get("liga_slug", liga))
-        
-        # Se as Odds falharem, identificamos o favorito por performance (Pressão)
         if not fav_final:
-            ch_h = stats.get("chutes_tot_h", 0)
-            ch_a = stats.get("chutes_tot_a", 0)
-            if ch_h > ch_a + 1: fav_final = "h"
-            elif ch_a > ch_h + 1: fav_final = "a"
-            if fav_final: print(f"  [AUTO-FAV] {h if fav_final=='h' else a} definido por pressão.")
-
-            print(f"  [SKIP] {h} x {a} - Favorito não identificado.")
-            continue
-
-        # PRESSÃO
-        chutes_gol_fav = stats.get("chutes_gol_h", 0) if fav_final == "h" else stats.get("chutes_gol_a", 0)
-        chutes_tot_fav = stats.get("chutes_tot_h", 0) if fav_final == "h" else stats.get("chutes_tot_a", 0)
-        fav_amassando = (chutes_gol_fav >= 1 or chutes_tot_fav >= 3)
-        ambas_pressionando = (stats.get("chutes_tot_h", 0) >= 2 and stats.get("chutes_tot_a", 0) >= 2)
+            fav_final = "h" if stats.get("chutes_tot_h", 0) >= stats.get("chutes_tot_a", 0) else "a"
         
-        fav_empatando = (sh == sa)
-        fav_perdendo_1 = (fav_final == "h" and sa == sh + 1) or (fav_final == "a" and sh == sa + 1)
-        red_fav = stats.get("red_cards_h", 0) if fav_final == "h" else stats.get("red_cards_a", 0)
+        # REMOVIDO SKIP DE FAVORITO PARA DESTRAVAR SINAIS
 
         # CRITÉRIOS (Mínimo 4)
         n_crit = 0
