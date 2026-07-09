@@ -1468,9 +1468,9 @@ def filtrar_janelas(jogos):
             p = p_raw
             
         em_janela = (
-            (p == 1 and 15 <= m <= 27) or
-            (p == 1 and 30 <= m <= 38) or
-            (p == 2 and 60 <= m <= 75) or
+            (p == 1 and 12 <= m <= 28) or
+            (p == 1 and 29 <= m <= 40) or
+            (p == 2 and 58 <= m <= 76) or
             (p == 2 and 80 <= m <= 88)
         )
         if em_janela:
@@ -1749,8 +1749,7 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
             # Ignora comandos com mais de 30 minutos (evita processar acúmulo muito antigo)
             if agora_ts - msg_ts > 600: # Ignora comandos com mais de 10 minutos
                 continue
-            if chat_id not in [str(c) for c in CHAT_IDS]:
-                continue
+            pass  # responde em qualquer chat
             if text == "/relatorio" and not relatorio_respondido:
                 enviar_relatorio_diario()
                 relatorio_respondido = True
@@ -1797,7 +1796,7 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
                     f"<b>⏳ FORA DA JANELA:</b>\n{linhas_fora}\n"
                     f"{sep}"
                 )
-                send_telegram(msg_radar, chat_id=chat_orig, botoes=False)
+                requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage", json={"chat_id": chat_orig, "text": msg_radar, "parse_mode": "HTML"}, timeout=10)
                 radar_respondido = True
         if new_last_id > last_id:
             with open(LAST_UPDATE_FILE, 'w') as f: json.dump({"last_id": new_last_id}, f)
