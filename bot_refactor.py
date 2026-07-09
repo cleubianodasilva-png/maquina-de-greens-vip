@@ -1,14 +1,3 @@
-import os
-import json
-import requests
-import time
-from datetime import datetime, timezone, timedelta
-
-TELEGRAM_TOKEN = os.getenv("TG_TOKEN", "")
-CHAT_ID = os.getenv("TG_GROUP_ID", "")
-APIFOOTBALL_KEY = os.getenv("APIFOOTBALL_KEY", "")
-BZZOIRO_TOKEN = os.getenv("BZZOIRO_TOKEN", "")
-
 
 
 def analisar_e_disparar(game, stats, p, m, sh, sa, odd_h, odd_a, sent_vistos):
@@ -86,17 +75,17 @@ def gerar_layout_radar(jogos_ao_vivo, jogos_na_janela):
             texto_janela += f"⚽️ {j['times']} ({j['minuto']})"
 
     corpo = (
-        f"{sep}"
-        f"📡 RADAR AO VIVO 📡"
-        f"{sep}"
-        f"🔴 {len(jogos_ao_vivo)} jogos ao vivo"
-        f"🎯 {len(jogos_na_janela)} na janela alvo"
-        f"{sep}"
-        f"🎯 NA JANELA:"
-        f"{texto_janela}"
-        f"{sep}"
-        f"⏳ FORA DA JANELA:"
-        f"—"
+        f"{sep}\n"
+        f"📡 RADAR AO VIVO 📡\n"
+        f"{sep}\n"
+        f"🔴 {len(jogos_ao_vivo)} jogos ao vivo\n"
+        f"🎯 {len(jogos_na_janela)} na janela alvo\n"
+        f"{sep}\n"
+        f"🎯 NA JANELA:\n"
+        f"{texto_janela}\n"
+        f"{sep}\n"
+        f"⏳ FORA DA JANELA:\n"
+        f"—\n"
         f"{sep}"
     )
     return corpo
@@ -421,7 +410,7 @@ ESPN_LIGAS = [
 # RapidAPI (fallback de lista)
 RAPIDAPI_URL     = "https://free-api-live-football-data.p.rapidapi.com"
 RAPIDAPI_HEADERS = {
-    "x-rapidapi-key":  API_FOOTBALL_KEYS[0],
+    "x-rapidapi-key":  APIFOOTBALL_KEY,
     "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
 }
 
@@ -432,7 +421,7 @@ BZZOIRO_URL = "https://sports.bzzoiro.com"
 APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
 
 # APIs Secundárias (Ativas)
-APIFOOTBALL_KEY = os.getenv("APIFOOTBALL_KEY")
+APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_KEY")
 BZZOIRO_TOKEN = os.getenv("BZZOIRO_TOKEN")
 BZZOIRO_URL = "https://sports.bzzoiro.com"
 
@@ -443,7 +432,7 @@ BZZOIRO_URL = "https://sports.bzzoiro.com"
 APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
 
 # APIs Secundárias (Ativas)
-APIFOOTBALL_KEY = os.getenv("APIFOOTBALL_KEY")
+APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_KEY")
 BZZOIRO_TOKEN = os.getenv("BZZOIRO_TOKEN")
 BZZOIRO_URL = "https://sports.bzzoiro.com"
 
@@ -454,7 +443,7 @@ BZZOIRO_URL = "https://sports.bzzoiro.com"
 APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
 
 # APIs Secundárias (Ativas)
-APIFOOTBALL_KEY = os.getenv("APIFOOTBALL_KEY")
+APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_KEY")
 BZZOIRO_TOKEN = os.getenv("BZZOIRO_TOKEN")
 BZZOIRO_URL = "https://sports.bzzoiro.com"
 
@@ -488,7 +477,7 @@ def send_telegram(msg, botoes=True, reply_to=None, marca=None, home="", away="")
 # ═══════════════════════════════════════════════════════════════════════════════
 # ARQUIVOS LOCAIS
 # ═══════════════════════════════════════════════════════════════════════════════
-GITHUB_TOKEN = os.environ.get("GH_PAT", "") or os.environ.get("GITHUB_TOKEN", "")
+GITHUB_TOKEN = os.environ.get("GH_PAT", "")
 GITHUB_REPO  = os.environ.get("GITHUB_REPOSITORY", "cleubianodasilva-png/boot-ia-inteligente-bot")
 SENT_API_PATH      = "sent_live_signals.json"
 RESULTADO_API_PATH = "resultados.json"
@@ -779,7 +768,7 @@ def get_jogos_espn():
 # ═══════════════════════════════════════════════════════════════════════════════
 def get_jogos_apifootball(fids_espn):
     """Busca todos os jogos ao vivo na apifootball e retorna os que ESPN não tem."""
-    for key in [APIFOOTBALL_KEY]:
+    for key in [APIFOOTBALL_COM_KEY]:
         try:
             r = requests.get(
                 f"{API_FOOTBALL_URL}/fixtures",
@@ -836,7 +825,7 @@ def get_jogos_apifootball(fids_espn):
 # ═══════════════════════════════════════════════════════════════════════════════
 def get_stats_apifootball_live(fid):
     """Busca stats ao vivo de um fixture da apifootball."""
-    for key in [APIFOOTBALL_KEY]:
+    for key in [APIFOOTBALL_COM_KEY]:
         try:
             r = requests.get(
                 f"{API_FOOTBALL_URL}/fixtures",
@@ -907,7 +896,7 @@ def get_stats_apifootball_live(fid):
 def get_jogos_apifootball_v3(fids_existentes):
     try:
         # action=get_events com match_live=1 retorna jogos ao vivo
-        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_KEY}
+        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_COM_KEY}
         r = requests.get(APIFOOTBALL_URL, params=params, timeout=15)
         data = r.json()
         if not isinstance(data, list): return []
@@ -956,7 +945,7 @@ def get_jogos_bzzoiro(fids_existentes):
 
 def get_stats_apifootball_v3(match_id):
     try:
-        params = {"action": "get_statistics", "match_id": match_id, "APIkey": APIFOOTBALL_KEY}
+        params = {"action": "get_statistics", "match_id": match_id, "APIkey": APIFOOTBALL_COM_KEY}
         r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
         data = r.json()
         if not data or str(match_id) not in data: return {}
@@ -1002,7 +991,7 @@ def get_stats_bzzoiro(fid_raw, home, away):
 def get_jogos_apifootball_v3(fids_existentes):
     try:
         # action=get_events com match_live=1 retorna jogos ao vivo
-        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_KEY}
+        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_COM_KEY}
         r = requests.get(APIFOOTBALL_URL, params=params, timeout=15)
         data = r.json()
         if not isinstance(data, list): return []
@@ -1051,7 +1040,7 @@ def get_jogos_bzzoiro(fids_existentes):
 
 def get_stats_apifootball_v3(match_id):
     try:
-        params = {"action": "get_statistics", "match_id": match_id, "APIkey": APIFOOTBALL_KEY}
+        params = {"action": "get_statistics", "match_id": match_id, "APIkey": APIFOOTBALL_COM_KEY}
         r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
         data = r.json()
         if not data or str(match_id) not in data: return {}
@@ -1097,7 +1086,7 @@ def get_stats_bzzoiro(fid_raw, home, away):
 def get_jogos_apifootball_v3(fids_existentes):
     try:
         # action=get_events com match_live=1 retorna jogos ao vivo
-        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_KEY}
+        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_COM_KEY}
         r = requests.get(APIFOOTBALL_URL, params=params, timeout=15)
         data = r.json()
         if not isinstance(data, list): return []
@@ -1146,7 +1135,7 @@ def get_jogos_bzzoiro(fids_existentes):
 
 def get_stats_apifootball_v3(match_id):
     try:
-        params = {"action": "get_statistics", "match_id": match_id, "APIkey": APIFOOTBALL_KEY}
+        params = {"action": "get_statistics", "match_id": match_id, "APIkey": APIFOOTBALL_COM_KEY}
         r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
         data = r.json()
         if not data or str(match_id) not in data: return {}
@@ -1247,7 +1236,7 @@ def get_stats_espn(eid, home, away):
 # ═══════════════════════════════════════════════════════════════════════════════
 # FALLBACK — apifootball: estatísticas (usado se ESPN falhar)
 # ═══════════════════════════════════════════════════════════════════════════════
-    for key in [APIFOOTBALL_KEY]:
+    for key in [APIFOOTBALL_COM_KEY]:
         try:
             r     = requests.get(f"{API_FOOTBALL_URL}/fixtures/statistics",
                                  params={"fixture": fid},
@@ -1341,7 +1330,7 @@ def get_favorito_odds(home, away, fid=None, league=None):
             match_id = str(fid).replace("apfc_","")
             r = requests.get("https://apiv3.apifootball.com/",
                              params={"action": "get_odds", "match_id": match_id,
-                                     "APIkey": APIFOOTBALL_KEY}, timeout=8)
+                                     "APIkey": APIFOOTBALL_COM_KEY}, timeout=8)
             odds_data = r.json()
             if isinstance(odds_data, list) and odds_data:
                 odd = odds_data[0]
@@ -1755,13 +1744,15 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
                 else:
                     linhas_fora = "—"
                 msg_radar = (
-                    f"{sep}📡 <b>RADAR AO VIVO</b> 📡{sep}"
-                    f"🔴 <b>{total_jogos_live} jogos ao vivo</b>"
-                    f"🎯 <b>{len(jogos_na_janela)} na janela alvo</b>"
-                    f"{sep}"
-                    f"<b>🎯 NA JANELA:</b>{linhas_janela}"
-                    f"{sep}"
-                    f"<b>⏳ FORA DA JANELA:</b>{linhas_fora}"
+                    f"{sep}\n"
+                    f"📡 <b>RADAR AO VIVO</b> 📡\n"
+                    f"{sep}\n"
+                    f"🔴 <b>{total_jogos_live} jogos ao vivo</b>\n"
+                    f"🎯 <b>{len(jogos_na_janela)} na janela alvo</b>\n"
+                    f"{sep}\n"
+                    f"<b>🎯 NA JANELA:</b>\n{linhas_janela}\n"
+                    f"{sep}\n"
+                    f"<b>⏳ FORA DA JANELA:</b>\n{linhas_fora}\n"
                     f"{sep}"
                 )
                 send_telegram(msg_radar, botoes=False)
@@ -1865,7 +1856,7 @@ def run():
 
         try:
             r_odd = requests.get("https://apiv3.apifootball.com/",
-                             params={"action": "get_odds", "match_id": fid, "APIkey": APIFOOTBALL_KEY}, timeout=8)
+                             params={"action": "get_odds", "match_id": fid, "APIkey": APIFOOTBALL_COM_KEY}, timeout=8)
             odds_data = r_odd.json()
             if isinstance(odds_data, list) and odds_data:
                 odd = odds_data[0]
@@ -1878,7 +1869,7 @@ def run():
     if not fav_por_odds:
         try:
             r = requests.get("https://apiv3.apifootball.com/",
-                             params={"action": "get_odds", "match_id": fid, "APIkey": APIFOOTBALL_KEY}, timeout=8)
+                             params={"action": "get_odds", "match_id": fid, "APIkey": APIFOOTBALL_COM_KEY}, timeout=8)
             odds_data = r.json()
             if isinstance(odds_data, list) and odds_data:
                 odd = odds_data[0]
@@ -1891,7 +1882,7 @@ def run():
     if not fav_por_odds:
         try:
             r = requests.get("https://apiv3.apifootball.com/",
-                             params={"action": "get_odds", "match_id": fid, "APIkey": APIFOOTBALL_KEY}, timeout=8)
+                             params={"action": "get_odds", "match_id": fid, "APIkey": APIFOOTBALL_COM_KEY}, timeout=8)
             odds_data = r.json()
             if isinstance(odds_data, list) and odds_data:
                 odd = odds_data[0]
@@ -2059,6 +2050,7 @@ def run():
     print(f"Finalizado. Enviados: {total_env}")
 
 
+
 def processar_comandos_pendentes(token, chat_id):
     import requests
     try:
@@ -2067,18 +2059,18 @@ def processar_comandos_pendentes(token, chat_id):
             for update in r.get("result", []):
                 msg = update.get("message", {})
                 text = msg.get("text", "")
+                sep = "━━━━━━━━━━━━━━━━━━━━"
                 if "/radar" in text:
-                    sep = "━━━━━━━━━━━━━━━━━━━━"
-                    msg_radar = f"{sep}📡 RADAR AO VIVO 📡{sep}🔴 Verificando jogos...{sep}"
-                    requests.post(f"https://api.telegram.org/bot{token}/sendMessage", json={"chat_id": chat_id, "text": msg_radar, "parse_mode": "HTML"})
+                    msg = f"{sep}📡 RADAR AO VIVO 📡{sep}🔴 Verificando jogos...{sep}"
+                    requests.post(f"https://api.telegram.org/bot{token}/sendMessage", json={"chat_id": chat_id, "text": msg, "parse_mode": "HTML"})
                 elif "/relatorio" in text:
-                    sep = "━━━━━━━━━━━━━━━━━━━━"
-                    msg_rel = f"{sep}📊 RELATÓRIO DIÁRIO{sep}✅ Processando dados...{sep}"
-                    requests.post(f"https://api.telegram.org/bot{token}/sendMessage", json={"chat_id": chat_id, "text": msg_rel, "parse_mode": "HTML"})
-    except Exception as e:
-        print(f"[ERRO COMANDOS] {e}")
+                    msg = f"{sep}📊 RELATÓRIO DIÁRIO{sep}✅ Processando dados...{sep}"
+                    requests.post(f"https://api.telegram.org/bot{token}/sendMessage", json={"chat_id": chat_id, "text": msg, "parse_mode": "HTML"})
+    except:
+        pass
+
 
 
 if __name__ == "__main__":
-    processar_comandos_pendentes(TELEGRAM_TOKEN, CHAT_ID)
+    processar_comandos_pendentes(TG_TOKEN, CHAT_ID)
     run()
