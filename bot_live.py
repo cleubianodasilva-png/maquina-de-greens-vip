@@ -913,27 +913,56 @@ def get_stats_apifootball_v3(match_id):
 # ═══════════════════════════════════════════════════════════════════════════════
 # FILTRO DE JANELAS
 # ═══════════════════════════════════════════════════════════════════════════════
+
 def get_odd_favorito_num(home, away, fid=None, league=None):
-    """Retorna a odd decimal do favorito (numero). Usa ESPN primeiro, depois Odds API."""
-    if fid and league:
+    """Retorna a odd decimal do favorito. Tenta apifootball_v3 primeiro (Mestre)."""
+    # 1. Tenta APIFOOTBALL V3 (Mestre) - Busca no endpoint de odds
+    if fid and str(fid).isdigit():
+        try:
+            url = f"https://apiv3.apifootball.com/?action=get_odds&match_id={fid}&APIkey={APIFOOTBALL_KEY}"
+            r = requests.get(url, timeout=7)
+            data = r.json()
+            if isinstance(data, list) and len(data) > 0:
+                # Pega a primeira casa de aposta (geralmente 1xBet ou Bet365)
+                mkt = data[0].get("odd_1x2", [])
+                if not mkt and "odds" in data[0]: mkt = data[0]["odds"].get("1x2", [])
+                
+                if mkt:
+                    # Formato pode variar, tentando extrair odds h, d, a
+                    try:
+                        o_h = float(mkt[0].get("home", 99))
+                        o_a = float(mkt[0].get("away", 99))
+                        if o_h < 90 or o_a < 90:
+                            return "h" if o_h < o_a else "a"
+                    except: pass
+        except: pass
+
+    # 2. Tenta ESPN (Legado)
+    if fid and league and not str(fid).isdigit():
         try:
             url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league}/scoreboard"
             r = requests.get(url, timeout=6)
             for ev in r.json().get("events", []):
-                comp = ev.get("competitions", [{}])[0]
-                if str(comp.get("id", "")) != str(fid):
-                    continue
-                for odd in comp.get("odds", []):
-                    if not odd:
-                        continue
-                    ml = odd.get("moneyline", {})
-                    if ml:
-                        def _get_ml(side):
-                            for key in ("current", "close", "open"):
-                                v = ml.get(side, {}).get(key, {}).get("odds")
-                                if v:
-                                    return v
-                            return 99
+                if str(ev.get("id")) == str(fid):
+                    comp = ev.get("competitions", [{}])[0]
+                    for odd in comp.get("odds", []):
+                        ml = odd.get("moneyline", {})
+                        if ml:
+                            # Converte Moneyline (+120, -150) para Decimal
+                            def _conv(v):
+                                try:
+                                    v = float(v)
+                                    if v > 0: return (v / 100) + 1
+                                    else: return (100 / abs(v)) + 1
+                                except: return 99
+                            oh = _conv(ml.get("home", {}).get("odds"))
+                            oa = _conv(ml.get("away", {}).get("odds"))
+                            if oh < oa: return "h"
+                            elif oa < oh: return "a"
+        except: pass
+    
+    return None # Retorna None se não achar favorito real
+
                         odd_h = _moneyline_to_decimal(_get_ml("home"))
                         odd_a = _moneyline_to_decimal(_get_ml("away"))
                         if odd_h < 90 and odd_a < 90:
@@ -1372,7 +1401,7 @@ def run():
         except:
             pass
             
-        if not fav_final or fav_final == 99:
+        if not fav_final:
             print(f"  [SKIP] {h} x {a} - Favorito não identificado.")
             continue
 
@@ -1395,6 +1424,12 @@ def run():
         if fav_amassando: n_crit += 1
         if ambas_pressionando: n_crit += 1
         n_crit = max(4, min(6, n_crit))
+
+        # DEBUG CRITERIA
+        print(f"  [CHECK] {h}x{a} | Fav: {fav_final} | Amassando: {fav_amassando} | n_crit: {n_crit}")
+        if n_crit < 4:
+            print(f"    [X] Falhou n_crit: fav={bool(fav_final)}, janela={(p == 1 and 15 <= m <= 27) or (p == 1 and 30 <= m <= 38) or (p == 2 and 60 <= m <= 75) or (p == 2 and 80 <= m <= 88)}, placar={(fav_empatando or fav_perdendo_1)}, red={red_fav==0}, pressao={fav_amassando}, ambas={ambas_pressionando}")
+
 
         hoje = datetime.now(BRT).strftime('%Y%m%d')
         
