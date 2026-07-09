@@ -1572,47 +1572,59 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
         linha = cantos_atual + 0.5
         if cantos_atual > 0:
             entrada = f"Mais de {linha}⛳️"
+    
     titles = {
-        "HT": "\u26f3\ufe0f\U0001f525OVER GOL INTERVALO\U0001f525\u26f3\ufe0f",
-        "LIMITEHT": "\u26f3\ufe0f\U0001f525OVER GOL LIMITE HT\U0001f525\u26f3\ufe0f",
-        "BTTS": "\u26f3\ufe0f\U0001f525AMBAS MARCAM\U0001f525\u26f3\ufe0f",
-        "OFT": "\u26f3\ufe0f\U0001f525OVER 1.5 GOLS PARTIDA\U0001f525\u26f3\ufe0f",
-        "OVERGOAL": "\u26f3\ufe0f\U0001f525OVER GOL PARTIDA\U0001f525\u26f3\ufe0f",
-        "CORNER_HT": "\u26f3\ufe0f\U0001f525ESCANTEIO LIMITE HT\U0001f525\u26f3\ufe0f",
-        "CORNER_FT": "\u26f3\ufe0f\U0001f525ESCANTEIO LIMITE FT\U0001f525\u26f3\ufe0f",
+        "HT": "⛳️🔥OVER GOL INTERVALO🔥⛳️",
+        "LIMITEHT": "⛳️🔥OVER GOL LIMITE HT🔥⛳️",
+        "BTTS": "⛳️🔥AMBAS MARCAM🔥⛳️",
+        "OFT": "⛳️🔥OVER 1.5 GOLS PARTIDA🔥⛳️",
+        "OVERGOAL": "⛳️🔥OVER GOL PARTIDA🔥⛳️",
+        "CORNER_HT": "⛳️🔥ESCANTEIO LIMITE HT🔥⛳️",
+        "CORNER_FT": "⛳️🔥ESCANTEIO LIMITE FT🔥⛳️",
     }
-    title = titles.get(mercado, f"\u26f3\ufe0f\U0001f525{mercado}\U0001f525\u26f3\ufe0f")
-    chutes_h = stats.get("chutes_tot_h", 0) if stats else 0
-    chutes_a = stats.get("chutes_tot_a", 0) if stats else 0
-    alvo_h = stats.get("chutes_gol_h", 0) if stats else 0
-    alvo_a = stats.get("chutes_gol_a", 0) if stats else 0
-    cant_h = stats.get("escanteios_h", 0) if stats else 0
-    cant_a = stats.get("escanteios_a", 0) if stats else 0
-    sep = "\u2501" * 20
+    title = titles.get(mercado, f"⛳️🔥{mercado}🔥⛳️")
+    
+    if stats:
+        chutes_h = stats.get("chutes_tot_h", 0)
+        chutes_a = stats.get("chutes_tot_a", 0)
+        alvo_h = stats.get("chutes_gol_h", 0)
+        alvo_a = stats.get("chutes_gol_a", 0)
+        cant_h = stats.get("escanteios_h", 0)
+        cant_a = stats.get("escanteios_a", 0)
+    else:
+        chutes_h = 0
+        chutes_a = 0
+        alvo_h = 0
+        alvo_a = 0
+        cant_h = 0
+        cant_a = 0
+
+    sep = "━━━━━━━━━━━━━━━━━━━━"
+    
     return (
         sep + "\n"
         + "<b>" + title + "</b>\n"
         + sep + "\n"
-        + "\u26bd\ufe0f Placar: <b>" + str(placar) + "</b>\n"
-        + "\U0001f30d Liga: <b>" + liga + "</b>\n"
-        + "\U0001f4e1 <b>" + home + "</b> x <b>" + away + "</b>\n"
-        + "\U0001f440 ODDs: <b>Casa 2.10 / Fora 3.40</b>\n"
-        + "\u23f0 Minuto: <b>" + str(minuto) + "'</b>\n"
+        + "⚽️ Placar: <b>" + str(placar) + "</b>\n"
+        + "🌍 Liga: <b>" + str(liga) + "</b>\n"
+        + "📡 <b>" + str(home) + "</b> x <b>" + str(away) + "</b>\n"
+        + "👀 ODDs: <b>Casa 2.10 / Fora 3.40</b>\n"
+        + "⏰ Minuto: <b>" + str(minuto) + "'</b>\n"
         + sep + "\n"
-        + "\U0001f4ca <b>Estat\u00edsticas ao Vivo da Partida:</b>\n"
-        + "\U0001f680 Chutes: <b>" + str(chutes_h) + " | " + str(chutes_a) + "</b>\n"
-        + "\U0001f3af No Alvo: <b>" + str(alvo_h) + " | " + str(alvo_a) + "</b>\n"
-        + "\u26f3\ufe0f Cantos: <b>" + str(cant_h) + " | " + str(cant_a) + "</b>\n"
+        + "📊 <b>Estatísticas ao Vivo da Partida:</b>\n"
+        + "🚀 Chutes: <b>" + str(chutes_h) + " | " + str(chutes_a) + "</b>\n"
+        + "🎯 No Alvo: <b>" + str(alvo_h) + " | " + str(alvo_a) + "</b>\n"
+        + "⛳️ Cantos: <b>" + str(cant_h) + " | " + str(cant_a) + "</b>\n"
         + sep + "\n"
-        + "\U0001f4a1 <b>An\u00e1lise T\u00e9cnica da Partida:</b>\n"
-        + "\u2705 Crit\u00e9rios: <b>" + str(n) + "/6</b>\n"
-        + "\U0001f525 Press\u00e3o: <b>Alta</b>\n"
-        + "\u26a0\ufe0f Alerta: <b>Fim de Jogo / Pressao Total</b>\n"
-        + "\U0001f4b0 Odd M\u00ednima Recomendada: <b>1.70</b>\n"
+        + "💡 <b>Análise Técnica da Partida:</b>\n"
+        + "✅ Critérios: <b>" + str(n) + "/6</b>\n"
+        + "🔥 Pressão: <b>Alta</b>\n"
+        + "⚠️ Alerta: <b>Fim de Jogo / Pressao Total</b>\n"
+        + "💰 Odd Mínima Recomendada: <b>1.70</b>\n"
         + sep + "\n"
-        + "\U0001f4cc Entrada: <b>" + entrada + "</b>\n"
+        + "📌 Entrada: <b>" + str(entrada) + "</b>\n"
         + sep + "\n"
-        + "\u26a0\ufe0f <b>Jogue com responsabilidade</b> \u26a0\ufe0f"
+        + "⚠️ <b>Jogue com responsabilidade</b> ⚠️"
     )
 
 def checar_resultado(sinal):
@@ -2072,7 +2084,7 @@ def processar_comandos_pendentes(token, chat_id):
                 text = msg.get("text", "")
                 sep = "━━━━━━━━━━━━━━━━━━━━"
                 if "/radar" in text:
-                    msg = f"{sep}📡 RADAR AO VIVO 📡{sep}🔴 Verificando jogos...{sep}"
+                    msg = f"{sep}\n📡 RADAR AO VIVO 📡\n{sep}\n🔴 Verificando jogos...\n{sep}"
                     requests.post(f"https://api.telegram.org/bot{token}/sendMessage", json={"chat_id": chat_id, "text": msg, "parse_mode": "HTML"})
                 elif "/relatorio" in text:
                     msg = f"{sep}📊 RELATÓRIO DIÁRIO{sep}✅ Processando dados...{sep}"
