@@ -1565,52 +1565,50 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
     return f"Jogo equilibrado, ambas criando chances — {chutes_h} chutes de Casa x {chutes_a} de Fora{posse_txt}{vermelho}"
 
 def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_val=None, cantos_atual=0, stats=None, sh=0, sa=0, fav_final="h"):
-    # Layout EXATO conforme imagem do usuário
-    if "CORNER" in mercado:
+    if "CORNER" in mercado or "ESCANTEIO" in mercado:
         linha = cantos_atual + 0.5
-        entrada = f"Mais de {linha}⛳️"
-    
+        if cantos_atual > 0:
+            entrada = f"Mais de {linha}⛳️"
     titles = {
-        "HT"       : "⚽️🔥OVER GOL INTERVALO🔥⚽️",
-        "BTTS"     : "⚽️🔥AMBAS MARCAM🔥⚽️",
-        "OFT"      : "⚽️🔥OVER 1.5 GOLS PARTIDA🔥⚽️",
-        "OVERGOAL" : "⚽️🔥OVER GOL PARTIDA🔥⚽️",
-        "LIMITEHT" : "⚽️🔥OVER GOL LIMITE HT🔥⚽️",
-        "CORNER_HT": "⛳️🔥ESCANTEIO LIMITE HT🔥⛳️",
-        "CORNER_FT": "⛳️🔥ESCANTEIO LIMITE FT🔥⛳️",
+        "HT": "\u26f3\ufe0f\U0001f525OVER GOL INTERVALO\U0001f525\u26f3\ufe0f",
+        "LIMITEHT": "\u26f3\ufe0f\U0001f525OVER GOL LIMITE HT\U0001f525\u26f3\ufe0f",
+        "BTTS": "\u26f3\ufe0f\U0001f525AMBAS MARCAM\U0001f525\u26f3\ufe0f",
+        "OFT": "\u26f3\ufe0f\U0001f525OVER 1.5 GOLS PARTIDA\U0001f525\u26f3\ufe0f",
+        "OVERGOAL": "\u26f3\ufe0f\U0001f525OVER GOL PARTIDA\U0001f525\u26f3\ufe0f",
+        "CORNER_HT": "\u26f3\ufe0f\U0001f525ESCANTEIO LIMITE HT\U0001f525\u26f3\ufe0f",
+        "CORNER_FT": "\u26f3\ufe0f\U0001f525ESCANTEIO LIMITE FT\U0001f525\u26f3\ufe0f",
     }
-    title = titles.get(mercado, f"⚽️🔥{mercado}🔥⚽️")
-    
+    title = titles.get(mercado, f"\u26f3\ufe0f\U0001f525{mercado}\U0001f525\u26f3\ufe0f")
     chutes_h = stats.get("chutes_tot_h", 0) if stats else 0
     chutes_a = stats.get("chutes_tot_a", 0) if stats else 0
-    alvo_h   = stats.get("chutes_gol_h", 0) if stats else 0
-    alvo_a   = stats.get("chutes_gol_a", 0) if stats else 0
-    cant_h   = stats.get("escanteios_h", 0) if stats else 0
-    cant_a   = stats.get("escanteios_a", 0) if stats else 0
-    
-    # Linhas de separação e campos em negrito conforme imagem
+    alvo_h = stats.get("chutes_gol_h", 0) if stats else 0
+    alvo_a = stats.get("chutes_gol_a", 0) if stats else 0
+    cant_h = stats.get("escanteios_h", 0) if stats else 0
+    cant_a = stats.get("escanteios_a", 0) if stats else 0
+    sep = "\u2501" * 20
     return (
-        f"······················································ ALERTA\n\n"
-        f"{title}\n"
-        f"⚽️ Placar: <b>{placar}</b>\n"
-        f"🌏 Liga: <b>{liga}</b>\n"
-        f"📡 <b>{home}</b> x <b>{away}</b>\n"
-        f"👀 ODDs: Casa 2.10 / Fora 3.40\n"
-        f"⏰ Minuto: <b>{minuto}'</b>\n"
-        f"______________________________________\n\n"
-        f"📊 Estatísticas ao Vivo:\n"
-        f"🚀 Chutes: <b>{chutes_h} | {chutes_a}</b>\n"
-        f"🎯 No Alvo: <b>{alvo_h} | {alvo_a}</b>\n"
-        f"⛳️ Cantos: <b>{cant_h} | {cant_a}</b>\n"
-        f"______________________________________\n\n"
-        f"💡 Análise Técnica da Partida:\n"
-        f"✅ Critérios: <b>{n}/6</b>\n"
-        f"🔥 Pressão: <b>Alta</b>\n"
-        f"⚠️ Alerta: <b>Fim de Jogo / Pressão Total</b>\n"
-        f"💰 Odd Mínima Recomendada: <b>1.70</b>\n"
-        f"______________________________________\n\n"
-        f"📌 Entrada: <b>{entrada}</b>\n\n"
-        f"⚠️ Jogue com responsabilidade ⚠️"
+        "<b>" + title + "</b>\n"
+        + sep + "\n"
+        + "\u26bd\ufe0f Placar: <b>" + str(placar) + "</b>\n"
+        + "\U0001f30d Liga: <b>" + liga + "</b>\n"
+        + "\U0001f4e1 <b>" + home + "</b> x <b>" + away + "</b>\n"
+        + "\U0001f440 ODDs: <b>Casa 2.10 / Fora 3.40</b>\n"
+        + "\u23f0 Minuto: <b>" + str(minuto) + "'</b>\n"
+        + sep + "\n"
+        + "\U0001f4ca <b>Estat\u00edsticas ao Vivo da Partida:</b>\n"
+        + "\U0001f680 Chutes: <b>" + str(chutes_h) + " | " + str(chutes_a) + "</b>\n"
+        + "\U0001f3af No Alvo: <b>" + str(alvo_h) + " | " + str(alvo_a) + "</b>\n"
+        + "\u26f3\ufe0f Cantos: <b>" + str(cant_h) + " | " + str(cant_a) + "</b>\n"
+        + sep + "\n"
+        + "\U0001f4a1 <b>An\u00e1lise T\u00e9cnica da Partida:</b>\n"
+        + "\u2705 Crit\u00e9rios: <b>" + str(n) + "/6</b>\n"
+        + "\U0001f525 Press\u00e3o: <b>Alta</b>\n"
+        + "\u26a0\ufe0f Alerta: <b>Fim de Jogo / Pressao Total</b>\n"
+        + "\U0001f4b0 Odd M\u00ednima Recomendada: <b>1.70</b>\n"
+        + sep + "\n"
+        + "\U0001f4cc Entrada: <b>" + entrada + "</b>\n"
+        + sep + "\n"
+        + "\u26a0\ufe0f <b>Jogue com responsabilidade</b> \u26a0\ufe0f"
     )
 
 def checar_resultado(sinal):
