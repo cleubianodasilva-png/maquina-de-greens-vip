@@ -2068,6 +2068,7 @@ def processar_comandos_pendentes(token, chat_id):
         pass
 
 
-if __name__ == "__main__":    processar_comandos_pendentes(TG_TOKEN, CHAT_ID)
-    run()
 
+if __name__ == "__main__":
+    processar_comandos_pendentes(TG_TOKEN, CHAT_ID)
+    run()
