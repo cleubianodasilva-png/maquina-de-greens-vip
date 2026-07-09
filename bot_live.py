@@ -1715,91 +1715,58 @@ def run():
         else:
             source = j.get("source", "espn")
         if source == "apifootball":
-            
-        # --- LOGICA DE FALLBACK INTELIGENTE (Autorizada pelo Cleubiano) ---
-        stats = {}
-        try:
-            # Tenta pegar os dados detalhados da API Mestre (apifootball)
-            stats = get_stats_apifootball_v3(j.get("fid_raw", fid))
-        except:
-            pass
+            # --- FALLBACK INTELIGENTE (Autorizado) ---
+            try:
+                stats = get_stats_apifootball_v3(j.get('fid_raw', fid))
+            except: stats = {}
 
-        # Se a API Mestre falhou ou retornou TUDO ZERADO, usamos o backup da varredura (ESPN/Bzzoiro)
-        if not stats or (stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0) == 0):
-            stats = {
-                "chutes_tot_h": j.get("sh_tot", j.get("sh", 0)), 
-                "chutes_tot_a": j.get("sa_tot", j.get("sa", 0)),
-                "chutes_gol_h": j.get("sgh", 0), 
-                "chutes_gol_a": j.get("sga", 0),
-                "escanteios_h": j.get("ch", 0), 
-                "escanteios_a": j.get("ca", 0),
-                "posse_h": j.get("ph", 50), 
-                "posse_a": j.get("pa", 50),
-                "red_cards_h": j.get("rh", 0), 
-                "red_cards_a": j.get("ra", 0)
-            }
-        # ------------------------------------------------------------------
-
+            # Se a API mestre vier zerada, usa os dados da varredura (ESPN/Bzzoiro)
+            if not stats or (stats.get('chutes_tot_h', 0) + stats.get('chutes_tot_a', 0) == 0):
+                stats = {
+                    'chutes_tot_h': j.get('sh', 0), 'chutes_tot_a': j.get('sa', 0),
+                    'chutes_gol_h': j.get('sgh', 0), 'chutes_gol_a': j.get('sga', 0),
+                    'escanteios_h': j.get('ch', 0), 'escanteios_a': j.get('ca', 0),
+                    'posse_h': j.get('ph', 50), 'posse_a': j.get('pa', 50),
+                    'red_cards_h': j.get('rh', 0), 'red_cards_a': j.get('ra', 0)
+                }
         elif source == "bzzoiro":
             stats = get_stats_bzzoiro(j["fid_raw"], h, a)
         else:
             source = j.get("source", "espn")
         if source == "apifootball":
-            
-        # --- LOGICA DE FALLBACK INTELIGENTE (Autorizada pelo Cleubiano) ---
-        stats = {}
-        try:
-            # Tenta pegar os dados detalhados da API Mestre (apifootball)
-            stats = get_stats_apifootball_v3(j.get("fid_raw", fid))
-        except:
-            pass
+            # --- FALLBACK INTELIGENTE (Autorizado) ---
+            try:
+                stats = get_stats_apifootball_v3(j.get('fid_raw', fid))
+            except: stats = {}
 
-        # Se a API Mestre falhou ou retornou TUDO ZERADO, usamos o backup da varredura (ESPN/Bzzoiro)
-        if not stats or (stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0) == 0):
-            stats = {
-                "chutes_tot_h": j.get("sh_tot", j.get("sh", 0)), 
-                "chutes_tot_a": j.get("sa_tot", j.get("sa", 0)),
-                "chutes_gol_h": j.get("sgh", 0), 
-                "chutes_gol_a": j.get("sga", 0),
-                "escanteios_h": j.get("ch", 0), 
-                "escanteios_a": j.get("ca", 0),
-                "posse_h": j.get("ph", 50), 
-                "posse_a": j.get("pa", 50),
-                "red_cards_h": j.get("rh", 0), 
-                "red_cards_a": j.get("ra", 0)
-            }
-        # ------------------------------------------------------------------
-
+            # Se a API mestre vier zerada, usa os dados da varredura (ESPN/Bzzoiro)
+            if not stats or (stats.get('chutes_tot_h', 0) + stats.get('chutes_tot_a', 0) == 0):
+                stats = {
+                    'chutes_tot_h': j.get('sh', 0), 'chutes_tot_a': j.get('sa', 0),
+                    'chutes_gol_h': j.get('sgh', 0), 'chutes_gol_a': j.get('sga', 0),
+                    'escanteios_h': j.get('ch', 0), 'escanteios_a': j.get('ca', 0),
+                    'posse_h': j.get('ph', 50), 'posse_a': j.get('pa', 50),
+                    'red_cards_h': j.get('rh', 0), 'red_cards_a': j.get('ra', 0)
+                }
         elif source == "bzzoiro":
             stats = get_stats_bzzoiro(j["fid_raw"], h, a)
         else:
             source = j.get("source", "espn")
         if source == "apifootball":
-            
-        # --- LOGICA DE FALLBACK INTELIGENTE (Autorizada pelo Cleubiano) ---
-        stats = {}
-        try:
-            # Tenta pegar os dados detalhados da API Mestre (apifootball)
-            stats = get_stats_apifootball_v3(j.get("fid_raw", fid))
-        except:
-            pass
+            # --- FALLBACK INTELIGENTE (Autorizado) ---
+            try:
+                stats = get_stats_apifootball_v3(j.get('fid_raw', fid))
+            except: stats = {}
 
-        # Se a API Mestre falhou ou retornou TUDO ZERADO, usamos o backup da varredura (ESPN/Bzzoiro)
-        if not stats or (stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0) == 0):
-            stats = {
-                "chutes_tot_h": j.get("sh_tot", j.get("sh", 0)), 
-                "chutes_tot_a": j.get("sa_tot", j.get("sa", 0)),
-                "chutes_gol_h": j.get("sgh", 0), 
-                "chutes_gol_a": j.get("sga", 0),
-                "escanteios_h": j.get("ch", 0), 
-                "escanteios_a": j.get("ca", 0),
-                "posse_h": j.get("ph", 50), 
-                "posse_a": j.get("pa", 50),
-                "red_cards_h": j.get("rh", 0), 
-                "red_cards_a": j.get("ra", 0)
-            }
-        # ------------------------------------------------------------------
-
+            # Se a API mestre vier zerada, usa os dados da varredura (ESPN/Bzzoiro)
+            if not stats or (stats.get('chutes_tot_h', 0) + stats.get('chutes_tot_a', 0) == 0):
+                stats = {
+                    'chutes_tot_h': j.get('sh', 0), 'chutes_tot_a': j.get('sa', 0),
+                    'chutes_gol_h': j.get('sgh', 0), 'chutes_gol_a': j.get('sga', 0),
+                    'escanteios_h': j.get('ch', 0), 'escanteios_a': j.get('ca', 0),
+                    'posse_h': j.get('ph', 50), 'posse_a': j.get('pa', 50),
+                    'red_cards_h': j.get('rh', 0), 'red_cards_a': j.get('ra', 0)
+                }
         elif source == "bzzoiro":
             stats = get_stats_bzzoiro(j["fid_raw"], h, a)
         else:
