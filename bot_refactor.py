@@ -1840,30 +1840,27 @@ def run():
 
         print(f"[Analisando] {h} x {a} | {placar} | {m}min")
 
-        # Busca stats UMA vez — reutiliza para tudo (fonte depende da origem do jogo)
-        source = j.get("source", "espn")
-        if source == "apifootball":
-            stats = get_stats_apifootball_live(fid)
-        else:
-            source = j.get("source", "espn")
-        if source == "apifootball":
-            stats = get_stats_apifootball_v3(j["fid_raw"])
-        elif source == "bzzoiro":
-            stats = get_stats_bzzoiro(j["fid_raw"], h, a)
-        else:
-            source = j.get("source", "espn")
-        if source == "apifootball":
-            stats = get_stats_apifootball_v3(j["fid_raw"])
-        elif source == "bzzoiro":
-            stats = get_stats_bzzoiro(j["fid_raw"], h, a)
-        else:
-            source = j.get("source", "espn")
-        if source == "apifootball":
-            stats = get_stats_apifootball_v3(j["fid_raw"])
-        elif source == "bzzoiro":
-            stats = get_stats_bzzoiro(j["fid_raw"], h, a)
-        else:
-            stats = get_stats_espn(fid, h, a)
+        # Stats FUSION: tenta todas as 3 APIs e mescla os dados reais
+        stats_espn = get_stats_espn(fid, h, a) if isinstance(get_stats_espn(fid, h, a), dict) else {}
+        stats_bzz  = get_stats_bzzoiro(j["fid_raw"], h, a) if isinstance(get_stats_bzzoiro(j["fid_raw"], h, a), dict) else {}
+        stats_apif = get_stats_apifootball_live(fid) if isinstance(get_stats_apifootball_live(fid), dict) else {}
+        if not stats_apif:
+            stats_apif = get_stats_apifootball_v3(j["fid_raw"]) if isinstance(get_stats_apifootball_v3(j["fid_raw"]), dict) else {}
+        stats = {}
+        for src_nome, src in [("ESPN", stats_espn), ("Bzzoiro", stats_bzz), ("apifootball", stats_apif)]:
+            for campo in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a","escanteios_h","escanteios_a","red_cards_h","red_cards_a","posse_h","posse_a"]:
+                if campo not in stats or not stats[campo] or stats[campo] in (-1, 0):
+                    val = src.get(campo, 0)
+                    if isinstance(val, (int,float)) and val > 0:
+                        stats[campo] = val
+                        stats["_fonte_"+campo] = src_nome
+        for k in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a"]:
+            stats.setdefault(k, 0)
+        for k in ["escanteios_h","escanteios_a"]:
+            stats.setdefault(k, -1)
+        for k in ["red_cards_h","red_cards_a"]:
+            stats.setdefault(k, 0)
+        print(f"[STATS-FUSION] {h} x {a} | chutes: {stats.get('chutes_tot_h',0)}/{stats.get('chutes_tot_a',0)} | cantos: {stats.get('escanteios_h',-1)}/{stats.get('escanteios_a',-1)}")
 
         # Verifica se tem dados reais — sem stats E sem odds, pula o jogo
         tem_stats = stats and (
@@ -1955,7 +1952,7 @@ def run():
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_ht_{hoje}"
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "HT", h, a, mid)
@@ -1973,7 +1970,7 @@ def run():
                 hoje = datetime.now(BRT).strftime('%Y%m%d')
                 key = f"{fid}_limiteht_{hoje}"
                 if key not in sent:
-                    mid = send_telegram(msg_universal(h, a, m, liga, 4, "LIMITEHT", "Over 0.5 HT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                    mid = send_telegram(msg_universal(h, a, m, liga, 4, "LIMITEHT", "Over 0.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                     if mid:
                         sent.add(key); total_env += 1
                         registrar_sinal(fid, "LIMITEHT", h, a, mid)
@@ -1993,7 +1990,7 @@ def run():
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_oft_{hoje}"
             if key not in sent:
-                mid = send_telegram(msg_universal(h, a, m, liga, 4, "OFT", "Over 1.5 FT", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
+                mid = send_telegram(msg_universal(h, a, m, liga, 4, "OFT", "Over 1.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "OFT", h, a, mid)
@@ -2006,15 +2003,15 @@ def run():
             # Linha dinâmica: sempre acima do total de gols atual
             total_gols = sh + sa
             if total_gols == 0:
-                linha_over = "Over 0.5 FT"
+                linha_over = "Over 0.5"
             elif total_gols == 1:
-                linha_over = "Over 1.5 FT"
+                linha_over = "Over 1.5"
             elif total_gols == 2:
-                linha_over = "Over 2.5 FT"
+                linha_over = "Over 2.5"
             elif total_gols == 3:
-                linha_over = "Over 3.5 FT"
+                linha_over = "Over 3.5"
             else:
-                linha_over = f"Over {total_gols + 0.5:.1f} FT"
+                linha_over = f"Over {total_gols + 0.5:.1f}"
             if key not in sent:
                 mid = send_telegram(msg_universal(h, a, m, liga, 4, "OVERGOAL", linha_over, placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final), marca=key, home=h, away=a)
                 if mid:
