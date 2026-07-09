@@ -1854,8 +1854,8 @@ def run():
         except: pass
         stats_apif = {}
         try:
-            sa = get_stats_apifootball_live(fid)
-            if isinstance(sa, dict): stats_apif = sa
+            sa_api = get_stats_apifootball_live(fid)
+            if isinstance(sa_api, dict): stats_apif = sa_api
         except: pass
         if not stats_apif:
             try:
