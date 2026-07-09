@@ -130,7 +130,7 @@ CHAT_IDS = [os.environ.get("TG_GROUP_ID", "")]  # BOOT IA INTELIGENTE (Zapia)
 
 # apifootball (fallback quando ESPN não tiver o jogo)
 API_FOOTBALL_KEYS = [
-    os.getenv("APIFOOTBALL_KEY"),   # Chave Mestre protegida
+    os.getenv("APIFOOTBALL_COM_KEY"),   # Chave Mestre protegida
 ]
 API_FOOTBALL_URL = "https://apiv3.apifootball.com"
 
@@ -410,7 +410,7 @@ ESPN_LIGAS = [
 # RapidAPI (fallback de lista)
 RAPIDAPI_URL     = "https://free-api-live-football-data.p.rapidapi.com"
 RAPIDAPI_HEADERS = {
-    "x-rapidapi-key":  APIFOOTBALL_KEY,
+    "x-rapidapi-key":  APIFOOTBALL_COM_KEY,
     "x-rapidapi-host": "free-api-live-football-data.p.rapidapi.com"
 }
 
@@ -421,7 +421,7 @@ BZZOIRO_URL = "https://sports.bzzoiro.com"
 APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
 
 # APIs Secundárias (Ativas)
-APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_KEY")
+APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_COM_KEY")
 BZZOIRO_TOKEN = os.getenv("BZZOIRO_TOKEN")
 BZZOIRO_URL = "https://sports.bzzoiro.com"
 
@@ -432,7 +432,7 @@ BZZOIRO_URL = "https://sports.bzzoiro.com"
 APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
 
 # APIs Secundárias (Ativas)
-APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_KEY")
+APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_COM_KEY")
 BZZOIRO_TOKEN = os.getenv("BZZOIRO_TOKEN")
 BZZOIRO_URL = "https://sports.bzzoiro.com"
 
@@ -443,7 +443,7 @@ BZZOIRO_URL = "https://sports.bzzoiro.com"
 APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
 
 # APIs Secundárias (Ativas)
-APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_KEY")
+APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_COM_KEY")
 BZZOIRO_TOKEN = os.getenv("BZZOIRO_TOKEN")
 BZZOIRO_URL = "https://sports.bzzoiro.com"
 
