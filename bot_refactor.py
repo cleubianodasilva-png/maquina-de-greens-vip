@@ -1841,11 +1841,28 @@ def run():
         print(f"[Analisando] {h} x {a} | {placar} | {m}min")
 
         # Stats FUSION: tenta todas as 3 APIs e mescla os dados reais
-        stats_espn = get_stats_espn(fid, h, a) if isinstance(get_stats_espn(fid, h, a), dict) else {}
-        stats_bzz  = get_stats_bzzoiro(j["fid_raw"], h, a) if isinstance(get_stats_bzzoiro(j["fid_raw"], h, a), dict) else {}
-        stats_apif = get_stats_apifootball_live(fid) if isinstance(get_stats_apifootball_live(fid), dict) else {}
+        stats_espn = {}
+        try:
+            se = get_stats_espn(fid, h, a)
+            if isinstance(se, dict): stats_espn = se
+        except: pass
+        fid_raw = j.get("fid_raw", fid)
+        stats_bzz = {}
+        try:
+            sb = get_stats_bzzoiro(fid_raw, h, a)
+            if isinstance(sb, dict): stats_bzz = sb
+        except: pass
+        stats_apif = {}
+        try:
+            sa = get_stats_apifootball_live(fid)
+            if isinstance(sa, dict): stats_apif = sa
+        except: pass
         if not stats_apif:
-            stats_apif = get_stats_apifootball_v3(j["fid_raw"]) if isinstance(get_stats_apifootball_v3(j["fid_raw"]), dict) else {}
+            try:
+                sa3 = get_stats_apifootball_v3(fid_raw)
+                if isinstance(sa3, dict): stats_apif = sa3
+            except: pass
+
         stats = {}
         for src_nome, src in [("ESPN", stats_espn), ("Bzzoiro", stats_bzz), ("apifootball", stats_apif)]:
             for campo in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a","escanteios_h","escanteios_a","red_cards_h","red_cards_a","posse_h","posse_a"]:
