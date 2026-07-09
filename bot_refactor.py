@@ -1936,8 +1936,17 @@ def run():
                     fav_por_odds = True
         except: pass
 
-
-
+        # Fallback odds via Bzzoiro
+        if not fav_por_odds:
+            try:
+                r = requests.get(f"https://sports.bzzoiro.com/api/matches/{fid_raw}/", timeout=8)
+                bz = r.json()
+                odd_h = float(bz.get("odd_h", 0) or bz.get("home_odd", 0) or 0)
+                odd_a = float(bz.get("odd_a", 0) or bz.get("away_odd", 0) or 0)
+                if odd_h > 1 and odd_a > 1:
+                    fav_final = "h" if odd_h <= odd_a else "a"
+                    fav_por_odds = True
+            except: pass
 
         # Sem odds = usa stats (chutes) como fallback para definir favorito
         if not fav_por_odds:
