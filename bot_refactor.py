@@ -1898,8 +1898,8 @@ def run():
         stats = {}
         for src_nome, src in [("ESPN", stats_espn), ("Bzzoiro", stats_bzz), ("apifootball", stats_apif)]:
             for campo in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a","escanteios_h","escanteios_a","red_cards_h","red_cards_a","posse_h","posse_a"]:
-                if stats.get(campo, -1) == -1:
-                    val = src.get(campo, 0)
+                if stats.get(campo, -1) == -1 and campo in src:
+                    val = src[campo]
                     if isinstance(val, (int,float)) and val >= 0:
                         stats[campo] = val
                         stats["_fonte_"+campo] = src_nome
