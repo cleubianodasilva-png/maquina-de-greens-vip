@@ -116,6 +116,7 @@ def obter_nome_liga(game, fonte):
 import os, json, requests, time
 APIFOOTBALL_KEY = os.getenv("APIFOOTBALL_KEY", "")
 from datetime import datetime, timezone, timedelta
+import hashlib
 
 # ─── Caminhos e Fuso ───────────────────────────────────────────────────────────
 BASE_DIR        = os.path.dirname(os.path.abspath(__file__))
@@ -2165,6 +2166,7 @@ def run():
     for j in jogos_dedup:
         fid    = j["fid"]
         h, a   = j["home"], j["away"]
+        dedup_id = hashlib.md5(f"{h}-{a}".lower().encode()).hexdigest()[:12]
         m, p   = j["minuto"], j["period"]
         sh, sa = j["sh"], j["sa"]
         liga   = str(j["liga"])
@@ -2314,7 +2316,7 @@ def run():
         # MERCADO 1: OVER 0.5 HT (10-26 min, 0x0, favorito empatando, sem vermelho do fav)
         if p == 1 and 10 <= m <= 26 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{fid}_ht_{hoje}"
+            key = f"{dedup_id}_ht_{hoje}"
             if key not in sent:
                 mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a), marca=key, home=h, away=a)
                 if mid:
@@ -2332,7 +2334,7 @@ def run():
             print(f"[LIMITE-HT] {h} x {a} | odd_fav={odd_fav_num} | prob_15ft={prob_15_ft}% | prob_05ht={prob_05_ht}% | appm={appm_fav}")
             if (odd_fav_num <= 1.50 and prob_15_ft >= 75 and prob_05_ht >= 65 and appm_fav >= 1):
                 hoje = datetime.now(BRT).strftime('%Y%m%d')
-                key = f"{fid}_limiteht_{hoje}"
+                key = f"{dedup_id}_limiteht_{hoje}"
                 if key not in sent:
                     mid = send_telegram(msg_universal(h, a, m, liga, 4, "LIMITEHT", "Over 0.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a), marca=key, home=h, away=a)
                     if mid:
@@ -2342,7 +2344,7 @@ def run():
         # MERCADO 2: AMBAS MARCAM BTTS (55-75 min, fav perdendo por 1, sem vermelho do fav)
         if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{fid}_btts_{hoje}"
+            key = f"{dedup_id}_btts_{hoje}"
             if key not in sent:
                 mid = send_telegram(msg_universal(h, a, m, liga, 4, "BTTS", "Ambas Marcam", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a), marca=key, home=h, away=a)
                 if mid:
@@ -2352,7 +2354,7 @@ def run():
         # MERCADO 3: OVER 1.5 FT (55-75 min, fav empatando ou perdendo por 1, placares: 0x0/1x0/0x1/1x1, sem vermelho do fav)
         if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{fid}_oft_{hoje}"
+            key = f"{dedup_id}_oft_{hoje}"
             if key not in sent:
                 mid = send_telegram(msg_universal(h, a, m, liga, 4, "OFT", "Over 1.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a), marca=key, home=h, away=a)
                 if mid:
@@ -2363,7 +2365,7 @@ def run():
         overgoal_valido = (fav_empatando or fav_perdendo_1)
         if p == 2 and 55 <= m <= 75 and overgoal_valido and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{fid}_overgoal_{hoje}"
+            key = f"{dedup_id}_overgoal_{hoje}"
             # Linha dinâmica: sempre acima do total de gols atual
             total_gols = sh + sa
             if total_gols == 0:
@@ -2385,7 +2387,7 @@ def run():
         # MERCADO 5: ESCANTEIO LIMITE HT (28-38 min, fav confirmado, empatando ou perdendo por 1, sem vermelho, pressão por ataques)
         if p == 1 and 28 <= m <= 38 and (fav_empatando or fav_perdendo_1) and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{fid}_cht_{hoje}"
+            key = f"{dedup_id}_cht_{hoje}"
             # Verifica pressão via ataques perigosos (0.7/min)
             atq_p_h = stats.get("ataques_perigosos_h", 0) if stats else 0
             atq_p_a = stats.get("ataques_perigosos_a", 0) if stats else 0
@@ -2409,7 +2411,7 @@ def run():
         # MERCADO 6: ESCANTEIO LIMITE FT (78-88 min, fav confirmado, empatando ou perdendo por 1, sem vermelho)
         if p == 2 and 78 <= m <= 88 and (fav_empatando or fav_perdendo_1) and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{fid}_cft_{hoje}"
+            key = f"{dedup_id}_cft_{hoje}"
             cantos_h = stats.get("escanteios_h", -1) if stats else -1
             cantos_a = stats.get("escanteios_a", -1) if stats else -1
             if cantos_h >= 0 and cantos_a >= 0:
