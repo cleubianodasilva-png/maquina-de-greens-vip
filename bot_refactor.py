@@ -1850,13 +1850,13 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
             entrada = f"Mais de {linha}⛳️"
     
     titles = {
-        "HT": "⛳️🔥OVER GOL INTERVALO🔥⛳️",
-        "LIMITEHT": "⛳️🔥OVER GOL LIMITE HT🔥⛳️",
-        "BTTS": "⛳️🔥AMBAS MARCAM🔥⛳️",
-        "OFT": "⛳️🔥OVER 1.5 GOLS PARTIDA🔥⛳️",
-        "OVERGOAL": "⛳️🔥OVER GOL PARTIDA🔥⛳️",
-        "CORNER_HT": "⛳️🔥ESCANTEIO LIMITE HT🔥⛳️",
-        "CORNER_FT": "⛳️🔥ESCANTEIO LIMITE FT🔥⛳️",
+        "HT": "⚽️🔥OVER GOL INTERVALO🔥⚽️",
+        "LIMITEHT": "⚽️🔥OVER GOL LIMITE HT🔥⚽️",
+        "BTTS": "⚽️🔥AMBAS MARCAM🔥⚽️",
+        "OFT": "⚽️🔥OVER 1.5 GOLS PARTIDA🔥⚽️",
+        "OVERGOAL": "⚽️🔥OVER GOL PARTIDA🔥⚽️",
+        "CORNER_HT": "🚩🔥ESCANTEIO LIMITE HT🔥🚩",
+        "CORNER_FT": "🚩🔥ESCANTEIO LIMITE FT🔥🚩",
     }
     title = titles.get(mercado, f"⛳️🔥{mercado}🔥⛳️")
     
