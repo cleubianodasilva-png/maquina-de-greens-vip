@@ -1505,9 +1505,9 @@ def get_favorito_odds(home, away, fid=None, league=None):
             print(f"[ODDS-ESPN] Erro: {e}")
 
     # Fallback 2: APIfootball.com odds (quando fid for do apifootball)
-    if fid and str(fid).replace("apfc_","").isdigit():
+    if fid and str(fid).replace("apif_","").isdigit():
         try:
-            match_id = str(fid).replace("apfc_","")
+            match_id = str(fid).replace("apif_","")
             r = requests.get("https://apiv3.apifootball.com/",
                              params={"action": "get_odds", "match_id": match_id,
                                      "APIkey": APIFOOTBALL_COM_KEY}, timeout=8)
@@ -2255,7 +2255,7 @@ def run():
 
         try:
             r_odd = requests.get("https://apiv3.apifootball.com/",
-                             params={"action": "get_odds", "match_id": fid, "APIkey": APIFOOTBALL_COM_KEY}, timeout=8)
+                             params={"action": "get_odds", "match_id": fid_raw, "APIkey": APIFOOTBALL_COM_KEY}, timeout=8)
             odds_data = r_odd.json()
             if isinstance(odds_data, list) and odds_data:
                 odd = odds_data[0]
@@ -2268,7 +2268,7 @@ def run():
         # Fallback odds via Bzzoiro
         if not fav_por_odds:
             try:
-                r = requests.get(f"https://sports.bzzoiro.com/api/matches/{fid_raw}/", timeout=8)
+                r = requests.get(f"https://sports.bzzoiro.com/api/v2/events/{fid_raw}/odds/", timeout=8)
                 bz = r.json()
                 odd_h = float(bz.get("odd_h", 0) or bz.get("home_odd", 0) or 0)
                 odd_a = float(bz.get("odd_a", 0) or bz.get("away_odd", 0) or 0)
