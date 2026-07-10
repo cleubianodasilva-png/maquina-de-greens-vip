@@ -17,33 +17,33 @@ def analisar_e_disparar(game, stats, p, m, sh, sa, odd_h, odd_a, sent_vistos):
     # MERCADOS
     
     # 1. OVER GOL INTERVALO (HT)
-    if p == 1 and 15 <= m <= 27:
+    if p == 1 and 10 <= m <= 26:
         if sh == 0 and sa == 0 and red_fav == 0:
             return "HT", "Over 0.5 Gols HT"
 
     # 2. OVER GOL PARTIDA (FT)
-    if p == 2 and 60 <= m <= 75:
+    if p == 2 and 55 <= m <= 75:
         if (fav_gols <= adv_gols) and (adv_gols - fav_gols <= 1) and red_fav == 0:
             total_gols = sh + sa
             return "OVERGOAL", f"Mais de {total_gols + 0.5} Gols"
 
     # 3. AMBAS MARCAM (BTTS)
-    if p == 2 and 60 <= m <= 75:
+    if p == 2 and 55 <= m <= 75:
         if (sh + sa == 1) and (fav_gols == 0 and adv_gols == 1) and red_fav == 0:
             return "BTTS", "Ambas Marcam"
 
     # 4. OVER 1.5 GOLS PARTIDA
-    if p == 2 and 60 <= m <= 75:
+    if p == 2 and 55 <= m <= 75:
         if (sh + sa == 1) and (fav_gols == 0 and adv_gols == 1) and red_fav == 0:
             return "OFT", "Mais de 1.5 Gols Partida"
 
     # 5. ESCANTEIO LIMITE HT
-    if p == 1 and 30 <= m <= 38:
+    if p == 1 and 28 <= m <= 38:
         if (fav_gols <= adv_gols) and (adv_gols - fav_gols <= 1) and red_fav == 0:
             return "CORNER_HT", "Escanteio Limite HT"
 
     # 6. ESCANTEIO LIMITE FT
-    if p == 2 and 80 <= m <= 88:
+    if p == 2 and 78 <= m <= 88:
         if (fav_gols <= adv_gols) and (adv_gols - fav_gols <= 1) and red_fav == 0:
             return "CORNER_FT", "Escanteio Limite FT"
 
@@ -1510,10 +1510,10 @@ def filtrar_janelas(jogos):
             p = p_raw
             
         em_janela = (
-            (p == 1 and 12 <= m <= 28) or
-            (p == 1 and 29 <= m <= 40) or
-            (p == 2 and 58 <= m <= 76) or
-            (p == 2 and 78 <= m <= 89)
+            (p == 1 and 10 <= m <= 27) or
+            (p == 1 and 28 <= m <= 38) or
+            (p == 2 and 55 <= m <= 77) or
+            (p == 2 and 78 <= m <= 88)
         )
         if em_janela:
             resultado.append(j)
@@ -2121,8 +2121,8 @@ def run():
             (sh + sa) == 1
         )
 
-        # MERCADO 1: OVER 0.5 HT (15-27 min, 0x0, favorito empatando, sem vermelho do fav)
-        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0:
+        # MERCADO 1: OVER 0.5 HT (10-26 min, 0x0, favorito empatando, sem vermelho do fav)
+        if p == 1 and 10 <= m <= 26 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_ht_{hoje}"
             if key not in sent:
@@ -2131,8 +2131,8 @@ def run():
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "HT", h, a, mid)
 
-        # MERCADO 1B: OVER GOL LIMITE HT (15-25 min, 0x0, odd fav ≤ 1.50, prob 1.5 FT ≥ 75%, prob 0.5 HT ≥ 65%, APPM fav ≥ 1)
-        if p == 1 and 15 <= m <= 25 and red_fav == 0:
+        # MERCADO 1B: OVER GOL LIMITE HT (10-25 min, 0x0, odd fav ≤ 1.50, prob 1.5 FT ≥ 75%, prob 0.5 HT ≥ 65%, APPM fav ≥ 1)
+        if p == 1 and 10 <= m <= 25 and red_fav == 0:
             odd_fav_num = get_odd_favorito_num(h, a, fid=fid, league=j.get("liga_slug", j.get("liga", "")))
             chutes_tot_total = (stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0)) if stats else 0
             chutes_gol_total = (stats.get("chutes_gol_h", 0) + stats.get("chutes_gol_a", 0)) if stats else 0
@@ -2149,8 +2149,8 @@ def run():
                         sent.add(key); total_env += 1
                         registrar_sinal(fid, "LIMITEHT", h, a, mid)
 
-        # MERCADO 2: AMBAS MARCAM BTTS (60-75 min, fav perdendo por 1, sem vermelho do fav)
-        if p == 2 and 60 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0:
+        # MERCADO 2: AMBAS MARCAM BTTS (55-75 min, fav perdendo por 1, sem vermelho do fav)
+        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_btts_{hoje}"
             if key not in sent:
@@ -2159,8 +2159,8 @@ def run():
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "BTTS", h, a, mid)
 
-        # MERCADO 3: OVER 1.5 FT (60-75 min, fav empatando ou perdendo por 1, placares: 0x0/1x0/0x1/1x1, sem vermelho do fav)
-        if p == 2 and 60 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0:
+        # MERCADO 3: OVER 1.5 FT (55-75 min, fav empatando ou perdendo por 1, placares: 0x0/1x0/0x1/1x1, sem vermelho do fav)
+        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_oft_{hoje}"
             if key not in sent:
@@ -2169,9 +2169,9 @@ def run():
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "OFT", h, a, mid)
 
-        # MERCADO 4: OVER GOL PARTIDA (60-75 min, placares 0x0/1x1/0x1/1x0, favorito empatando ou perdendo por 1)
+        # MERCADO 4: OVER GOL PARTIDA (55-75 min, placares 0x0/1x1/0x1/1x0, favorito empatando ou perdendo por 1)
         overgoal_valido = (fav_empatando or fav_perdendo_1)
-        if p == 2 and 60 <= m <= 75 and overgoal_valido and red_fav == 0:
+        if p == 2 and 55 <= m <= 75 and overgoal_valido and red_fav == 0:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{fid}_overgoal_{hoje}"
             # Linha dinâmica: sempre acima do total de gols atual
