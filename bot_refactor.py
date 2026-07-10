@@ -846,68 +846,36 @@ def get_jogos_apifootball(fids_espn):
 # apifootball: estatísticas de um jogo específico
 # ═══════════════════════════════════════════════════════════════════════════════
 def get_stats_apifootball_live(fid):
-    """Busca stats ao vivo de um fixture da apifootball."""
-    for key in [APIFOOTBALL_COM_KEY]:
-        try:
-            r = requests.get(
-                f"{API_FOOTBALL_URL}/fixtures",
-                params={"id": fid},
-                headers={"x-apisports-key": key},
-                timeout=10
-            )
-            rjson = r.json()
-            data = rjson.get("response", [])
-            if not data:
-                continue
-            f = data[0]
-            stats = {}
-            # Estatísticas detalhadas
-            r2 = requests.get(
-                f"{API_FOOTBALL_URL}/fixtures/statistics",
-                params={"fixture": fid},
-                headers={"x-apisports-key": key},
-                timeout=10
-            )
-            r2json = r2.json()
-            stat_data = r2json.get("response", [])
-            if stat_data:
-                home_id = stat_data[0]["team"]["id"]
-                for team in stat_data:
-                    side = "h" if team["team"]["id"] == home_id else "a"
-                    for s in team["statistics"]:
-                        k   = s["type"].lower().replace(" ", "_")
-                        val = s["value"] or 0
-                        if k == "corner_kicks":  stats[f"escanteios_{side}"] = val
-                        if k == "total_shots":   stats[f"chutes_tot_{side}"]  = val
-                        if k == "shots_on_goal": stats[f"chutes_gol_{side}"]  = val
-                # Cartões vermelhos via events
-                r3 = requests.get(
-                    f"{API_FOOTBALL_URL}/fixtures/events",
-                    params={"fixture": fid},
-                    headers={"x-apisports-key": key},
-                    timeout=10
-                )
-                events = r3.json().get("response", [])
-                red_h, red_a = 0, 0
-                for ev in events:
-                    if ev.get("type") == "Card" and "Red" in (ev.get("detail") or ""):
-                        if ev.get("team", {}).get("id") == home_id: red_h += 1
-                        else: red_a += 1
-                stats["red_cards_h"], stats["red_cards_a"] = red_h, red_a
-            # Garante defaults
-            for side in ["h", "a"]:
-                for k in ["chutes_tot", "chutes_gol", "red_cards"]:
-                    stats.setdefault(f"{k}_{side}", 0)
-                stats.setdefault(f"escanteios_{side}", -1)
-                stats.setdefault(f"posse_{side}", 0.0)
-                stats.setdefault(f"passes_precisos_{side}", 0)
-            stats["fav_side"] = "h" if stats.get("chutes_tot_h", 0) >= stats.get("chutes_tot_a", 0) else "a"
-            print(f"[apifootball Stats] fixture {fid} OK")
-            return stats
-        except Exception as e:
-            print(f"[apifootball Stats] Erro: {e}")
-            continue
-    return {}
+    """Busca stats ao vivo via action=get_statistics da apifootball."""
+    try:
+        params = {"action": "get_statistics", "match_id": fid, "APIkey": APIFOOTBALL_COM_KEY}
+        r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
+        data = r.json()
+        if not data or str(fid) not in data:
+            return {}
+        raw = data[str(fid)].get("statistics", [])
+        stats = {}
+        for s in raw:
+            tipo = s.get("type", "").lower()
+            h_val = s.get("home", "0").replace("%", "")
+            a_val = s.get("away", "0").replace("%", "")
+            if "corner" in tipo:
+                stats["escanteios_h"], stats["escanteios_a"] = int(h_val), int(a_val)
+            elif "shots on goal" in tipo:
+                stats["chutes_gol_h"], stats["chutes_gol_a"] = int(h_val), int(a_val)
+            elif "total shots" in tipo:
+                stats["chutes_tot_h"], stats["chutes_tot_a"] = int(h_val), int(a_val)
+            elif "red cards" in tipo:
+                stats["red_cards_h"], stats["red_cards_a"] = int(h_val), int(a_val)
+        for side in ["h", "a"]:
+            for k in ["chutes_tot", "chutes_gol", "red_cards"]:
+                stats.setdefault(f"{k}_{side}", 0)
+            stats.setdefault(f"escanteios_{side}", -1)
+        print(f"[apifootball Stats] action=get_statistics fid {fid} OK")
+        return stats
+    except Exception as e:
+        print(f"[apifootball Stats] Erro: {e}")
+        return {}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -984,7 +952,7 @@ def get_stats_apifootball_v3(match_id):
                 stats["escanteios_h"], stats["escanteios_a"] = int(h_val), int(a_val)
             elif "shots on goal" in tipo:
                 stats["chutes_gol_h"], stats["chutes_gol_a"] = int(h_val), int(a_val)
-            elif "shots total" in tipo:
+            elif "total shots" in tipo:
                 stats["chutes_tot_h"], stats["chutes_tot_a"] = int(h_val), int(a_val)
             elif "red cards" in tipo:
                 stats["red_cards_h"], stats["red_cards_a"] = int(h_val), int(a_val)
@@ -1080,7 +1048,7 @@ def get_stats_apifootball_v3(match_id):
                 stats["escanteios_h"], stats["escanteios_a"] = int(h_val), int(a_val)
             elif "shots on goal" in tipo:
                 stats["chutes_gol_h"], stats["chutes_gol_a"] = int(h_val), int(a_val)
-            elif "shots total" in tipo:
+            elif "total shots" in tipo:
                 stats["chutes_tot_h"], stats["chutes_tot_a"] = int(h_val), int(a_val)
             elif "red cards" in tipo:
                 stats["red_cards_h"], stats["red_cards_a"] = int(h_val), int(a_val)
@@ -1176,7 +1144,7 @@ def get_stats_apifootball_v3(match_id):
                 stats["escanteios_h"], stats["escanteios_a"] = int(h_val), int(a_val)
             elif "shots on goal" in tipo:
                 stats["chutes_gol_h"], stats["chutes_gol_a"] = int(h_val), int(a_val)
-            elif "shots total" in tipo:
+            elif "total shots" in tipo:
                 stats["chutes_tot_h"], stats["chutes_tot_a"] = int(h_val), int(a_val)
             elif "red cards" in tipo:
                 stats["red_cards_h"], stats["red_cards_a"] = int(h_val), int(a_val)
@@ -1941,11 +1909,18 @@ def run():
         stats = {}
         for src_nome, src in [("ESPN", stats_espn), ("Bzzoiro", stats_bzz), ("apifootball", stats_apif)]:
             for campo in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a","escanteios_h","escanteios_a","red_cards_h","red_cards_a","posse_h","posse_a"]:
-                if stats.get(campo, -1) == -1 and campo in src:
-                    val = src[campo]
-                    if isinstance(val, (int,float)) and val >= 0:
-                        stats[campo] = val
-                        stats["_fonte_"+campo] = src_nome
+                if campo not in src:
+                    continue
+                val = src[campo]
+                if not isinstance(val, (int,float)) or val < 0:
+                    continue
+                current = stats.get(campo, -1)
+                if current == -1:
+                    stats[campo] = val
+                    stats["_fonte_"+campo] = src_nome
+                elif current == 0 and val > 0:
+                    stats[campo] = val
+                    stats["_fonte_"+campo] = src_nome
         for k in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a"]:
             stats.setdefault(k, 0)
         for k in ["escanteios_h","escanteios_a"]:
