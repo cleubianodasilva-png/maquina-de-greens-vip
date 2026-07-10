@@ -1523,41 +1523,50 @@ def filtrar_janelas(jogos):
 # MENSAGEM PADRÃO
 # ═══════════════════════════════════════════════════════════════════════════════
 def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
-    chutes_h     = stats.get("chutes_tot_h", 0) if stats else 0
-    chutes_a     = stats.get("chutes_tot_a", 0) if stats else 0
-    chutes_gol_h = stats.get("chutes_gol_h", 0) if stats else 0
-    chutes_gol_a = stats.get("chutes_gol_a", 0) if stats else 0
-    cantos_h     = max(0, stats.get("escanteios_h", 0)) if stats else 0
-    cantos_a     = max(0, stats.get("escanteios_a", 0)) if stats else 0
-    red_h        = stats.get("red_cards_h", 0) if stats else 0
-    red_a        = stats.get("red_cards_a", 0) if stats else 0
-    posse_h_raw  = stats.get("posse_h", 0.0) if stats else 0.0
-    posse_a_raw  = stats.get("posse_a", 0.0) if stats else 0.0
+    chutes_h          = stats.get("chutes_tot_h", 0) if stats else 0
+    chutes_a          = stats.get("chutes_tot_a", 0) if stats else 0
+    chutes_gol_h      = stats.get("chutes_gol_h", 0) if stats else 0
+    chutes_gol_a      = stats.get("chutes_gol_a", 0) if stats else 0
+    cantos_h          = max(0, stats.get("escanteios_h", 0)) if stats else 0
+    cantos_a          = max(0, stats.get("escanteios_a", 0)) if stats else 0
+    red_h             = stats.get("red_cards_h", 0) if stats else 0
+    red_a             = stats.get("red_cards_a", 0) if stats else 0
+    posse_h_raw       = stats.get("posse_h", 0.0) if stats else 0.0
+    posse_a_raw       = stats.get("posse_a", 0.0) if stats else 0.0
+    atq_perig_h       = stats.get("ataques_perigosos_h", 0) if stats else 0
+    atq_perig_a       = stats.get("ataques_perigosos_a", 0) if stats else 0
     posse_h = int(round(float(posse_h_raw) * 100)) if float(posse_h_raw) <= 1 else int(round(float(posse_h_raw)))
     posse_a = int(round(float(posse_a_raw) * 100)) if float(posse_a_raw) <= 1 else int(round(float(posse_a_raw)))
-    total_chutes = chutes_h + chutes_a
-    total_cantos = cantos_h + cantos_a
-    tem_dados    = total_chutes > 0 or total_cantos > 0
+    total_chutes      = chutes_h + chutes_a
+    total_cantos      = cantos_h + cantos_a
+    total_atq_perig   = atq_perig_h + atq_perig_a
+    tem_dados         = total_chutes > 0 or total_cantos > 0 or total_atq_perig > 0
 
     if not tem_dados:
         return "Estatísticas não disponíveis para esta liga"
 
     # Labels com identidade: Favorito(Casa/Fora) ou Zebra(Casa/Fora)
     if fav_final == "h":
-        fav_label  = "Favorito (Casa)"
+        fav_label   = "Favorito (Casa)"
         zebra_label = "Zebra (Fora)"
-        fav_chutes = chutes_h; fav_gol = chutes_gol_h
-        adv_chutes = chutes_a; adv_gol = chutes_gol_a
+        fav_chutes  = chutes_h; fav_gol = chutes_gol_h
+        adv_chutes  = chutes_a; adv_gol = chutes_gol_a
+        fav_atq     = atq_perig_h
+        adv_atq     = atq_perig_a
     elif fav_final == "a":
-        fav_label  = "Favorito (Fora)"
+        fav_label   = "Favorito (Fora)"
         zebra_label = "Zebra (Casa)"
-        fav_chutes = chutes_a; fav_gol = chutes_gol_a
-        adv_chutes = chutes_h; adv_gol = chutes_gol_h
+        fav_chutes  = chutes_a; fav_gol = chutes_gol_a
+        adv_chutes  = chutes_h; adv_gol = chutes_gol_h
+        fav_atq     = atq_perig_a
+        adv_atq     = atq_perig_h
     else:
-        fav_label  = "Casa"
+        fav_label   = "Casa"
         zebra_label = "Fora"
-        fav_chutes = chutes_h; fav_gol = chutes_gol_h
-        adv_chutes = chutes_a; adv_gol = chutes_gol_a
+        fav_chutes  = chutes_h; fav_gol = chutes_gol_h
+        adv_chutes  = chutes_a; adv_gol = chutes_gol_a
+        fav_atq     = atq_perig_h
+        adv_atq     = atq_perig_a
 
     # Contexto do placar
     jogo_aberto  = sh == 0 and sa == 0
@@ -1565,6 +1574,11 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
     fav_ganhando = (fav_final == "h" and sh > sa) or (fav_final == "a" and sa > sh)
     # Zebra dominando nos dados
     zebra_dominando = adv_chutes > fav_chutes
+    # Quem amassa: diferença de ataques perigosos
+    diff_atq = fav_atq - adv_atq
+    fav_amassando = diff_atq >= 8
+    adv_amassando = adv_atq >= fav_atq + 8
+    ambos_pressionando = total_atq_perig >= 20 and abs(diff_atq) < 8
 
     if red_h > 0 or red_a > 0:
         vermelho = " | 🟥 Vermelho: " + ("Casa" if red_h > 0 else "Fora")
@@ -1589,6 +1603,12 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
             return f"Jogo aberto e bastante movimentado — {chutes_h} chutes de Casa, {chutes_a} de Fora, sem gols ainda{posse_txt}{vermelho}"
         if fav_chutes > adv_chutes and fav_gol > 0:
             return f"Jogo aberto, {fav_label} dominando com {fav_chutes} chutes ({fav_gol} no alvo){posse_txt}{vermelho}"
+        if fav_amassando:
+            return f"Jogo aberto, {fav_label} amassando — {fav_atq} ataques perigosos x {adv_atq}{posse_txt}{vermelho}"
+        if adv_amassando:
+            return f"Jogo aberto, {zebra_label} pressionando muito — {adv_atq} ataques perigosos x {fav_atq}{posse_txt}{vermelho}"
+        if ambos_pressionando:
+            return f"Jogo aberto, ambas equipes pressionando forte — {total_atq_perig} ataques perigosos no total{posse_txt}{vermelho}"
         return f"Jogo aberto, ambas buscando o primeiro gol — {chutes_h} chutes x {chutes_a}{posse_txt}{vermelho}"
 
     # ── FAVORITO PERDENDO ─────────────────────────────────────────
@@ -1597,8 +1617,14 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
             return f"Grandes chances do {fav_label} empatar — chegando constantemente com {fav_chutes} chutes, {fav_gol} no alvo{posse_txt}{vermelho}"
         if fav_chutes >= 6 and fav_gol >= 2:
             return f"{fav_label} em busca do empate, criando boas chances — {fav_chutes} chutes, {fav_gol} no alvo{posse_txt}{vermelho}"
+        if fav_amassando:
+            return f"{fav_label} perdendo mas amassando! — {fav_atq} ataques perigosos x {adv_atq}{posse_txt}{vermelho}"
         if zebra_dominando and adv_chutes >= 8:
             return f"{zebra_label} dominando e ameaçando ampliar — {adv_chutes} chutes, {adv_gol} no alvo{posse_txt}{vermelho}"
+        if adv_amassando:
+            return f"{zebra_label} com mais volume de ataque — {adv_atq} ataques perigosos x {fav_atq}{posse_txt}{vermelho}"
+        if ambos_pressionando:
+            return f"Ambas pressionando — {total_atq_perig} ataques perigosos, jogo aberto{posse_txt}{vermelho}"
         if fav_chutes > adv_chutes:
             return f"{fav_label} em busca do empate, pressionando com {fav_chutes} chutes x {adv_chutes}{posse_txt}{vermelho}"
         return f"{fav_label} perdendo e tentando reagir — {fav_chutes} chutes x {adv_chutes} da {zebra_label}{posse_txt}{vermelho}"
@@ -1607,7 +1633,15 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
     if fav_ganhando:
         if adv_chutes >= 8 and adv_gol >= 3:
             return f"{zebra_label} pressionando forte em busca do empate — {adv_chutes} chutes, {adv_gol} no alvo{posse_txt}{vermelho}"
+        if adv_amassando:
+            return f"{zebra_label} amassando mesmo perdendo — {adv_atq} ataques perigosos x {fav_atq}{posse_txt}{vermelho}"
         if fav_chutes >= 8:
+            return f"{fav_label} controlando e ampliando a pressão — {fav_chutes} chutes, {fav_gol} no alvo{posse_txt}{vermelho}"
+        if fav_amassando:
+            return f"{fav_label} na frente e amassando — {fav_atq} ataques perigosos x {adv_atq}{posse_txt}{vermelho}"
+        if ambos_pressionando:
+            return f"Ambas pressionando, placar aberto — {total_atq_perig} ataques perigosos{posse_txt}{vermelho}"
+        if fav_chutes > adv_chutes:
             return f"{fav_label} controlando e ampliando a pressão — {fav_chutes} chutes, {fav_gol} no alvo{posse_txt}{vermelho}"
         if fav_chutes > adv_chutes:
             return f"{fav_label} na frente e dominando — {fav_chutes} chutes x {adv_chutes} da {zebra_label}{posse_txt}{vermelho}"
@@ -1624,6 +1658,12 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, cantos_atual=0):
         return f"{zebra_label} surpreendendo com mais volume — {adv_chutes} chutes ({adv_gol} no alvo) x {fav_chutes} do {fav_label}{posse_txt}{vermelho}"
     if fav_chutes > adv_chutes and fav_gol > 0:
         return f"{fav_label} criando mais chances — {fav_chutes} chutes ({fav_gol} no alvo) x {adv_chutes}{posse_txt}{vermelho}"
+    if fav_amassando:
+        return f"{fav_label} amassando em busca da virada — {fav_atq} ataques perigosos x {adv_atq}{posse_txt}{vermelho}"
+    if adv_amassando:
+        return f"{zebra_label} pressionando para virar — {adv_atq} ataques perigosos x {fav_atq}{posse_txt}{vermelho}"
+    if ambos_pressionando:
+        return f"Jogo eletrizante, ambas pressionando — {total_atq_perig} ataques perigosos{posse_txt}{vermelho}"
     if total_cantos >= 6:
         return f"Jogo bastante movimentado pelas laterais — {total_cantos} escanteios, {total_chutes} chutes{posse_txt}{vermelho}"
     return f"Jogo equilibrado, ambas criando chances — {chutes_h} chutes de Casa x {chutes_a} de Fora{posse_txt}{vermelho}"
@@ -1727,6 +1767,7 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
         + "📊 <b>Estatísticas ao Vivo:</b>\n"
         + "🚀 Chutes: <b>" + str(chutes_h) + " | " + str(chutes_a) + "</b>\n"
         + "🎯 No Alvo: <b>" + str(alvo_h) + " | " + str(alvo_a) + "</b>\n"
+        + "⚔️ Ataques: <b>" + str(atq_perig_h) + " | " + str(atq_perig_a) + "</b> ⚠️\n"
         + "⛳️ Cantos: <b>" + str(cant_h) + " | " + str(cant_a) + "</b>\n"
         + sep + "\n"
         + "💡 <b>Análise Técnica:</b>\n"
