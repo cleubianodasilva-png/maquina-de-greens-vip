@@ -1846,8 +1846,7 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, minuto, cantos_atual=0):
 def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_val=None, cantos_atual=0, stats=None, sh=0, sa=0, fav_final="h"):
     if "CORNER" in mercado or "ESCANTEIO" in mercado:
         linha = cantos_atual + 0.5
-        if cantos_atual > 0:
-            entrada = f"Mais de {linha}⛳️"
+        entrada = f"Mais de {linha}⛳️"
     
     titles = {
         "HT": "⚽️🔥OVER GOL INTERVALO🔥⚽️",
