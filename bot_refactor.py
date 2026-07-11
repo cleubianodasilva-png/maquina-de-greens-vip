@@ -1842,7 +1842,7 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, minuto, cantos_atual=0):
 def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_val=None, cantos_atual=0, stats=None, sh=0, sa=0, fav_final="h", odd_h=None, odd_a=None):
     if "CORNER" in mercado or "ESCANTEIO" in mercado:
         linha = cantos_atual + 0.5
-        entrada = f"Mais de {linha}⛳️"
+        entrada = f"Mais de {linha}🚩"
     
     titles = {
         "HT": "⚽️🔥OVER GOL INTERVALO🔥⚽️",
@@ -1850,10 +1850,10 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
         "BTTS": "⚽️🔥AMBAS MARCAM🔥⚽️",
         "OFT": "⚽️🔥OVER 1.5 GOLS PARTIDA🔥⚽️",
         "OVERGOAL": "⚽️🔥OVER GOL PARTIDA🔥⚽️",
-        "CORNER_HT": "⛳️🔥ESCANTEIO LIMITE HT🔥⛳️",
-        "CORNER_FT": "⛳️🔥ESCANTEIO LIMITE FT🔥⛳️",
+        "CORNER_HT": "🚩🔥ESCANTEIO LIMITE HT🔥🚩",
+        "CORNER_FT": "🚩🔥ESCANTEIO LIMITE FT🔥🚩",
     }
-    title = titles.get(mercado, f"⛳️🔥{mercado}🔥⛳️")
+    title = titles.get(mercado, f"🚩🔥{mercado}🔥🚩")
     
     if stats:
         chutes_h = stats.get("chutes_tot_h", 0)
@@ -1924,7 +1924,7 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
         + "<b>🚀 Chutes Totais:</b> <b>" + str(chutes_h) + " | " + str(chutes_a) + "</b>\n"
         + "<b>🎯 Chutes No Alvo:</b> <b>" + str(alvo_h) + " | " + str(alvo_a) + "</b>\n"
         + "<b>⚔️ Ataques Perigosos:</b> <b>" + str(atq_perig_h) + " | " + str(atq_perig_a) + "</b>\n"
-        + "<b>⛳️ Escanteios:</b> <b>" + str(cant_h) + " | " + str(cant_a) + "</b>\n"
+        + "<b>🚩 Escanteios:</b> <b>" + str(cant_h) + " | " + str(cant_a) + "</b>\n"
         + sep + "\n"
         + "<b>💡 Análise Técnica da Partida:</b>\n"
         + "<b>🎯 Favorito:</b> <b>" + str(fav_nome) + "</b>\n"
