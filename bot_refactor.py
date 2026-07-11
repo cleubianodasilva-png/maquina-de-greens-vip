@@ -2044,50 +2044,7 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
             if text == "/relatorio" and not relatorio_respondido:
                 enviar_relatorio_diario()
                 relatorio_respondido = True
-            elif text == "/radar" and not radar_respondido:
-                jogos_live = jogos_live or []
-                jogos_na_janela = jogos_na_janela or []
-                # Monta lista de jogos na janela
-                if jogos_na_janela:
-                    linhas_janela = ""
-                    for j in jogos_na_janela:
-                        h = j.get("home", "")
-                        a = j.get("away", "")
-                        m = j.get("minuto", 0)
-                        sh = j.get("sh", 0)
-                        sa = j.get("sa", 0)
-                        liga = j.get("liga", "")
-                        linhas_janela += f"🎯 <b>{h} x {a}</b> | {m}' | {sh}x{sa} | {liga}\n"
-                else:
-                    linhas_janela = "Nenhum jogo na janela no momento."
-                # Monta lista de jogos ao vivo fora da janela (até 10)
-                fora_janela = [j for j in jogos_live if j not in jogos_na_janela]
-                if fora_janela:
-                    linhas_fora = ""
-                    for j in fora_janela[:10]:
-                        h = j.get("home", "")
-                        a = j.get("away", "")
-                        m = j.get("minuto", 0)
-                        sh = j.get("sh", 0)
-                        sa = j.get("sa", 0)
-                        linhas_fora += f"⏳ {h} x {a} | {m}' | {sh}x{sa}\n"
-                    if len(fora_janela) > 10:
-                        linhas_fora += f"... e mais {len(fora_janela)-10} jogos"
-                else:
-                    linhas_fora = "—"
-                msg_radar = (
-                    f"{sep}\n"
-                    f"📡👉<b>RADAR DE JOGOS AO VIVO</b>👈📡\n"
-                    f"{sep}\n"
-                    f"🔴 <b>{total_jogos_live} jogos ao vivo</b> | 🎯 <b>{len(jogos_na_janela)} na janela</b>\n"
-                    f"{sep}\n"
-                    f"🚨<b>JOGOS NO ALVO:</b>\n{linhas_janela}"
-                    f"{sep}\n"
-                    f"⏳<b>FORA DA JANELA:</b>\n{linhas_fora}"
-                    f"{sep}"
-                )
-                requests.post(f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage", json={"chat_id": chat_orig, "text": msg_radar, "parse_mode": "HTML"}, timeout=10)
-                radar_respondido = True
+            # Radar removido daqui — tratado exclusivamente em processar_comandos_pendentes
         if new_last_id > last_id:
             with open(LAST_UPDATE_FILE, 'w') as f: json.dump({"last_id": new_last_id}, f)
             # Salva no GitHub para persistir entre execuções
@@ -2448,11 +2405,6 @@ def run():
     except Exception as e:
         print(f"[SINAIS] Erro validação: {e}")
 
-    # Processa comandos pendentes com dados reais
-    try:
-        processar_comandos_pendentes(TG_TOKEN, CHAT_ID, jogos_live, jogos_na_janela)
-    except Exception as e:
-        print(f"[CMD] Erro chamando comandos: {e}")
     # Processa comandos pendentes com dados reais
     try:
         processar_comandos_pendentes(TG_TOKEN, CHAT_ID, jogos_live, jogos_na_janela)
