@@ -868,33 +868,41 @@ def get_stats_apifootball_live(fid):
 
 def get_jogos_apifootball_v3(fids_existentes):
     try:
-        # action=get_events com match_live=1 retorna jogos ao vivo
-        params = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_COM_KEY}
-        r = requests.get(APIFOOTBALL_URL, params=params, timeout=15)
+        hoje = datetime.now().strftime("%Y-%m-%d")
+        params_ev = {"action": "get_events", "match_live": "1", "APIkey": APIFOOTBALL_COM_KEY}
+        r = requests.get(APIFOOTBALL_URL, params=params_ev, timeout=15)
         data = r.json()
         if not isinstance(data, list): return []
+        # Busca odds de UMA vez (from=hoje&to=hoje) e indexa por match_id
+        odds_idx = {}
+        try:
+            params_odd = {"action": "get_odds", "from": hoje, "to": hoje, "APIkey": APIFOOTBALL_COM_KEY}
+            ro = requests.get(APIFOOTBALL_URL, params=params_odd, timeout=15)
+            odds_raw = ro.json()
+            if isinstance(odds_raw, list):
+                for odd in odds_raw:
+                    mid = odd.get("match_id")
+                    if mid and odd.get("odd_1") and odd.get("odd_2"):
+                        if mid not in odds_idx:
+                            odds_idx[mid] = odd
+        except:
+            pass
+        print(f"[APIF-ODDS] {len(odds_idx)} jogos com odds carregadas")
         jogos = []
         for ev in data:
             fid = "apif_" + str(ev.get("match_id", ""))
             if fid in fids_existentes: continue
-            # Busca odds Pre-Live da apifootball ja na coleta
+            fid_raw = str(ev.get("match_id", ""))
             odd_h = odd_a = None
-            try:
-                fid_raw = str(ev.get("match_id", ""))
-                ro = requests.get(APIFOOTBALL_URL,
-                    params={"action": "get_odds", "match_id": fid_raw, "APIkey": APIFOOTBALL_COM_KEY}, timeout=6)
-                odds_data = ro.json()
-                if isinstance(odds_data, list) and odds_data:
-                    odd = odds_data[0]
-                    odd_h_tmp = odd.get("odd_1")
-                    odd_a_tmp = odd.get("odd_2")
-                    if odd_h_tmp and odd_a_tmp:
-                        odd_h = float(odd_h_tmp)
-                        odd_a = float(odd_a_tmp)
-            except:
-                pass
+            if fid_raw in odds_idx:
+                od = odds_idx[fid_raw]
+                oh = od.get("odd_1")
+                oa = od.get("odd_2")
+                if oh and oa:
+                    odd_h = float(oh)
+                    odd_a = float(oa)
             jogos.append({
-                "fid": fid, "fid_raw": str(ev.get("match_id", "")),
+                "fid": fid, "fid_raw": fid_raw,
                 "home": ev.get("match_hometeam_name", ""),
                 "away": ev.get("match_awayteam_name", ""),
                 "sh": int(ev.get("match_hometeam_score", 0) or 0),
