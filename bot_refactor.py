@@ -2133,7 +2133,7 @@ def run():
     jogos_bzz = get_jogos_bzzoiro(fids_apif | {j["fid"] for j in jogos_espn})
 
     # Junta tudo na ordem: apifootball > ESPN > Bzzoiro
-    jogos_live = jogos_apif + jogos_espn + jogos_bzz
+    jogos_live = jogos_espn + jogos_bzz + jogos_apif
     print(f"[Total] {len(jogos_live)} jogos ao vivo (apifootball={len(jogos_apif)} + ESPN={len(jogos_espn)} + bzzoiro={len(jogos_bzz)})")
 
     # PASSO 2: Filtra janelas alvo
@@ -2295,6 +2295,11 @@ def run():
             else:
                 fav_final = "h"
                 print(f"[FAV-HOME] {h} x {a} — sem odds e sem stats, assumindo mandante como favorito")
+
+        # Se NENHUMA fonte retornou odds válidas, pula o jogo
+        if not (odd_h and odd_h > 1 and odd_a and odd_a > 1):
+            print(f"[SKIP-SEM-ODDS] {h} x {a} — nenhuma odd válida (Casa:{odd_h} Fora:{odd_a}), pulando sinal")
+            continue
 
         red_fav = stats.get(f"red_cards_{fav_final}", 0) if stats else 0
 
