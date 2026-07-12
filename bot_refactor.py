@@ -17,7 +17,7 @@ def analisar_e_disparar(game, stats, p, m, sh, sa, odd_h, odd_a, sent_vistos):
     # MERCADOS
     
     # 1. OVER GOL INTERVALO (HT)
-    if p == 1 and 10 <= m <= 26:
+    if p == 1 and 15 <= m <= 27:
         if sh == 0 and sa == 0 and red_fav == 0:
             return "HT", "Over 0.5 Gols HT"
 
