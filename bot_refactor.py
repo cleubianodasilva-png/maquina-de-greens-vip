@@ -53,18 +53,25 @@ def gerar_layout_relatorio(greens, reds, data_str):
     sep = "━━━━━━━━━━━━━━━━━━━━"
     total = greens + reds
     taxa = (greens / total * 100) if total > 0 else 0.0
-    msg = (
-        f"{sep}\n"
-        f"<b>📊 RELATÓRIO DIÁRIO — {data_str}</b>\n"
-        f"{sep}\n"
-        f"✅ GREEN: <b>{greens}</b>\n"
-        f"🔴 RED: <b>{reds}</b>\n"
-        f"📈 TOTAL DE ENTRADAS: <b>{total}</b>\n"
-        f"🎯 ASSERTIVIDADE: <b>{taxa:.1f}%</b>\n"
-        f"{sep}\n"
+    return (
+        f"{sep}
+"
+        f"<b>📊 RELATÓRIO DIÁRIO — {data_str}</b>
+"
+        f"{sep}
+"
+        f"✅ GREEN: <b>{greens}</b>
+"
+        f"🔴 RED: <b>{reds}</b>
+"
+        f"📈 TOTAL DE ENTRADAS: <b>{total}</b>
+"
+        f"🎯 ASSERTIVIDADE: <b>{taxa:.1f}%</b>
+"
+        f"{sep}
+"
         f"⚠️👆Resultados do dia👆⚠️"
     )
-    return msg
 def gerar_layout_radar(jogos_ao_vivo, jogos_na_janela):
     sep = "━━━━━━━━━━━━━━━━━━━━"
     texto_jan = ""
