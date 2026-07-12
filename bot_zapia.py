@@ -2070,7 +2070,7 @@ def run():
 
     # Junta tudo na ordem: apifootball > ESPN > Bzzoiro
     jogos_live = jogos_apif + jogos_bzz
-    print(f'[Total] {len(jogos_live)} jogos ao vivo (apifootball={len(jogos_apif)} + ESPN={len(jogos_espn)} + bzzoiro={len(jogos_bzz)})')
+    print(f'[Total] {len(jogos_live)} jogos ao vivo (apifootball={len(jogos_apif)} + bzzoiro={len(jogos_bzz)})')
 
     # PASSO 2: Filtra janelas alvo
     jogos_na_janela = filtrar_janelas(jogos_live)
