@@ -427,7 +427,6 @@ APIFOOTBALL_URL  = "https://apiv3.apifootball.com"
 # APIs Secundárias (Ativas)
 APIFOOTBALL_COM_KEY = os.getenv("APIFOOTBALL_KEY")
 BZZOIRO_TOKEN = os.getenv("BZZOIRO_TOKEN")
-DISABLE_ESPN = os.getenv("DISABLE_ESPN", "").lower() in ("true", "1", "yes")
 BZZOIRO_URL = "https://sports.bzzoiro.com"
 
 
@@ -2080,7 +2079,7 @@ def run():
     # ─────────────────────────────────────────────────────────────
     # PASSO 1B: ESPN — 2ª fonte, complementa o que apifootball não cobriu (DESLIGADA no Zapia)
     # ─────────────────────────────────────────────────────────────
-    jogos_espn = get_jogos_espn(fids_apif) if not DISABLE_ESPN else []
+    jogos_espn = get_jogos_espn(fids_apif)
 
     # ─────────────────────────────────────────────────────────────
     # PASSO 1C: Bzzoiro — 3ª fonte, preenche o que faltar
