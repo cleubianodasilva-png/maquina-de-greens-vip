@@ -2421,8 +2421,7 @@ def processar_comandos_pendentes(token, chat_id, jogos_live=None, jogos_na_janel
                         h = j.get("home",""); a = j.get("away","")
                         m = j.get("minuto",""); sh = j.get("sh",0); sa = j.get("sa",0)
                         liga = j.get("liga","")
-                        linhas_jan += f"🎯 <b>{h} x {a}</b> | {m}' | {sh}x{sa} | {liga}
-"
+                        linhas_jan += f"🎯 <b>{h} x {a}</b> | {m}' | {sh}x{sa} | {liga}\n"
                     if not linhas_jan:
                         linhas_jan = "Nenhum jogo na janela no momento."
                     
@@ -2431,8 +2430,7 @@ def processar_comandos_pendentes(token, chat_id, jogos_live=None, jogos_na_janel
                     for j in fora:
                         h = j.get("home",""); a = j.get("away","")
                         m = j.get("minuto",""); sh = j.get("sh",0); sa = j.get("sa",0)
-                        linhas_fora += f"⚽ {h} x {a} | {m}' | {sh}x{sa}
-"
+                        linhas_fora += f"⚽ {h} x {a} | {m}' | {sh}x{sa}\n"
                     if not linhas_fora:
                         linhas_fora = "—"
                     
