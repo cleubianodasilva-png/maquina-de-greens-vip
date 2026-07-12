@@ -877,6 +877,22 @@ def get_jogos_apifootball_v3(fids_existentes):
         for ev in data:
             fid = "apif_" + str(ev.get("match_id", ""))
             if fid in fids_existentes: continue
+            # Busca odds Pre-Live da apifootball ja na coleta
+            odd_h = odd_a = None
+            try:
+                fid_raw = str(ev.get("match_id", ""))
+                ro = requests.get(APIFOOTBALL_URL,
+                    params={"action": "get_odds", "match_id": fid_raw, "APIkey": APIFOOTBALL_COM_KEY}, timeout=6)
+                odds_data = ro.json()
+                if isinstance(odds_data, list) and odds_data:
+                    odd = odds_data[0]
+                    odd_h_tmp = odd.get("odd_1")
+                    odd_a_tmp = odd.get("odd_2")
+                    if odd_h_tmp and odd_a_tmp:
+                        odd_h = float(odd_h_tmp)
+                        odd_a = float(odd_a_tmp)
+            except:
+                pass
             jogos.append({
                 "fid": fid, "fid_raw": str(ev.get("match_id", "")),
                 "home": ev.get("match_hometeam_name", ""),
@@ -886,7 +902,9 @@ def get_jogos_apifootball_v3(fids_existentes):
                 "minuto": int(ev.get("match_status", 0) or 0),
                 "liga": ev.get("league_name", "") or ev.get("league", "") or ev.get("competition_name", "") or "Liga",
                 "period": 2 if (int(ev.get("match_status", 0) or 0) >= 45) else 1,
-                "source": "apifootball"
+                "source": "apifootball",
+                "odd_h": odd_h,
+                "odd_a": odd_a
             })
         print(f"[APIF-v3] {len(jogos)} novos jogos (de {len(data)} totais)")
         return jogos
