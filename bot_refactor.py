@@ -2133,7 +2133,7 @@ def run():
     jogos_bzz = get_jogos_bzzoiro(fids_apif | {j["fid"] for j in jogos_espn})
 
     # Junta tudo na ordem: apifootball > ESPN > Bzzoiro
-    jogos_live = jogos_espn + jogos_bzz + jogos_apif
+    jogos_live = jogos_apif + jogos_espn + jogos_bzz
     print(f"[Total] {len(jogos_live)} jogos ao vivo (apifootball={len(jogos_apif)} + ESPN={len(jogos_espn)} + bzzoiro={len(jogos_bzz)})")
 
     # PASSO 2: Filtra janelas alvo
@@ -2150,17 +2150,25 @@ def run():
 
     # PASSO 3: Dedup por nome dos times (mesmo jogo de APIs diferentes)
     jogos_dedup = []
-    vistos_jogos = set()
+    vistos_jogos = {}
     for j in jogos_na_janela:
         # Normaliza pra mesma chave entre APIs
         hn_j = re.sub(r'\b(RJ|SP|MG|RS|PR|SC|BA|PE|CE|GO|MT|MS|DF|ES|RN|PB|AL|SE|PI|MA|PA|AM|AC|RO|RR|AP|TO|FR|FC|AC|EC|SE|CF)\b', '', j["home"].lower()).strip()
         an_j = re.sub(r'\b(RJ|SP|MG|RS|PR|SC|BA|PE|CE|GO|MT|MS|DF|ES|RN|PB|AL|SE|PI|MA|PA|AM|AC|RO|RR|AP|TO|FR|FC|AC|EC|SE|CF)\b', '', j["away"].lower()).strip()
         chave = (hn_j, an_j)
         if chave not in vistos_jogos:
-            vistos_jogos.add(chave)
+            vistos_jogos[chave] = j
             jogos_dedup.append(j)
         else:
-            print(f"[DEDUP] ignorando duplicata de {j['home']} x {j['away']} ({j.get('source','?')})")
+            existente = vistos_jogos[chave]
+            # Se a duplicata é da ESPN (tem odds) e a existente NÃO é ESPN, substitui
+            if j.get("source") == "espn" and existente.get("source") != "espn":
+                vistos_jogos[chave] = j
+                idx = jogos_dedup.index(existente)
+                jogos_dedup[idx] = j
+                print(f"[DEDUP] substituido {existente['home']} x {existente['away']} ({existente.get('source','?')}) -> {j.get('source','?')} (ESPN tem odds)")
+            else:
+                print(f"[DEDUP] ignorando duplicata de {j['home']} x {j['away']} ({j.get('source','?')})")
     print(f"[Dedup] {len(jogos_na_janela)} -> {len(jogos_dedup)} jogos unicos")
     
     for j in jogos_dedup:
