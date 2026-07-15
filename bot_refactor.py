@@ -19,22 +19,7 @@ def analisar_e_disparar(game, stats, p, m, sh, sa, odd_h, odd_a, sent_vistos):
     # 1. OVER GOL INTERVALO (HT)
     if p == 1 and 15 <= m <= 27:
         if sh == 0 and sa == 0 and red_fav == 0:
-            alvo = stats.get("chutes_gol_h", 0) + stats.get("chutes_gol_a", 0) if stats else 2
-            atq_perig = stats.get("ataques_perigosos_h", 0) + stats.get("ataques_perigosos_a", 0) if stats else 15
-            chutes = stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0) if stats else 6
-            if alvo >= 1 and atq_perig >= 15 and chutes >= 6:
-                return "HT", "Over 0.5 Gols HT"
-
-    # 1B. OVER GOL PRESSÃO HT
-    if p == 1 and 15 <= m <= 27:
-        if sh == 0 and sa == 0 and red_fav == 0:
-            alvo = stats.get("chutes_gol_h", 0) + stats.get("chutes_gol_a", 0)
-            esc = stats.get("escanteios_h", 0) + stats.get("escanteios_a", 0)
-            atq_perig = stats.get("ataques_perigosos_h", 0) + stats.get("ataques_perigosos_a", 0)
-            chutes = stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0)
-            esc_ok = esc >= 2 or esc == -2  # -2 = soma de -1 + -1 (liga sem escanteio)
-            if alvo >= 2 and esc_ok and atq_perig >= 17 and chutes >= 8:
-                return "PRESS", "Over 0.5 Gols Pressão HT"
+            return "HT", "Over 0.5 Gols HT"
 
     # 2. OVER GOL PARTIDA (FT)
     if p == 2 and 55 <= m <= 75:
@@ -782,9 +767,7 @@ def _fetch_liga(liga_slug):
                 resultado.append({
                     "fid": eid, "home": home, "away": away,
                     "sh": sh, "sa": sa, "minuto": minuto,
-                    "period": period, "liga": liga, "liga_slug": liga_slug, "source": "espn",
-                    "home_id": str(home_t.get("team", {}).get("id", "")),
-                    "away_id": str(away_t.get("team", {}).get("id", ""))
+                    "period": period, "liga": liga, "liga_slug": liga_slug, "source": "espn"
                 })
             except:
                 continue
@@ -998,9 +981,7 @@ def get_jogos_bzzoiro(fids_existentes):
                 "fid": fid, "fid_raw": str(ev.get("id", "")),
                 "home": ev.get("home_team", ""), "away": ev.get("away_team", ""),
                 "sh": sh, "sa": sa, "minuto": minuto,
-                "period": period, "liga": liga_nome, "source": "bzzoiro",
-                "home_id": str(ev.get("home_team_id", "")),
-                "away_id": str(ev.get("away_team_id", ""))
+                "period": period, "liga": liga_nome, "source": "bzzoiro"
             })
         print(f"[APIF-v3] {len(jogos)} novos jogos (de {len(data)} totais)")
         return jogos
@@ -1086,9 +1067,7 @@ def get_jogos_apifootball_v3(fids_existentes):
                 "minuto": int(ev.get("match_status", 0) or 0),
                 "liga": ev.get("league_name", "") or ev.get("league", "") or ev.get("competition_name", "") or "Liga",
                 "period": 2 if (int(ev.get("match_status", 0) or 0) >= 45) else 1,
-                "source": "apifootball",
-                "home_id": ev.get("match_hometeam_id", ""),
-                "away_id": ev.get("match_awayteam_id", "")
+                "source": "apifootball"
             })
         print(f"[APIF-v3] {len(jogos)} novos jogos (de {len(data)} totais)")
         return jogos
@@ -1114,9 +1093,7 @@ def get_jogos_bzzoiro(fids_existentes):
                 "fid": fid, "fid_raw": str(ev.get("id", "")),
                 "home": ev.get("home_team", ""), "away": ev.get("away_team", ""),
                 "sh": sh, "sa": sa, "minuto": minuto,
-                "period": period, "liga": liga_nome, "source": "bzzoiro",
-                "home_id": str(ev.get("home_team_id", "")),
-                "away_id": str(ev.get("away_team_id", ""))
+                "period": period, "liga": liga_nome, "source": "bzzoiro"
             })
         print(f"[APIF-v3] {len(jogos)} novos jogos (de {len(data)} totais)")
         return jogos
@@ -1236,9 +1213,7 @@ def get_jogos_bzzoiro(fids_existentes):
                 "fid": fid, "fid_raw": str(ev.get("id", "")),
                 "home": ev.get("home_team", ""), "away": ev.get("away_team", ""),
                 "sh": sh, "sa": sa, "minuto": minuto,
-                "period": period, "liga": liga_nome, "source": "bzzoiro",
-                "home_id": str(ev.get("home_team_id", "")),
-                "away_id": str(ev.get("away_team_id", ""))
+                "period": period, "liga": liga_nome, "source": "bzzoiro"
             })
         print(f"[APIF-v3] {len(jogos)} novos jogos (de {len(data)} totais)")
         return jogos
@@ -1271,9 +1246,7 @@ def get_jogos_bzzoiro(fids_existentes):
                 "fid": fid, "fid_raw": str(ev.get("id", "")),
                 "home": ev.get("home_team", ""), "away": ev.get("away_team", ""),
                 "sh": sh, "sa": sa, "minuto": minuto,
-                "period": period, "liga": liga_nome, "source": "bzzoiro",
-                "home_id": str(ev.get("home_team_id", "")),
-                "away_id": str(ev.get("away_team_id", ""))
+                "period": period, "liga": liga_nome, "source": "bzzoiro"
             })
         print(f"[Bzzoiro] {len(jogos)} novos jogos")
         return jogos
@@ -1812,16 +1785,6 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, minuto, cantos_atual=0):
                 return f"Pressão ofensiva sustentada ({total_atq_perig} atq. perigosos){vermelho}"
             return f"Pressão ofensiva contínua ({total_atq_perig} ataques perigosos){vermelho}"
 
-    if mercado == "PRESS":
-        alvo = stats.get("chutes_gol_h", 0) + stats.get("chutes_gol_a", 0) if stats else 0
-        esc = stats.get("escanteios_h", 0) + stats.get("escanteios_a", 0) if stats else 0
-        atq = atq_perig_h + atq_perig_a
-        chutes = total_chutes
-        esc_ok = esc >= 2 or esc == -2
-        if alvo >= 2 and esc_ok and atq >= 17 and chutes >= 8:
-            return f"Pressão total! {chutes} chutes, {alvo} no alvo, {atq} atq. perigosos — jogo pede gol{vermelho}"
-        return f"Pressão: {chutes} chutes, {alvo} no alvo, {atq} atq. perigosos{vermelho}"
-
     if mercado == "HT":
         if chutes_gol_h >= 2 or chutes_gol_a >= 2:
             return f"Ambas finalizando no alvo ({chutes_gol_h}x{chutes_gol_a}) — gol no 1º tempo iminente{vermelho}"
@@ -1951,17 +1914,15 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
         entrada = f"Mais de {linha}🚩"
 
     # Adiciona ⚽ na entrada para mercados de gol
-    if mercado in ("HT", "LIMITEHT", "VEMGOL1T", "BTTS", "OFT", "OVERGOAL", "PRESS"):
+    if mercado in ("HT", "LIMITEHT", "BTTS", "OFT", "OVERGOAL"):
         entrada = str(entrada).rstrip() + "⚽"
     
     titles = {
         "HT": "⚽️🔥OVER GOL INTERVALO🔥⚽️",
         "LIMITEHT": "⚽️🔥OVER GOL LIMITE HT🔥⚽️",
-        "VEMGOL1T": "⚽️🔥VEM GOL NO 1°TEMPO🔥⚽️",
         "BTTS": "⚽️🔥AMBAS MARCAM🔥⚽️",
         "OFT": "⚽️🔥OVER 1.5 GOLS PARTIDA🔥⚽️",
         "OVERGOAL": "⚽️🔥OVER GOL PARTIDA🔥⚽️",
-        "PRESS": "⚽️🔥OVER GOL PRESSÃO HT🔥⚽️",
         "CORNER_HT": "🚩🔥ESCANTEIO LIMITE HT🔥🚩",
         "CORNER_FT": "🚩🔥ESCANTEIO LIMITE FT🔥🚩",
     }
@@ -2068,7 +2029,7 @@ def checar_resultado(sinal):
         is_final = (state == "post")
         is_2h    = (state == "in" and int(status.get("period", 0)) >= 2)
         
-        if not (is_final or (mercado in ["HT", "LIMITEHT", "VEMGOL1T", "PRESS", "CORNER_HT"] and is_2h)):
+        if not (is_final or (mercado in ["HT", "LIMITEHT", "CORNER_HT"] and is_2h)):
             return None
 
         # Placar Final (ou atual se is_2h)
@@ -2090,7 +2051,7 @@ def checar_resultado(sinal):
         total_ht = gh_ht + ga_ht
 
         # Lógica por Mercado
-        if mercado in ["HT", "LIMITEHT", "VEMGOL1T"]:
+        if mercado in ["HT", "LIMITEHT"]:
             return "green" if total_ht >= 1 else ("red" if (is_2h or is_final) else None)
         
         elif mercado == "BTTS":
@@ -2221,169 +2182,7 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
     except Exception as e:
         print(f"[CMD] Erro ao processar comandos: {e}")
 
-
-# Cache de histórico de times (evita consultas repetidas no mesmo ciclo)
-HISTORICO_CACHE = {}
-
-def get_team_ht_stats(team_id, team_name):
-    """Retorna stats de HT dos últimos 10 jogos do time via apifootball."""
-    if team_id in HISTORICO_CACHE:
-        return HISTORICO_CACHE[team_id]
-    try:
-        params = {
-            "action": "get_events",
-            "from": (datetime.now(BRT) - timedelta(days=45)).strftime("%Y-%m-%d"),
-            "to": datetime.now(BRT).strftime("%Y-%m-%d"),
-            "team_id": team_id,
-            "APIkey": APIFOOTBALL_COM_KEY
-        }
-        r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
-        data = r.json()
-        if not isinstance(data, list):
-            HISTORICO_CACHE[team_id] = None
-            return None
-        jogos = [j for j in data if j.get('match_status') == 'Finished' and (str(j.get('match_hometeam_id','')) == str(team_id) or str(j.get('match_awayteam_id','')) == str(team_id))]
-        jogos = jogos[-10:]
-        if not jogos:
-            HISTORICO_CACHE[team_id] = None
-            return None
-        total_partidas = len(jogos)
-        gols_ht = 0
-        total_gols = 0
-        ambas_marcam = 0
-        for j in jogos:
-            try:
-                ht_h = int(j.get('match_hometeam_halftime_score', 0) or 0)
-                ht_a = int(j.get('match_awayteam_halftime_score', 0) or 0)
-                ft_h = int(j.get('match_hometeam_score', 0) or 0)
-                ft_a = int(j.get('match_awayteam_score', 0) or 0)
-                if ht_h + ht_a > 0:
-                    gols_ht += 1
-                total_gols += ft_h + ft_a
-                if ft_h > 0 and ft_a > 0:
-                    ambas_marcam += 1
-            except:
-                continue
-        result = {
-            "pct_ht": round(gols_ht / total_partidas * 100, 1),
-            "gols_ht": gols_ht,
-            "total_parts": total_partidas,
-            "media_gols": round(total_gols / total_partidas, 1) if total_partidas > 0 else 0,
-            "pct_bt": round(ambas_marcam / total_partidas * 100, 1) if total_partidas > 0 else 0
-        }
-        HISTORICO_CACHE[team_id] = result
-        return result
-    except Exception as e:
-        print(f"[HT-HIST] Erro ao buscar histórico do time {team_name} (id={team_id}): {e}")
-        HISTORICO_CACHE[team_id] = None
-        return None
-
-
-def get_team_ht_stats_espn(team_id, team_name):
-    """Fallback: últimos jogos do time via ESPN (só placar final, sem gols HT)."""
-    cache_key = f"espn_{team_id}"
-    if cache_key in HISTORICO_CACHE:
-        return HISTORICO_CACHE[cache_key]
-    try:
-        url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/{team_id}/schedule?season=2026"
-        r = requests.get(url, timeout=8)
-        if r.status_code != 200:
-            HISTORICO_CACHE[cache_key] = None
-            return None
-        data = r.json()
-        events = data.get("events", [])
-        jogos_ft = []
-        for e in events:
-            comp = e.get("competitions", [{}])[0]
-            status = comp.get("status", {}).get("type", {}).get("name", "")
-            if "FULL_TIME" not in status:
-                continue
-            teams = comp.get("competitors", [])
-            if len(teams) < 2:
-                continue
-            sh = int(teams[0].get("score", 0) or 0)
-            sa = int(teams[1].get("score", 0) or 0)
-            if sh > 0 or sa > 0:
-                jogos_ft.append((sh, sa))
-        jogos_ft = jogos_ft[-10:]
-        if not jogos_ft:
-            HISTORICO_CACHE[cache_key] = None
-            return None
-        total = len(jogos_ft)
-        total_gols = sum(sh + sa for sh, sa in jogos_ft)
-        ambas = sum(1 for sh, sa in jogos_ft if sh > 0 and sa > 0)
-        result = {
-            "pct_ht": 50,
-            "media_gols": round(total_gols / total, 1),
-            "pct_bt": round(ambas / total * 100, 1),
-            "total_parts": total,
-            "_fonte": "ESPN"
-        }
-        HISTORICO_CACHE[cache_key] = result
-        return result
-    except Exception as e:
-        print(f"[ESPN-HIST] {team_name} ({team_id}): {e}")
-        HISTORICO_CACHE[cache_key] = None
-        return None
-
-
-def get_team_ht_stats_bzzoiro(team_id, team_name):
-    """Fallback: histórico via Bzzoiro (tem score HT!)."""
-    cache_key = f"bzz_{team_id}"
-    if cache_key in HISTORICO_CACHE:
-        return HISTORICO_CACHE[cache_key]
-    try:
-        headers = {"Authorization": "Token " + BZZOIRO_TOKEN}
-        url = f"https://sports.bzzoiro.com/api/v2/events/?status=finished&home_team_id={team_id}&limit=20"
-        r = requests.get(url, headers=headers, timeout=10)
-        if r.status_code != 200:
-            url = f"https://sports.bzzoiro.com/api/v2/events/?status=finished&away_team_id={team_id}&limit=20"
-            r = requests.get(url, headers=headers, timeout=10)
-            if r.status_code != 200:
-                HISTORICO_CACHE[cache_key] = None
-                return None
-        data = r.json()
-        results = data.get("results", [])
-        if not results:
-            HISTORICO_CACHE[cache_key] = None
-            return None
-        jogos = [j for j in results if j.get("home_score") is not None and j.get("away_score") is not None]
-        jogos = jogos[-10:]
-        if not jogos:
-            HISTORICO_CACHE[cache_key] = None
-            return None
-        total = len(jogos)
-        gols_ht = 0
-        total_gols = 0
-        ambas = 0
-        for j in jogos:
-            ht_h = int(j.get("home_score_ht", 0) or 0)
-            ht_a = int(j.get("away_score_ht", 0) or 0)
-            ft_h = int(j.get("home_score", 0) or 0)
-            ft_a = int(j.get("away_score", 0) or 0)
-            if ht_h + ht_a > 0:
-                gols_ht += 1
-            total_gols += ft_h + ft_a
-            if ft_h > 0 and ft_a > 0:
-                ambas += 1
-        result = {
-            "pct_ht": round(gols_ht / total * 100, 1),
-            "media_gols": round(total_gols / total, 1),
-            "pct_bt": round(ambas / total * 100, 1),
-            "total_parts": total,
-            "_fonte": "Bzzoiro"
-        }
-        print(f"[BZZ-HIST] {team_name} ({team_id}): {result}")
-        HISTORICO_CACHE[cache_key] = result
-        return result
-    except Exception as e:
-        print(f"[BZZ-HIST] {team_name} ({team_id}): {e}")
-        HISTORICO_CACHE[cache_key] = None
-        return None
-
-
 # ═══════════════════════════════════════════════════════════════════════════════
-# LOOP PRINCIPAL
 # LOOP PRINCIPAL
 # ═══════════════════════════════════════════════════════════════════════════════
 def run():
@@ -2430,14 +2229,8 @@ def run():
     vistos_jogos = {}
     for j in jogos_na_janela:
         # Normaliza pra mesma chave entre APIs
-        hn_raw = unicodedata.normalize('NFKD', j["home"]).encode('ascii', 'ignore').decode().lower()
-        an_raw = unicodedata.normalize('NFKD', j["away"]).encode('ascii', 'ignore').decode().lower()
-        hn_raw = re.sub(r'[^a-z0-9\s]', '', hn_raw)  # remove pontuação: F.C. -> FC
-        an_raw = re.sub(r'[^a-z0-9\s]', '', an_raw)
-        hn_j = re.sub(r'\b(rj|sp|mg|rs|pr|sc|ba|pe|ce|go|mt|ms|df|es|rn|pb|al|se|pi|ma|pa|am|ac|ro|rr|ap|to|fr|fc|ac|ec|se|cf)\b', '', hn_raw).strip()
-        an_j = re.sub(r'\b(rj|sp|mg|rs|pr|sc|ba|pe|ce|go|mt|ms|df|es|rn|pb|al|se|pi|ma|pa|am|ac|ro|rr|ap|to|fr|fc|ac|ec|se|cf)\b', '', an_raw).strip()
-        hn_j = re.sub(r'\s+', ' ', hn_j)
-        an_j = re.sub(r'\s+', ' ', an_j)
+        hn_j = re.sub(r'\b(RJ|SP|MG|RS|PR|SC|BA|PE|CE|GO|MT|MS|DF|ES|RN|PB|AL|SE|PI|MA|PA|AM|AC|RO|RR|AP|TO|FR|FC|AC|EC|SE|CF)\b', '', j["home"].lower()).strip()
+        an_j = re.sub(r'\b(RJ|SP|MG|RS|PR|SC|BA|PE|CE|GO|MT|MS|DF|ES|RN|PB|AL|SE|PI|MA|PA|AM|AC|RO|RR|AP|TO|FR|FC|AC|EC|SE|CF)\b', '', j["away"].lower()).strip()
         chave = (hn_j, an_j)
         if chave not in vistos_jogos:
             vistos_jogos[chave] = j
@@ -2458,14 +2251,8 @@ def run():
         fid    = j["fid"]
         h, a   = j["home"], j["away"]
         # Normaliza nomes pra chave estável entre APIs diferentes
-        hn_raw = unicodedata.normalize('NFKD', h).encode('ascii', 'ignore').decode().lower()
-        an_raw = unicodedata.normalize('NFKD', a).encode('ascii', 'ignore').decode().lower()
-        hn_raw = re.sub(r'[^a-z0-9\s]', '', hn_raw)
-        an_raw = re.sub(r'[^a-z0-9\s]', '', an_raw)
-        hn = re.sub(r'\b(rj|sp|mg|rs|pr|sc|ba|pe|ce|go|mt|ms|df|es|rn|pb|al|se|pi|ma|pa|am|ac|ro|rr|ap|to|fr|fc|ac|ec|se|cf)\b', '', hn_raw).strip()
-        an = re.sub(r'\b(rj|sp|mg|rs|pr|sc|ba|pe|ce|go|mt|ms|df|es|rn|pb|al|se|pi|ma|pa|am|ac|ro|rr|ap|to|fr|fc|ac|ec|se|cf)\b', '', an_raw).strip()
-        hn = re.sub(r'\s+', ' ', hn)
-        an = re.sub(r'\s+', ' ', an)
+        hn = re.sub(r'\b(RJ|SP|MG|RS|PR|SC|BA|PE|CE|GO|MT|MS|DF|ES|RN|PB|AL|SE|PI|MA|PA|AM|AC|RO|RR|AP|TO|FR|FC|AC|EC|SE|CF)\b', '', h.lower()).strip()
+        an = re.sub(r'\b(RJ|SP|MG|RS|PR|SC|BA|PE|CE|GO|MT|MS|DF|ES|RN|PB|AL|SE|PI|MA|PA|AM|AC|RO|RR|AP|TO|FR|FC|AC|EC|SE|CF)\b', '', a.lower()).strip()
         dedup_id = hashlib.md5(f"{hn}-{an}".encode()).hexdigest()[:12]
         m, p   = j["minuto"], j["period"]
         sh, sa = j["sh"], j["sa"]
@@ -2487,10 +2274,8 @@ def run():
                 sa3 = get_stats_apifootball_v3(fid_raw)
                 if isinstance(sa3, dict): stats_apif = sa3
             except: pass
-        # Fallback: busca por nome dos times SOMENTE se apifootball nao retornou NADA
-        if not stats_apif or all(
-            stats_apif.get(c, 0) == 0 for c in ["chutes_tot_h","chutes_tot_a","escanteios_h","escanteios_a"]
-        ):
+        # Fallback: busca por nome dos times se o ID falhar (apifootball cobre 700+ ligas)
+        if not stats_apif or not (stats_apif.get("escanteios_h", -1) >= 0 and stats_apif.get("escanteios_a", -1) >= 0):
             try:
                 sa_name = get_stats_apifootball_by_name(h, a)
                 if isinstance(sa_name, dict) and sa_name.get("escanteios_h", -1) >= 0:
@@ -2521,7 +2306,7 @@ def run():
 
         stats = {}
         for src_nome, src in [("apifootball", stats_apif), ("ESPN", stats_espn), ("Bzzoiro", stats_bzz)]:
-            for campo in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a","red_cards_h","red_cards_a","posse_h","posse_a","ataques_h","ataques_a","ataques_perigosos_h","ataques_perigosos_a"]:
+            for campo in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a","escanteios_h","escanteios_a","red_cards_h","red_cards_a","posse_h","posse_a","ataques_h","ataques_a","ataques_perigosos_h","ataques_perigosos_a"]:
                 if campo not in src:
                     continue
                 val = src[campo]
@@ -2534,45 +2319,10 @@ def run():
                 elif current == 0 and val > 0:
                     stats[campo] = val
                     stats["_fonte_"+campo] = src_nome
-
-        # === ESCANTEIOS: apifootball é a fonte da verdade ===
-        # Só usa Bzzoiro em último caso, com validação ultra restritiva
-        esc_h, esc_a = -1, -1
-        esc_fonte = None
-
-        # Nível 1: apifootball (fonte da verdade)
-        if stats_apif.get("escanteios_h", -1) >= 0 and stats_apif.get("escanteios_a", -1) >= 0:
-            esc_h, esc_a = stats_apif["escanteios_h"], stats_apif["escanteios_a"]
-            esc_fonte = "apifootball"
-            print(f"[ESC] apifootball: {esc_h}x{esc_a}")
-
-        # Nível 2: ESPN (só se apifootball falhou)
-        if esc_fonte is None and stats_espn.get("escanteios_h", -1) >= 0 and stats_espn.get("escanteios_a", -1) >= 0:
-            esc_h, esc_a = stats_espn["escanteios_h"], stats_espn["escanteios_a"]
-            esc_fonte = "ESPN"
-            print(f"[ESC] ESPN: {esc_h}x{esc_a}")
-
-        # Nível 3: Bzzoiro SÓ se for a única opção E passar sanity de 1 corner/10min
-        if esc_fonte is None and stats_bzz.get("escanteios_h", -1) >= 0 and stats_bzz.get("escanteios_a", -1) >= 0:
-            total_bzz = stats_bzz["escanteios_h"] + stats_bzz["escanteios_a"]
-            max_esc = max(1, int(m / 10))  # 1 corner a cada 10 min (média real)
-            if total_bzz <= max_esc:
-                esc_h, esc_a = stats_bzz["escanteios_h"], stats_bzz["escanteios_a"]
-                esc_fonte = "Bzzoiro"
-                print(f"[ESC] Bzzoiro (aprovado sanity): {esc_h}x{esc_a} total {total_bzz} <= {max_esc}")
-            else:
-                print(f"[ESC] Bzzoiro REJEITADO: {stats_bzz['escanteios_h']}x{stats_bzz['escanteios_a']} (total {total_bzz}) > max {max_esc} no min {m}")
-
-        if esc_fonte:
-            stats["escanteios_h"] = esc_h
-            stats["escanteios_a"] = esc_a
-            stats["_fonte_escanteios"] = esc_fonte
-        else:
-            stats.setdefault("escanteios_h", -1)
-            stats.setdefault("escanteios_a", -1)
-
         for k in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a"]:
             stats.setdefault(k, 0)
+        for k in ["escanteios_h","escanteios_a"]:
+            stats.setdefault(k, -1)
         for k in ["red_cards_h","red_cards_a"]:
             stats.setdefault(k, 0)
         print(f"[STATS-FUSION] {h} x {a} | chutes: {stats.get('chutes_tot_h',0)}/{stats.get('chutes_tot_a',0)} | cantos: {stats.get('escanteios_h',-1)}/{stats.get('escanteios_a',-1)}")
@@ -2674,101 +2424,28 @@ def run():
         _appm_total = round(_apt_val / m, 2) if m > 0 else 0
         _appm_h = round(_aph_val / m, 2) if m > 0 else 0
         _appm_a = round(_apa_val / m, 2) if m > 0 else 0
-        # PPM seletiva por repositório
-        # maquina-de-greens-bot (Grupo GITHUB): PPM ativa (0.7/time ou 1.40 total)
+        # APPM seletiva por repositório
+        # maquina-de-greens-bot (Grupo GITHUB): APPM ativo (casa ≥ 0.7 OU fora ≥ 0.7 OU total ≥ 1.4)
         # boot-ia-inteligente-bot (Grupo ZAPIA): livre
-        REPO_ATUAL = os.environ.get("GITHUB_REPOSITORY", "")
-        if "maquina-de-greens" in REPO_ATUAL:
-            appm_valido = _appm_total >= 1.4 and (_appm_h >= 0.7 or _appm_a >= 0.7)
+        _repo_atual = os.environ.get("GITHUB_REPOSITORY", "")
+        if "maquina-de-greens" in _repo_atual:
+            appm_valido = _appm_h >= 0.7 or _appm_a >= 0.7 or _appm_total >= 1.4
             if not appm_valido:
-                print(f"[PPM-BLOQUEADO] {h} x {a} — PPM total={_appm_total} casa={_appm_h} fora={_appm_a} (mín 1.40 total e 0.7 casa/fora)")
+                print(f"[APPM-BLOQUEADO] {h} x {a} — APPM casa={_appm_h} fora={_appm_a} total={_appm_total} (mín: 0.7/time ou 1.4 total)")
         else:
             appm_valido = True
 
-        # === FILTRO HISTÓRICO (média de gols dos times nos últimos 10 jogos) ===
-        hist_ok_ht = True
-        hist_ok_ft = True
-        try:
-            home_id = str(j.get("home_id", ""))
-            away_id = str(j.get("away_id", ""))
-            source = j.get("source", "")
-            if home_id and away_id and home_id != "None" and away_id != "None":
-                # Tenta apifootball primeiro (fonte principal)
-                hist_h = get_team_ht_stats(home_id, h)
-                hist_a = get_team_ht_stats(away_id, a)
-                # Fallback 1: ESPN
-                if not hist_h or not hist_a:
-                    if source == "espn":
-                        if not hist_h: hist_h = get_team_ht_stats_espn(home_id, h)
-                        if not hist_a: hist_a = get_team_ht_stats_espn(away_id, a)
-                    if not hist_h or not hist_a:
-                        if not hist_h: hist_h = get_team_ht_stats_bzzoiro(home_id, h)
-                        if not hist_a: hist_a = get_team_ht_stats_bzzoiro(away_id, a)
-                # Fallback 2: Bzzoiro
-                if not hist_h or not hist_a:
-                    if source == "bzzoiro":
-                        if not hist_h: hist_h = get_team_ht_stats_bzzoiro(home_id, h)
-                        if not hist_a: hist_a = get_team_ht_stats_bzzoiro(away_id, a)
-                if hist_h and hist_a:
-                    pct_ht_h = hist_h.get("pct_ht", 0)
-                    pct_ht_a = hist_a.get("pct_ht", 0)
-                    media_h = hist_h.get("media_gols", 0)
-                    media_a = hist_a.get("media_gols", 0)
-                    media_combinada = (media_h + media_a) / 2
-                    pct_bt_h = hist_h.get("pct_bt", 0)
-                    pct_bt_a = hist_a.get("pct_bt", 0)
-                    pct_bt_media = (pct_bt_h + pct_bt_a) / 2
-                    print(f"[HIST] {h} x {a} | média_gols={media_combinada:.1f} | pct_ht: {pct_ht_h}%/{pct_ht_a}% | pct_bt: {pct_bt_h}%/{pct_bt_a}%")
-                    # HT: pelo menos um time com ≥ 40% de gols no 1º tempo nos últimos 10 jogos
-                    hist_ok_ht = (pct_ht_h >= 40 or pct_ht_a >= 40)
-                    # FT: média combinada ≥ 2.0 gols/jogo E média BTTS ≥ 25%
-                    hist_ok_ft = (media_combinada >= 2.0 and pct_bt_media >= 25)
-                    if not hist_ok_ht:
-                        print(f"[HIST-BLOQ-HT] {h} x {a} — pct_ht baixo ({pct_ht_h}%/{pct_ht_a}%), pulando mercados HT")
-                    if not hist_ok_ft:
-                        print(f"[HIST-BLOQ-FT] {h} x {a} — média {media_combinada:.1f}/BTTS {pct_bt_media:.0f}% abaixo do mínimo, pulando mercados FT")
-                else:
-                    print(f"[HIST] {h} x {a} — sem histórico disponível (times sem dados)")
-            else:
-                print(f"[HIST] {h} x {a} — sem IDs dos times (fonte: {j.get('source','?')})")
-        except Exception as e:
-            print(f"[HIST] {h} x {a} — erro no filtro histórico: {e}")
+        # MERCADO 1: OVER 0.5 HT (10-26 min, 0x0, favorito empatando, sem vermelho do fav)
+        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0 and appm_valido:
+            hoje = datetime.now(BRT).strftime('%Y%m%d')
+            key = f"{dedup_id}_ht_{hoje}"
+            if key not in sent:
+                mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a), marca=key, home=h, away=a)
+                if mid:
+                    sent.add(key); total_env += 1
+                    registrar_sinal(fid, "HT", h, a, mid)
 
-        # MERCADO 1: OVER 0.5 HT (15-27 min, 0x0, favorito empatando, sem vermelho do fav, critérios mínimos de pressão)
-        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0 and appm_valido and hist_ok_ht:
-            if stats:
-                alvo_ht = stats.get("chutes_gol_h", 0) + stats.get("chutes_gol_a", 0)
-                atq_perig_ht = stats.get("ataques_perigosos_h", 0) + stats.get("ataques_perigosos_a", 0)
-                chutes_ht = stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0)
-            else:
-                alvo_ht, atq_perig_ht, chutes_ht = 1, 15, 6
-            if alvo_ht >= 1 and atq_perig_ht >= 15 and chutes_ht >= 6:
-                hoje = datetime.now(BRT).strftime('%Y%m%d')
-                key = f"{dedup_id}_ht_{hoje}"
-                if key not in sent:
-                    mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a), marca=key, home=h, away=a)
-                    if mid:
-                        sent.add(key); total_env += 1
-                        registrar_sinal(fid, "HT", h, a, mid)
-
-        # MERCADO 1B: OVER GOL PRESSÃO HT (15-27 min, 0x0, sem vermelho, critérios de pressão)
-        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and red_fav == 0 and hist_ok_ht:
-            if stats:
-                alvo = stats.get("chutes_gol_h", 0) + stats.get("chutes_gol_a", 0)
-                esc = stats.get("escanteios_h", 0) + stats.get("escanteios_a", 0)
-                atq_perig = stats.get("ataques_perigosos_h", 0) + stats.get("ataques_perigosos_a", 0)
-                chutes = stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0)
-                esc_ok = esc >= 2 or esc == -2
-                if alvo >= 2 and esc_ok and atq_perig >= 17 and chutes >= 8:
-                    hoje = datetime.now(BRT).strftime('%Y%m%d')
-                    key = f"{dedup_id}_press_{hoje}"
-                    if key not in sent:
-                        mid = send_telegram(msg_universal(h, a, m, liga, 3, "PRESS", "Over 0.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a), marca=key, home=h, away=a)
-                        if mid:
-                            sent.add(key); total_env += 1
-                            registrar_sinal(fid, "PRESS", h, a, mid)
-
-        # MERCADO 1C: OVER GOL LIMITE HT (15-27 min, 0x0, odd fav ≤ 1.50, prob 1.5 FT ≥ 75%, prob 0.5 HT ≥ 65%, APPM casa/fora ≥ 1)
+        # MERCADO 1B: OVER GOL LIMITE HT (15-27 min, 0x0, odd fav ≤ 1.50, prob 1.5 FT ≥ 75%, prob 0.5 HT ≥ 65%, APPM casa/fora ≥ 1)
         if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and red_fav == 0:
             odd_fav_num = get_odd_favorito_num(h, a, fid=fid, league=j.get("liga_slug", j.get("liga", "")))
             
@@ -2783,14 +2460,14 @@ def run():
             prob_15_ft, prob_05_ht = calcular_prob_gols_ht(chutes_tot_total, chutes_gol_total, m)
             
             # Fallback: se não tem stats de chutes nem ataques, usa odd do favorito como proxy
-            if chutes_tot_total == 0 and (odd_fav_num <= 1.50 or odd_fav_num >= 90):
+            if chutes_tot_total == 0 and odd_fav_num <= 1.50:
                 prob_15_ft = max(prob_15_ft, 80)
                 prob_05_ht = max(prob_05_ht, 70)
                 if not appm_ht_ok and _aph_val == 0 and _apa_val == 0:
                     appm_ht_ok = True
             
             print(f"[LIMITE-HT] {h} x {a} | odd_fav={odd_fav_num} | prob_15ft={prob_15_ft}% | prob_05ht={prob_05_ht}% | appm_casa={appm_casa} appm_fora={appm_fora}")
-            if (odd_fav_num <= 1.50 and prob_15_ft >= 75 and prob_05_ht >= 65 and appm_ht_ok and appm_valido and hist_ok_ht):
+            if (odd_fav_num <= 1.50 and prob_15_ft >= 75 and prob_05_ht >= 65 and appm_ht_ok and appm_valido):
                 hoje = datetime.now(BRT).strftime('%Y%m%d')
                 key = f"{dedup_id}_limiteht_{hoje}"
                 if key not in sent:
@@ -2799,9 +2476,8 @@ def run():
                         sent.add(key); total_env += 1
                         registrar_sinal(fid, "LIMITEHT", h, a, mid)
 
-
         # MERCADO 2: AMBAS MARCAM BTTS (55-75 min, fav perdendo por 1, sem vermelho do fav)
-        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido and hist_ok_ft:
+        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_btts_{hoje}"
             if key not in sent:
@@ -2811,7 +2487,7 @@ def run():
                     registrar_sinal(fid, "BTTS", h, a, mid)
 
         # MERCADO 3: OVER 1.5 FT (55-75 min, fav empatando ou perdendo por 1, placares: 0x0/1x0/0x1/1x1, sem vermelho do fav)
-        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido and hist_ok_ft:
+        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_oft_{hoje}"
             if key not in sent:
@@ -2822,7 +2498,7 @@ def run():
 
         # MERCADO 4: OVER GOL PARTIDA (55-75 min, placares 0x0/1x1/0x1/1x0, favorito empatando ou perdendo por 1)
         overgoal_valido = (fav_empatando or fav_perdendo_1)
-        if p == 2 and 55 <= m <= 75 and overgoal_valido and red_fav == 0 and appm_valido and hist_ok_ft:
+        if p == 2 and 55 <= m <= 75 and overgoal_valido and red_fav == 0 and appm_valido:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_overgoal_{hoje}"
             # Linha dinâmica: sempre acima do total de gols atual
