@@ -1185,7 +1185,9 @@ def get_jogos_apifootball_v3(fids_existentes):
                 "minuto": minuto,
                 "liga": liga_nome,
                 "period": 2 if minuto >= 45 else 1,
-                "source": "apifootball"
+                "source": "apifootball",
+                "home_id": str(ev.get("match_hometeam_id", "")),
+                "away_id": str(ev.get("match_awayteam_id", ""))
             })
         print(f"[APIF-v3] {len(jogos)} novos jogos (de {len(data)} totais)")
         return jogos
@@ -2183,6 +2185,52 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
         print(f"[CMD] Erro ao processar comandos: {e}")
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# HISTÓRICO — Média de gols (usando H2H da apifootball)
+# ═══════════════════════════════════════════════════════════════════════════════
+_HIST_CACHE = {}
+def get_media_gols_historica(home_id, away_id):
+    """Retorna a média de gols por partida (jogo todo) dos últimos 10 jogos de cada time.
+    Usa a API H2H da apifootball. Cache em memória pra evitar chamadas repetidas."""
+    chave = f"{home_id}_{away_id}"
+    if chave in _HIST_CACHE:
+        return _HIST_CACHE[chave]
+
+    if not home_id or not away_id or home_id == "" or away_id == "":
+        _HIST_CACHE[chave] = -1.0
+        return -1.0
+
+    try:
+        params = {"action": "get_H2H", "firstTeamId": home_id, "secondTeamId": away_id, "APIkey": APIFOOTBALL_COM_KEY}
+        r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
+        data = r.json()
+        if not isinstance(data, dict):
+            _HIST_CACHE[chave] = 0.0
+            return 0.0
+
+        # Junta todos os resultados dos dois times
+        todos_jogos = []
+        for chave_lista in ["firstTeam_lastResults", "secondTeam_lastResults"]:
+            lista = data.get(chave_lista, [])
+            if isinstance(lista, list):
+                for j in lista:
+                    try:
+                        ph = int(j.get("match_hometeam_score", 0) or 0)
+                        pa = int(j.get("match_awayteam_score", 0) or 0)
+                        todos_jogos.append(ph + pa)
+                    except: pass
+
+        if len(todos_jogos) < 4:
+            _HIST_CACHE[chave] = 0.0
+            return 0.0
+
+        media = round(sum(todos_jogos) / len(todos_jogos), 1)
+        _HIST_CACHE[chave] = media
+        return media
+    except:
+        _HIST_CACHE[chave] = 0.0
+        return 0.0
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # LOOP PRINCIPAL
 # ═══════════════════════════════════════════════════════════════════════════════
 def run():
@@ -2435,8 +2483,19 @@ def run():
         else:
             appm_valido = True
 
-        # MERCADO 1: OVER 0.5 HT (10-26 min, 0x0, favorito empatando, sem vermelho do fav)
-        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0 and appm_valido:
+        # HISTÓRICO — Média de gols por partida (jogo todo) ≥ 2.0
+        # Req. para: Over Gol HT, Over Gol FT e BTTS
+        home_id = j.get("home_id", "")
+        away_id = j.get("away_id", "")
+        media_hist = 0.0
+        if home_id and away_id:
+            media_hist = get_media_gols_historica(home_id, away_id)
+        hist_ok = media_hist < 0 or media_hist >= 2.0  # -1 = sem dados históricos (não bloqueia)
+        if not hist_ok:
+            print(f"[HIST-BLOQUEADO] {h} x {a} — média {media_hist:.1f} < 2.0, pulando mercados de gol")
+
+        # MERCADO 1: OVER 0.5 HT (15-27 min, 0x0, favorito empatando, sem vermelho do fav, média hist ≥ 2.0)
+        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0 and appm_valido and hist_ok:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_ht_{hoje}"
             if key not in sent:
@@ -2476,8 +2535,8 @@ def run():
                         sent.add(key); total_env += 1
                         registrar_sinal(fid, "LIMITEHT", h, a, mid)
 
-        # MERCADO 2: AMBAS MARCAM BTTS (55-75 min, fav perdendo por 1, sem vermelho do fav)
-        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido:
+        # MERCADO 2: AMBAS MARCAM BTTS (55-75 min, fav perdendo por 1, sem vermelho do fav, média hist ≥ 2.0)
+        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido and hist_ok:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_btts_{hoje}"
             if key not in sent:
@@ -2496,9 +2555,9 @@ def run():
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "OFT", h, a, mid)
 
-        # MERCADO 4: OVER GOL PARTIDA (55-75 min, placares 0x0/1x1/0x1/1x0, favorito empatando ou perdendo por 1)
+        # MERCADO 4: OVER GOL PARTIDA (55-75 min, placares 0x0/1x1/0x1/1x0, favorito empatando ou perdendo por 1, média hist ≥ 2.0)
         overgoal_valido = (fav_empatando or fav_perdendo_1)
-        if p == 2 and 55 <= m <= 75 and overgoal_valido and red_fav == 0 and appm_valido:
+        if p == 2 and 55 <= m <= 75 and overgoal_valido and red_fav == 0 and appm_valido and hist_ok:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_overgoal_{hoje}"
             # Linha dinâmica: sempre acima do total de gols atual
