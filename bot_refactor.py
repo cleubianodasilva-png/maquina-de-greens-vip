@@ -1968,7 +1968,7 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
         + "<b>⚠️ Alerta:</b> <b>" + alerta + "</b>\n"
         + sep + "\n"
         + "📌 Entrada: <b>" + str(entrada) + "</b>\n"
-        + "<b>🔧 ODD Recomendada:</b> <b>1.70+</b>\n"
+        + "<b>💰 ODD Recomendada:</b> <b>1.70+</b>\n"
         + sep + "\n"
         + "⚠️ <b>Jogue com responsabilidade</b> ⚠️"
     )
