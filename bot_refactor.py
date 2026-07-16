@@ -1553,10 +1553,20 @@ def get_favorito_odds(home, away, fid=None, league=None):
                                      "APIkey": APIFOOTBALL_COM_KEY}, timeout=8)
             odds_data = r.json()
             if isinstance(odds_data, list) and odds_data:
-                odd = odds_data[0]
+                # Prioridade: Bet365 > Betano > qualquer outra
+                odd_ml = None
+                for bk_alvo in ("bet365", "betano"):
+                    for od in odds_data:
+                        if str(od.get("odd_bookmakers", "")).lower() == bk_alvo:
+                            odd_ml = od
+                            break
+                    if odd_ml:
+                        break
+                if not odd_ml:
+                    odd_ml = odds_data[0]
                 try:
-                    odd_h = float(odd.get("odd_1", 0) or 0)
-                    odd_a = float(odd.get("odd_2", 0) or 0)
+                    odd_h = float(odd_ml.get("odd_1", 0) or 0)
+                    odd_a = float(odd_ml.get("odd_2", 0) or 0)
                     if odd_h > 1 and odd_a > 1:
                         fav = "h" if odd_h <= odd_a else "a"
                         print(f"[ODDS-APFC] {home} x {away} | Casa:{odd_h} Fora:{odd_a} → Fav:{fav}")
@@ -2379,8 +2389,18 @@ def run():
                                  params={"action": "get_odds", "match_id": fid_raw, "APIkey": APIFOOTBALL_COM_KEY}, timeout=8)
                 odds_data = r_odd.json()
                 if isinstance(odds_data, list) and odds_data:
-                    odd = odds_data[0]
-                    odd_h, odd_a = float(odd.get("odd_1", 0)), float(odd.get("odd_2", 0))
+                    # Prioridade: Bet365 > Betano > qualquer outra
+                    odd_ml = None
+                    for bk_alvo in ("bet365", "betano"):
+                        for od in odds_data:
+                            if str(od.get("odd_bookmakers", "")).lower() == bk_alvo:
+                                odd_ml = od
+                                break
+                        if odd_ml:
+                            break
+                    if not odd_ml:
+                        odd_ml = odds_data[0]
+                    odd_h, odd_a = float(odd_ml.get("odd_1", 0)), float(odd_ml.get("odd_2", 0))
                     if odd_h > 1 and odd_a > 1:
                         fav_final = "h" if odd_h <= odd_a else "a"
                         fav_por_odds = True
