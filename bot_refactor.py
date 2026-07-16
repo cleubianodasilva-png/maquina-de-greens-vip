@@ -2523,14 +2523,14 @@ def run():
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "HT", h, a, mid)
 
-        # MERCADO 1B: OVER GOL LIMITE HT (15-27 min, 0x0, odd fav ≤ 1.50, prob 1.5 FT ≥ 75%, prob 0.5 HT ≥ 65%, APPM casa/fora ≥ 1)
+        # MERCADO 1B: OVER GOL LIMITE HT (15-27 min, 0x0, odd fav ≤ 1.80, prob 1.5 FT ≥ 60%, prob 0.5 HT ≥ 50%, APPM casa/fora ≥ 0.7)
         if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and red_fav == 0:
             odd_fav_num = get_odd_favorito_num(h, a, fid=fid, league=j.get("liga_slug", j.get("liga", "")))
             
-            # APPM: ataques perigosos por minuto (casa OU fora ≥ 1)
+            # APPM: ataques perigosos por minuto (casa OU fora ≥ 0.7)
             appm_casa = _appm_h
             appm_fora = _appm_a
-            appm_ht_ok = appm_casa >= 1 or appm_fora >= 1
+            appm_ht_ok = appm_casa >= 0.7 or appm_fora >= 0.7
             
             # Cálculo de probabilidades via chutes (se tiver)
             chutes_tot_total = (stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0)) if stats else 0
@@ -2538,14 +2538,14 @@ def run():
             prob_15_ft, prob_05_ht = calcular_prob_gols_ht(chutes_tot_total, chutes_gol_total, m)
             
             # Fallback: se não tem stats de chutes nem ataques, usa odd do favorito como proxy
-            if chutes_tot_total == 0 and odd_fav_num <= 1.50:
-                prob_15_ft = max(prob_15_ft, 80)
-                prob_05_ht = max(prob_05_ht, 70)
+            if chutes_tot_total == 0 and odd_fav_num <= 1.80:
+                prob_15_ft = max(prob_15_ft, 65)
+                prob_05_ht = max(prob_05_ht, 55)
                 if not appm_ht_ok and _aph_val == 0 and _apa_val == 0:
                     appm_ht_ok = True
             
             print(f"[LIMITE-HT] {h} x {a} | odd_fav={odd_fav_num} | prob_15ft={prob_15_ft}% | prob_05ht={prob_05_ht}% | appm_casa={appm_casa} appm_fora={appm_fora}")
-            if (odd_fav_num <= 1.50 and prob_15_ft >= 75 and prob_05_ht >= 65 and appm_ht_ok and appm_valido and hist_ok):
+            if (odd_fav_num <= 1.80 and prob_15_ft >= 60 and prob_05_ht >= 50 and appm_ht_ok and appm_valido and hist_ok):
                 hoje = datetime.now(BRT).strftime('%Y%m%d')
                 key = f"{dedup_id}_limiteht_{hoje}"
                 if key not in sent:
