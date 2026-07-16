@@ -2466,16 +2466,18 @@ def run():
             print(f"[HIST-BLOQUEADO] {h} x {a} — média {media_hist:.1f} < 2.0, pulando mercados de gol")
 
         # MERCADO 1: OVER 0.5 HT (15-27 min, 0x0, favorito empatando, sem vermelho do fav, média hist ≥ 2.0)
-        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0 and appm_valido and hist_ok:
+        ob365 = j.get("odds_b365", {}).get("o+0.5") if j.get("odds_b365") else None
+        obano = j.get("odds_bano", {}).get("o+0.5") if j.get("odds_bano") else None
+        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0 and appm_valido and hist_ok and (ob365 or obano):
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_ht_{hoje}"
             if key not in sent:
-                ob365 = j.get("odds_b365", {}).get("o+0.5") if j.get("odds_b365") else None
-                obano = j.get("odds_bano", {}).get("o+0.5") if j.get("odds_bano") else None
                 mid = send_telegram(msg_universal(h, a, m, liga, 3, "HT", "Over 0.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365, odd_bano=obano), marca=key, home=h, away=a, odd_b365_val=ob365, odd_bano_val=obano)
                 if mid:
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "HT", h, a, mid)
+            else:
+                print(f"[ODD-ESPERA-HT] {h} x {a} — odd do mercado ainda não disponível, aguardando próximo ciclo")
 
         # MERCADO 1B: OVER GOL LIMITE HT (15-27 min, 0x0, odd fav ≤ 1.50, prob 1.5 FT ≥ 75%, prob 0.5 HT ≥ 65%, APPM casa/fora ≥ 1)
         if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and red_fav == 0:
@@ -2499,65 +2501,76 @@ def run():
                     appm_ht_ok = True
             
             print(f"[LIMITE-HT] {h} x {a} | odd_fav={odd_fav_num} | prob_15ft={prob_15_ft}% | prob_05ht={prob_05_ht}% | appm_casa={appm_casa} appm_fora={appm_fora}")
-            if (odd_fav_num <= 1.50 and prob_15_ft >= 75 and prob_05_ht >= 65 and appm_ht_ok and appm_valido and hist_ok):
+            ob365 = j.get("odds_b365", {}).get("o+0.5") if j.get("odds_b365") else None
+            obano = j.get("odds_bano", {}).get("o+0.5") if j.get("odds_bano") else None
+            if (odd_fav_num <= 1.50 and prob_15_ft >= 75 and prob_05_ht >= 65 and appm_ht_ok and appm_valido and hist_ok and (ob365 or obano)):
                 hoje = datetime.now(BRT).strftime('%Y%m%d')
                 key = f"{dedup_id}_limiteht_{hoje}"
                 if key not in sent:
-                    ob365 = j.get("odds_b365", {}).get("o+0.5") if j.get("odds_b365") else None
-                    obano = j.get("odds_bano", {}).get("o+0.5") if j.get("odds_bano") else None
                     mid = send_telegram(msg_universal(h, a, m, liga, 4, "LIMITEHT", "Over 0.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365, odd_bano=obano), marca=key, home=h, away=a, odd_b365_val=ob365, odd_bano_val=obano)
                     if mid:
                         sent.add(key); total_env += 1
                         registrar_sinal(fid, "LIMITEHT", h, a, mid)
+                else:
+                    print(f"[ODD-ESPERA-LIMITEHT] {h} x {a} — odd do mercado ainda não disponível, aguardando próximo ciclo")
 
         # MERCADO 2: AMBAS MARCAM BTTS (55-75 min, fav perdendo por 1, sem vermelho do fav, média hist ≥ 2.0)
         if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido and hist_ok:
-            hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{dedup_id}_btts_{hoje}"
-            if key not in sent:
-                ob365 = j.get("odds_b365", {}).get("bts_yes") if j.get("odds_b365") else None
-                obano = j.get("odds_bano", {}).get("bts_yes") if j.get("odds_bano") else None
-                mid = send_telegram(msg_universal(h, a, m, liga, 4, "BTTS", "Ambas Marcam", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365, odd_bano=obano), marca=key, home=h, away=a, odd_b365_val=ob365, odd_bano_val=obano)
-                if mid:
-                    sent.add(key); total_env += 1
-                    registrar_sinal(fid, "BTTS", h, a, mid)
+            ob365 = j.get("odds_b365", {}).get("bts_yes") if j.get("odds_b365") else None
+            obano = j.get("odds_bano", {}).get("bts_yes") if j.get("odds_bano") else None
+            if ob365 or obano:
+                hoje = datetime.now(BRT).strftime('%Y%m%d')
+                key = f"{dedup_id}_btts_{hoje}"
+                if key not in sent:
+                    mid = send_telegram(msg_universal(h, a, m, liga, 4, "BTTS", "Ambas Marcam", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365, odd_bano=obano), marca=key, home=h, away=a, odd_b365_val=ob365, odd_bano_val=obano)
+                    if mid:
+                        sent.add(key); total_env += 1
+                        registrar_sinal(fid, "BTTS", h, a, mid)
+            else:
+                print(f"[ODD-ESPERA-BTTS] {h} x {a} — odd do mercado ainda não disponível, aguardando próximo ciclo")
 
         # MERCADO 3: OVER 1.5 FT (55-75 min, fav perdendo por 1, placar 1x0/0x1, sem vermelho do fav, média hist ≥ 2.0)
         if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido and hist_ok:
-            hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{dedup_id}_oft_{hoje}"
-            if key not in sent:
-                ob365 = j.get("odds_b365", {}).get("o+1.5") if j.get("odds_b365") else None
-                obano = j.get("odds_bano", {}).get("o+1.5") if j.get("odds_bano") else None
-                mid = send_telegram(msg_universal(h, a, m, liga, 4, "OFT", "Over 1.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365, odd_bano=obano), marca=key, home=h, away=a, odd_b365_val=ob365, odd_bano_val=obano)
-                if mid:
-                    sent.add(key); total_env += 1
-                    registrar_sinal(fid, "OFT", h, a, mid)
+            ob365 = j.get("odds_b365", {}).get("o+1.5") if j.get("odds_b365") else None
+            obano = j.get("odds_bano", {}).get("o+1.5") if j.get("odds_bano") else None
+            if ob365 or obano:
+                hoje = datetime.now(BRT).strftime('%Y%m%d')
+                key = f"{dedup_id}_oft_{hoje}"
+                if key not in sent:
+                    mid = send_telegram(msg_universal(h, a, m, liga, 4, "OFT", "Over 1.5", placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365, odd_bano=obano), marca=key, home=h, away=a, odd_b365_val=ob365, odd_bano_val=obano)
+                    if mid:
+                        sent.add(key); total_env += 1
+                        registrar_sinal(fid, "OFT", h, a, mid)
+            else:
+                print(f"[ODD-ESPERA-OFT] {h} x {a} — odd do mercado ainda não disponível, aguardando próximo ciclo")
 
         # MERCADO 4: OVER GOL PARTIDA (55-75 min, placares 0x0/1x1/0x1/1x0, favorito empatando ou perdendo por 1, média hist ≥ 2.0)
         overgoal_valido = (fav_empatando or fav_perdendo_1)
         if p == 2 and 55 <= m <= 75 and overgoal_valido and red_fav == 0 and appm_valido and hist_ok:
-            hoje = datetime.now(BRT).strftime('%Y%m%d')
-            key = f"{dedup_id}_overgoal_{hoje}"
-            # Linha dinâmica: sempre acima do total de gols atual
-            total_gols = sh + sa
-            if total_gols == 0:
-                linha_over = "Over 0.5"
-            elif total_gols == 1:
-                linha_over = "Over 1.5"
-            elif total_gols == 2:
-                linha_over = "Over 2.5"
-            elif total_gols == 3:
-                linha_over = "Over 3.5"
+            ob365 = j.get("odds_b365", {}).get("o+0.5") if j.get("odds_b365") else None
+            obano = j.get("odds_bano", {}).get("o+0.5") if j.get("odds_bano") else None
+            if ob365 or obano:
+                hoje = datetime.now(BRT).strftime('%Y%m%d')
+                key = f"{dedup_id}_overgoal_{hoje}"
+                # Linha dinâmica: sempre acima do total de gols atual
+                total_gols = sh + sa
+                if total_gols == 0:
+                    linha_over = "Over 0.5"
+                elif total_gols == 1:
+                    linha_over = "Over 1.5"
+                elif total_gols == 2:
+                    linha_over = "Over 2.5"
+                elif total_gols == 3:
+                    linha_over = "Over 3.5"
+                else:
+                    linha_over = f"Over {total_gols + 0.5:.1f}"
+                if key not in sent:
+                    mid = send_telegram(msg_universal(h, a, m, liga, 4, "OVERGOAL", linha_over, placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365, odd_bano=obano), marca=key, home=h, away=a, odd_b365_val=ob365, odd_bano_val=obano)
+                    if mid:
+                        sent.add(key); total_env += 1
+                        registrar_sinal(fid, "OVERGOAL", h, a, mid, extra_val=total_gols)
             else:
-                linha_over = f"Over {total_gols + 0.5:.1f}"
-            if key not in sent:
-                ob365 = j.get("odds_b365", {}).get("o+0.5") if j.get("odds_b365") else None
-                obano = j.get("odds_bano", {}).get("o+0.5") if j.get("odds_bano") else None
-                mid = send_telegram(msg_universal(h, a, m, liga, 4, "OVERGOAL", linha_over, placar, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365, odd_bano=obano), marca=key, home=h, away=a, odd_b365_val=ob365, odd_bano_val=obano)
-                if mid:
-                    sent.add(key); total_env += 1
-                    registrar_sinal(fid, "OVERGOAL", h, a, mid, extra_val=total_gols)
+                print(f"[ODD-ESPERA-OVERGOAL] {h} x {a} — odd do mercado ainda não disponível, aguardando próximo ciclo")
 
         # MERCADO 5: ESCANTEIO LIMITE HT (28-38 min, fav confirmado, empatando ou perdendo por 1, sem vermelho, APPM ≥ 1)
         if p == 1 and 28 <= m <= 38 and (fav_empatando or fav_perdendo_1) and red_fav == 0 and appm_valido:
@@ -2568,13 +2581,16 @@ def run():
             cantos = (max(0, cantos_h) + max(0, cantos_a)) if (cantos_h >= 0 and cantos_a >= 0) else -1
             if cantos < 0:
                 print(f"[SKIP-CORNER-HT] {h} x {a} — cantos={cantos} sem chutes")
-            elif key not in sent:
+            else:
                 ob365_e = j.get("odds_b365", {}).get("o+0.5") if j.get("odds_b365") else None
                 obano_e = j.get("odds_bano", {}).get("o+0.5") if j.get("odds_bano") else None
-                mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_HT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365_e, odd_bano=obano_e), marca=key, home=h, away=a, odd_b365_val=ob365_e, odd_bano_val=obano_e)
-                if mid:
-                    sent.add(key); total_env += 1
-                    registrar_sinal(fid, "CORNER_HT", h, a, mid, extra_val=cantos)
+                if not (ob365_e or obano_e):
+                    print(f"[ODD-ESPERA-CORNER-HT] {h} x {a} — odd do mercado ainda não disponível, aguardando próximo ciclo")
+                elif key not in sent:
+                    mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_HT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365_e, odd_bano=obano_e), marca=key, home=h, away=a, odd_b365_val=ob365_e, odd_bano_val=obano_e)
+                    if mid:
+                        sent.add(key); total_env += 1
+                        registrar_sinal(fid, "CORNER_HT", h, a, mid, extra_val=cantos)
 
         # MERCADO 6: ESCANTEIO LIMITE FT (78-88 min, fav confirmado, empatando ou perdendo por 1, sem vermelho)
         if p == 2 and 78 <= m <= 88 and (fav_empatando or fav_perdendo_1) and red_fav == 0 and appm_valido:
@@ -2588,13 +2604,16 @@ def run():
                 cantos = -1
             if cantos < 0:
                 print(f"[SKIP-CORNER-FT] {h} x {a} — cantos={cantos} sem chutes")
-            elif key not in sent:
+            else:
                 ob365_e = j.get("odds_b365", {}).get("o+0.5") if j.get("odds_b365") else None
                 obano_e = j.get("odds_bano", {}).get("o+0.5") if j.get("odds_bano") else None
-                mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_FT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365_e, odd_bano=obano_e), marca=key, home=h, away=a, odd_b365_val=ob365_e, odd_bano_val=obano_e)
-                if mid:
-                    sent.add(key); total_env += 1
-                    registrar_sinal(fid, "CORNER_FT", h, a, mid, extra_val=cantos)
+                if not (ob365_e or obano_e):
+                    print(f"[ODD-ESPERA-CORNER-FT] {h} x {a} — odd do mercado ainda não disponível, aguardando próximo ciclo")
+                elif key not in sent:
+                    mid = send_telegram(msg_universal(h, a, m, liga, 5, "CORNER_FT", "", placar, cantos_atual=cantos, stats=stats, sh=sh, sa=sa, fav_final=fav_final, odd_h=odd_h, odd_a=odd_a, odd_b365=ob365_e, odd_bano=obano_e), marca=key, home=h, away=a, odd_b365_val=ob365_e, odd_bano_val=obano_e)
+                    if mid:
+                        sent.add(key); total_env += 1
+                        registrar_sinal(fid, "CORNER_FT", h, a, mid, extra_val=cantos)
 
     save_sent(sent)
 
