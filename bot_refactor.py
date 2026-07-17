@@ -1757,65 +1757,65 @@ def gerar_motivo(mercado, stats, sh, sa, fav_final, minuto, cantos_atual=0):
     # ESCANTEIOS HT/FT
     if mercado in ("CORNER_HT", "CORNER_FT"):
         if total_cantos >= 8:
-            return clima + " — Muita movimentação pelas laterais, escanteios saindo em sequência"
+    return 'Muita movimentação pelas laterais, escanteios saindo em sequência'
         if total_cantos >= 5:
-            return clima + " — Movimentação moderada, entrada pela tendência de escanteios"
+    return 'Movimentação moderada, entrada pela tendência de escanteios'
         if total_cantos >= 3:
-            return clima + " — Movimentação moderada, escanteios com frequência regular"
-        return clima + " — Partida lenta pelos lados, entrada baseada no valor da odd"
+    return 'Movimentação moderada, escanteios com frequência regular'
+    return 'Partida lenta pelos lados, entrada baseada no valor da odd'
 
     # OVER GOL INTERVALO
     if mercado == "HT":
         if fav_dominando and fav_gol >= 2:
-            return clima + " — Muita movimentação ofensiva, favorito criando chances — gol do 1º tempo questão de tempo"
+    return 'Muita movimentação ofensiva, favorito criando chances — gol do 1º tempo questão de tempo'
         if fav_dominando and fav_gol >= 1:
-            return clima + " — Movimentação moderada, entrada baseada na tendência do favorito"
+    return 'Movimentação moderada, entrada baseada na tendência do favorito'
         if fav_dominando and fav_chutes >= 6:
-            return clima + " — Pressão ofensiva constante, favorito rondando a área — gol iminente"
+    return 'Pressão ofensiva constante, favorito rondando a área — gol iminente'
         if ambos_finalizando:
-            return clima + " — Ambas trocando finalizações, jogo movimentado para o primeiro gol"
+    return 'Ambas trocando finalizações, jogo movimentado para o primeiro gol'
         if zebra_dominando and adv_chutes >= 5:
-            return clima + " — Visitante surpreendendo ofensivamente, partida mais aberta que o previsto"
-        return clima + " — Partida lenta, entrada baseada no valor da odd do favorito"
+    return 'Visitante surpreendendo ofensivamente, partida mais aberta que o previsto'
+    return 'Partida lenta, entrada baseada no valor da odd do favorito'
 
     # AMBAS MARCAM
     if mercado == "BTTS":
         if ambos_finalizando and total_alvo >= 3:
-            return clima + " — Muita movimentação ofensiva, chances claras nos dois lados"
+    return 'Muita movimentação ofensiva, chances claras nos dois lados'
         if chutes_gol_h >= 2 and chutes_gol_a >= 1:
-            return clima + " — Movimentação moderada, ambas finalizando com frequência"
+    return 'Movimentação moderada, ambas finalizando com frequência'
         if chutes_gol_h >= 2 or chutes_gol_a >= 2:
-            return clima + " — Favorito com movimentação moderada, adversário deixando brechas"
+    return 'Favorito com movimentação moderada, adversário deixando brechas'
         if total_alvo >= 2 or ambos_finalizando:
-            return clima + " — Ambas se arriscando ofensivamente, tendência de gols"
-        return clima + " — Partida lenta, entrada baseada na odd — expectativa de reação"
+    return 'Ambas se arriscando ofensivamente, tendência de gols'
+    return 'Partida lenta, entrada baseada na odd — expectativa de reação'
 
     # OVER 1.5 GOLS PARTIDA
     if mercado == "OFT":
         if fav_dominando and fav_chutes >= 8 and total_atq_perig >= 12:
-            return clima + " — Muita movimentação ofensiva, chances de gols em abundância"
+    return 'Muita movimentação ofensiva, chances de gols em abundância'
         if fav_dominando and fav_gol >= 2:
-            return clima + " — Movimentação moderada, favorito criando — expectativa de ampliação"
+    return 'Movimentação moderada, favorito criando — expectativa de ampliação'
         if total_chutes >= 12:
-            return clima + " — Partida movimentada com várias finalizações, gols no radar"
+    return 'Partida movimentada com várias finalizações, gols no radar'
         if zebra_dominando:
-            return clima + " — Visitante equilibrando as ações, partida mais aberta que o previsto"
-        return clima + " — Partida lenta, entrada baseada no valor da odd"
+    return 'Visitante equilibrando as ações, partida mais aberta que o previsto'
+    return 'Partida lenta, entrada baseada no valor da odd'
 
     # OVER GOL PARTIDA
     if mercado == "OVERGOAL":
         if fav_dominando and fav_gol >= 2:
-            return clima + " — Muita movimentação ofensiva, favorito dominando — gol saindo"
+    return 'Muita movimentação ofensiva, favorito dominando — gol saindo'
         if fav_dominando and total_atq_perig >= 10:
-            return clima + " — Pressão ofensiva intensa, gol é questão de tempo"
+    return 'Pressão ofensiva intensa, gol é questão de tempo'
         if ambos_finalizando or total_alvo >= 3:
-            return clima + " — Movimentação moderada, ataques perigosos em sequência"
+    return 'Movimentação moderada, ataques perigosos em sequência'
         if fav_dominando:
-            return clima + " — Movimentação moderada do favorito na área adversária"
-        return clima + " — Partida lenta, entrada baseada no valor da odd"
+    return 'Movimentação moderada do favorito na área adversária'
+    return 'Partida lenta, entrada baseada no valor da odd'
 
     # FALLBACK
-    return clima + " — Partida lenta, entrada baseada no valor da odd"
+    return 'Partida lenta, entrada baseada no valor da odd'
 
 
 def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_val=None, cantos_atual=0, stats=None, sh=0, sa=0, fav_final="h", odd_h=None, odd_a=None, odd_b365=None, odd_bano=None):
