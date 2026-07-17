@@ -2374,12 +2374,22 @@ def run():
             if isinstance(sb, dict): stats_bzz = sb
         except: pass
         # Fallback Bzzoiro por nome (quando o ID da apifootball nao funciona no Bzzoiro)
-        if not stats_bzz or not (stats_bzz.get("chutes_tot_h", 0) > 0 or stats_bzz.get("escanteios_h", -1) >= 0):
+        precisa_fallback = not stats_bzz or not (stats_bzz.get("chutes_tot_h", 0) > 0 or stats_bzz.get("escanteios_h", -1) >= 0)
+        if precisa_fallback:
             try:
                 sb_name = get_stats_bzzoiro_by_name(h, a)
-                if isinstance(sb_name, dict) and (sb_name.get("chutes_tot_h", 0) > 0 or sb_name.get("escanteios_h", -1) >= 0):
-                    stats_bzz = sb_name
-                    print(f"[BZZ-NAME] Stats via nome OK: esc {sb_name.get('escanteios_h')}x{sb_name.get('escanteios_a')} | chutes {sb_name.get('chutes_tot_h')}x{sb_name.get('chutes_tot_a')}")
+                if isinstance(sb_name, dict):
+                    # Club Friendlies - Group Stage World: sempre confiável, aceita dados normalmente
+                    if "Club Friendlies - Group Stage World" in liga:
+                        stats_bzz = sb_name
+                        print(f"[BZZ-NAME] Friendlies aceito: esc {sb_name.get('escanteios_h')}x{sb_name.get('escanteios_a')}")
+                    else:
+                        # Demais ligas: só aceita fallback se tiver scout real (chutes, ataques ou chutes no gol)
+                        if (sb_name.get("chutes_tot_h", 0) > 0 or sb_name.get("chutes_tot_a", 0) > 0 or
+                            sb_name.get("ataques_perigosos_h", 0) > 0 or sb_name.get("ataques_perigosos_a", 0) > 0 or
+                            sb_name.get("chutes_gol_h", 0) > 0 or sb_name.get("chutes_gol_a", 0) > 0):
+                            stats_bzz = sb_name
+                            print(f"[BZZ-NAME] Stats via nome OK: esc {sb_name.get('escanteios_h')}x{sb_name.get('escanteios_a')} | chutes {sb_name.get('chutes_tot_h')}x{sb_name.get('chutes_tot_a')}")
             except: pass
 
         stats = {}
