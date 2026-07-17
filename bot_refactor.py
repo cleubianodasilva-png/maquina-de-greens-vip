@@ -1971,10 +1971,14 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
         cantos_por_min = 0
         atq_perig_por_min = 0
 
-    if (chutes_por_min >= 0.4 and alvo_h + alvo_a >= 3) or (cantos_por_min >= 0.25) or (atq_perig_por_min >= 0.7):
+    if (chutes_por_min >= 0.7) or (chutes_por_min >= 0.5 and alvo_h + alvo_a >= 4) or (atq_perig_por_min >= 1.2):
+        pressao = "Altíssima 🔥🔥"
+    elif (chutes_por_min >= 0.4 and alvo_h + alvo_a >= 3) or (cantos_por_min >= 0.25) or (atq_perig_por_min >= 0.7):
         pressao = "Alta 🔥"
-    elif chutes_por_min >= 0.2 or total_alvo >= 1 or atq_perig_por_min >= 0.4:
-        pressao = "Média 💪"
+    elif chutes_por_min >= 0.3 or atq_perig_por_min >= 0.5 or total_alvo >= 2:
+        pressao = "Moderada 💪"
+    elif chutes_por_min >= 0.15 or atq_perig_por_min >= 0.3 or total_alvo >= 1:
+        pressao = "Média ✅"
     else:
         pressao = "Baixa 💮"
 
