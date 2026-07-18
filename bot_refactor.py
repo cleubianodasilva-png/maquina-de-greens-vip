@@ -1961,7 +1961,7 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
 
     sep = "━━━━━━━━━━━━━━━━━━━━"
     
-    # --- ANALISE DINAMICA ---
+    # --- ANALISE DINAMICA (baseada no APPM - Ataques Perigosos Por Minuto) ---
     total_chutes = chutes_h + chutes_a
     total_alvo = alvo_h + alvo_a
     total_cantos = cant_h + cant_a
@@ -1975,16 +1975,19 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
         cantos_por_min = 0
         atq_perig_por_min = 0
 
-    if (chutes_por_min >= 0.7) or (chutes_por_min >= 0.5 and alvo_h + alvo_a >= 4) or (atq_perig_por_min >= 1.2):
+    # Pressão baseada exclusivamente no APPM da partida (total)
+    if atq_perig_por_min >= 1.8:
         pressao = "Altíssima 🔥🔥"
-    elif (chutes_por_min >= 0.4 and alvo_h + alvo_a >= 3) or (cantos_por_min >= 0.25) or (atq_perig_por_min >= 0.7):
+    elif atq_perig_por_min >= 1.0:
         pressao = "Alta 🔥"
-    elif chutes_por_min >= 0.3 or atq_perig_por_min >= 0.5 or total_alvo >= 2:
-        pressao = "Moderada ⚖️"
-    elif chutes_por_min >= 0.15 or atq_perig_por_min >= 0.3 or total_alvo >= 1:
+    elif atq_perig_por_min >= 0.7:
+        pressao = "Moderada 💪"
+    elif atq_perig_por_min >= 0.5:
         pressao = "Média ✅"
-    else:
+    elif atq_perig_por_min >= 0.3:
         pressao = "Baixa 👎"
+    else:
+        pressao = "Muito Baixa 👇"
 
     # Substitui alerta antigo pela análise técnica completa com ataques perigosos
     alerta = gerar_motivo(mercado, stats, sh, sa, fav_final, minuto, cantos_atual)
@@ -2247,25 +2250,17 @@ def get_media_gols_historica(home_id, away_id):
 # LOOP PRINCIPAL
 # ═══════════════════════════════════════════════════════════════════════════════
 def run():
-    print("[Iniciando monitoramento — APENAS apifootball (config Zapia)]")
+    print("[Iniciando monitoramento — APIFOOTBALL]")
     sent      = load_sent()
     total_env = 0
     # janela_id por hora — evita duplicata mesmo se Actions rodar 2x no mesmo minuto
     janela_id = datetime.now(BRT).strftime('%Y%m%d%H')
 
     # ─────────────────────────────────────────────────────────────
-    # PASSO 1A: apifootball — ÚNICA fonte de jogos (Zapia: ESPN e Bzzoiro desativados)
+    # PASSO 1: apifootball — única fonte
     # ─────────────────────────────────────────────────────────────
-    jogos_apif = get_jogos_apifootball_v3(set())
-    fids_apif  = {j["fid"] for j in jogos_apif}
-
-    # ESPN e Bzzoiro desativados neste repositório (apenas apifootball)
-    jogos_espn = []
-    jogos_bzz  = []
-
-    # Junta tudo na ordem: só apifootball
-    jogos_live = jogos_apif
-    print(f"[Total] {len(jogos_live)} jogos ao vivo (apenas apifootball)")
+    jogos_live = get_jogos_apifootball_v3(set())
+    print(f"[Total] {len(jogos_live)} jogos ao vivo (apifootball)")
 
     # PASSO 2: Filtra janelas alvo
     jogos_na_janela = filtrar_janelas(jogos_live)
@@ -2531,15 +2526,21 @@ def run():
         _appm_h = round(_aph_val / m, 2) if m > 0 else 0
         _appm_a = round(_apa_val / m, 2) if m > 0 else 0
         # APPM seletiva por repositório
-        # maquina-de-greens-bot (Grupo GITHUB): APPM ativo (casa ≥ 0.7 OU fora ≥ 0.7 OU total ≥ 1.4)
+        # maquina-de-greens-bot (Grupo GITHUB): APPM ativo
+        #   - OVER GOLS: casa ≥ 0.8 OU fora ≥ 0.8 OU total ≥ 1.5
+        #   - ESCANTEIOS: casa ≥ 0.7 OU fora ≥ 0.7 OU total ≥ 1.4
         # boot-ia-inteligente-bot (Grupo ZAPIA): livre
         _repo_atual = os.environ.get("GITHUB_REPOSITORY", "")
         if "maquina-de-greens" in _repo_atual:
-            appm_valido = _appm_h >= 0.7 or _appm_a >= 0.7 or _appm_total >= 1.4
+            appm_valido   = _appm_h >= 0.7 or _appm_a >= 0.7 or _appm_total >= 1.4  # escanteios
+            appm_gols_ok  = _appm_h >= 0.8 or _appm_a >= 0.8 or _appm_total >= 1.5  # over gols
             if not appm_valido:
                 print(f"[APPM-BLOQUEADO] {h} x {a} — APPM casa={_appm_h} fora={_appm_a} total={_appm_total} (mín: 0.7/time ou 1.4 total)")
+            if not appm_gols_ok:
+                print(f"[APPM-GOLS-BLOQUEADO] {h} x {a} — APPM casa={_appm_h} fora={_appm_a} total={_appm_total} (mín: 0.8/time ou 1.5 total)")
         else:
-            appm_valido = True
+            appm_valido   = True
+            appm_gols_ok  = True
 
         # HISTÓRICO — Média de gols por partida (jogo todo) ≥ 2.0
         # Req. para: Over Gol HT, Over Gol FT e BTTS
@@ -2553,7 +2554,7 @@ def run():
             print(f"[HIST-BLOQUEADO] {h} x {a} — média {media_hist:.1f} < 2.0, pulando mercados de gol")
 
         # MERCADO 1: OVER 0.5 HT (15-27 min, 0x0, favorito empatando, sem vermelho do fav, média hist ≥ 2.0)
-        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0 and appm_valido and hist_ok:
+        if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and fav_empatando and red_fav == 0 and appm_gols_ok and hist_ok:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_ht_{hoje}"
             if key not in sent:
@@ -2564,14 +2565,14 @@ def run():
                     sent.add(key); total_env += 1
                     registrar_sinal(fid, "HT", h, a, mid)
 
-        # MERCADO 1B: OVER GOL LIMITE HT (15-27 min, 0x0, odd fav ≤ 1.80, prob 1.5 FT ≥ 60%, prob 0.5 HT ≥ 50%, APPM casa/fora ≥ 0.7)
+        # MERCADO 1B: OVER GOL LIMITE HT (15-27 min, 0x0, odd fav ≤ 1.80, prob 1.5 FT ≥ 60%, prob 0.5 HT ≥ 50%, APPM casa/fora ≥ 0.8)
         if p == 1 and 15 <= m <= 27 and sh == 0 and sa == 0 and red_fav == 0:
             odd_fav_num = get_odd_favorito_num(h, a, fid=fid, league=j.get("liga_slug", j.get("liga", "")))
             
-            # APPM: ataques perigosos por minuto (casa OU fora ≥ 0.7)
+            # APPM: ataques perigosos por minuto (casa OU fora ≥ 0.8)
             appm_casa = _appm_h
             appm_fora = _appm_a
-            appm_ht_ok = appm_casa >= 0.7 or appm_fora >= 0.7
+            appm_ht_ok = appm_casa >= 0.8 or appm_fora >= 0.8
             
             # Cálculo de probabilidades via chutes (se tiver)
             chutes_tot_total = (stats.get("chutes_tot_h", 0) + stats.get("chutes_tot_a", 0)) if stats else 0
@@ -2586,7 +2587,7 @@ def run():
                     appm_ht_ok = True
             
             print(f"[LIMITE-HT] {h} x {a} | odd_fav={odd_fav_num} | prob_15ft={prob_15_ft}% | prob_05ht={prob_05_ht}% | appm_casa={appm_casa} appm_fora={appm_fora}")
-            if (odd_fav_num <= 1.80 and prob_15_ft >= 60 and prob_05_ht >= 50 and appm_ht_ok and appm_valido and hist_ok):
+            if (odd_fav_num <= 1.80 and prob_15_ft >= 60 and prob_05_ht >= 50 and appm_ht_ok and appm_gols_ok and hist_ok):
                 hoje = datetime.now(BRT).strftime('%Y%m%d')
                 key = f"{dedup_id}_limiteht_{hoje}"
                 if key not in sent:
@@ -2598,7 +2599,7 @@ def run():
                         registrar_sinal(fid, "LIMITEHT", h, a, mid)
 
         # MERCADO 2: AMBAS MARCAM BTTS (55-75 min, fav perdendo por 1, sem vermelho do fav, média hist ≥ 2.0)
-        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido and hist_ok:
+        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_gols_ok and hist_ok:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_btts_{hoje}"
             if key not in sent:
@@ -2610,7 +2611,7 @@ def run():
                     registrar_sinal(fid, "BTTS", h, a, mid)
 
         # MERCADO 3: OVER 1.5 FT (55-75 min, fav perdendo por 1, placar 1x0/0x1, sem vermelho do fav, média hist ≥ 2.0)
-        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_valido and hist_ok:
+        if p == 2 and 55 <= m <= 75 and ((sh == 1 and sa == 0) or (sh == 0 and sa == 1)) and fav_perdendo_1 and red_fav == 0 and appm_gols_ok and hist_ok:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_oft_{hoje}"
             if key not in sent:
@@ -2623,7 +2624,7 @@ def run():
 
         # MERCADO 4: OVER GOL PARTIDA (55-75 min, placares 0x0/1x1/0x1/1x0, favorito empatando ou perdendo por 1, média hist ≥ 2.0)
         overgoal_valido = (fav_empatando or fav_perdendo_1)
-        if p == 2 and 55 <= m <= 75 and overgoal_valido and red_fav == 0 and appm_valido and hist_ok:
+        if p == 2 and 55 <= m <= 75 and overgoal_valido and red_fav == 0 and appm_gols_ok and hist_ok:
             hoje = datetime.now(BRT).strftime('%Y%m%d')
             key = f"{dedup_id}_overgoal_{hoje}"
             # Linha dinâmica: sempre acima do total de gols atual
