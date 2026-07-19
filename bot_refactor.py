@@ -2691,31 +2691,57 @@ def processar_comandos_pendentes(token, chat_id, jogos_live=None, jogos_na_janel
                 chat_orig = msg.get("chat", {}).get("id", 0)
                 sep = "━" * 20
                 if "/radar" in text:
+                    # Busca dados frescos da API para minutos atualizados
+                    try:
+                        jogos_frescos = get_jogos_apifootball_v3(set())
+                        # Cria lookup: (home, away) -> minuto
+                        minuto_map = {}
+                        for j in jogos_frescos:
+                            key = (j.get("home","").lower(), j.get("away","").lower())
+                            minuto_map[key] = j.get("minuto",0)
+                    except:
+                        minuto_map = {}
+
                     linhas_jan = ""
                     for j in jogos_na_janela:
                         h = j.get("home",""); a = j.get("away","")
-                        m = j.get("minuto",""); sh = j.get("sh",0); sa = j.get("sa",0)
+                        sh = j.get("sh",0); sa = j.get("sa",0)
                         liga = j.get("liga","")
-                        linhas_jan += f"\U0001f3af <b>{h} x {a}</b> | {m}' | {sh}x{sa} | {liga}\n"
+                        # Usa minuto atualizado se disponível
+                        m = minuto_map.get((h.lower(), a.lower()), j.get("minuto",""))
+                        linhas_jan += f"🎯 <b>{h} x {a}</b> | {m}' | {sh}x{sa} | {liga}
+"
                     if not linhas_jan:
                         linhas_jan = "Nenhum jogo na janela no momento."
                     fora = [j for j in jogos_live if j not in jogos_na_janela][:10]
                     linhas_fora = ""
                     for j in fora:
                         h = j.get("home",""); a = j.get("away","")
-                        m = j.get("minuto",""); sh = j.get("sh",0); sa = j.get("sa",0)
-                        linhas_fora += f"\u23f3 {h} x {a} | {m}' | {sh}x{sa}\n"
-                    if not linhas_fora: linhas_fora = "\u2014"
+                        sh = j.get("sh",0); sa = j.get("sa",0)
+                        # Usa minuto atualizado se disponível
+                        m = minuto_map.get((h.lower(), a.lower()), j.get("minuto",""))
+                        linhas_fora += f"⏳ {h} x {a} | {m}' | {sh}x{sa}
+"
+                    if not linhas_fora: linhas_fora = "—"
                     msg_radar = (
-                        f"{sep}\n"
-                        f"📡👉<b>RADAR DE JOGOS AO VIVO</b>👈📡\n"
-                        f"{sep}\n"
-                        f"🔴 <b>{len(jogos_live)} jogos ao vivo</b>\n"
-                        f"🎯 <b>{len(jogos_na_janela)} na janela alvo</b>\n"
-                        f"{sep}\n"
-                        f"🚨<b>JOGOS NO ALVO:</b>\n{linhas_jan}"
-                        f"{sep}\n"
-                        f"<b>⏳ FORA DA JANELA:</b>\n{linhas_fora}"
+                        f"{sep}
+"
+                        f"📡👉<b>RADAR DE JOGOS AO VIVO</b>👇📡
+"
+                        f"{sep}
+"
+                        f"🔴 <b>{len(jogos_live)} jogos ao vivo</b>
+"
+                        f"🎯 <b>{len(jogos_na_janela)} na janela alvo</b>
+"
+                        f"{sep}
+"
+                        f"🚨<b>JOGOS NO ALVO:</b>
+{linhas_jan}"
+                        f"{sep}
+"
+                        f"<b>⏳ FORA DA JANELA:</b>
+{linhas_fora}"
                         f"{sep}"
                     )
                     requests.post(f"https://api.telegram.org/bot{token}/sendMessage",
@@ -2746,5 +2772,6 @@ def processar_comandos_pendentes(token, chat_id, jogos_live=None, jogos_na_janel
             except: pass
     except Exception as e:
         print(f"[CMD] Erro processar comandos: {e}")
+
 if __name__ == "__main__":
     run()
