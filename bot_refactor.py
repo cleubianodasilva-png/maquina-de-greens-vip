@@ -592,7 +592,16 @@ def get_jogos_apifootball_v3(fids_existentes):
             fid = "apif_" + str(ev.get("match_id", ""))
             if fid in fids_existentes: continue
             status_digits = __import__('re').findall(r'\d+', status_raw)
-            minuto = int(status_digits[0]) if status_digits else 0
+            # Trata status textuais: "Half Time" → 45, "Not Started" → 0, "Finished" já filtrado
+            if not status_digits:
+                if "half" in status_raw.lower() or "interval" in status_raw.lower():
+                    minuto = 45
+                elif "break" in status_raw.lower():
+                    minuto = 45
+                else:
+                    minuto = 0
+            else:
+                minuto = int(status_digits[0])
             liga_nome = (ev.get("league_name", "") or "").strip()
             country = (ev.get("country_name", "") or "").strip()
             if country and liga_nome and " " + country not in (" " + liga_nome):
