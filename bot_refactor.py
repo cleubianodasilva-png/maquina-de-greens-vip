@@ -1348,7 +1348,8 @@ def checar_resultado(sinal):
             import re as _re
             status_digits = _re.findall(r'\d+', status_raw)
             minuto_atual = int(status_digits[0]) if status_digits else 0
-            is_2h = minuto_atual >= 45
+            # So considera 2o tempo se minuto >= 50 (evita confundir acrescimos do 1o tempo)
+            is_2h = minuto_atual >= 50 or "break" in status_raw.lower()
         
         if not (is_final or (mercado in ["HT", "LIMITEHT", "CORNER_HT"] and is_2h)):
             return None
