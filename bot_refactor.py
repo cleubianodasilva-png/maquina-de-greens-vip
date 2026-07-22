@@ -747,30 +747,37 @@ def get_stats_apifootball_v3(match_id):
         if not data or str(match_id) not in data: return {}
         raw = data[str(match_id)].get("statistics", [])
         stats = {}
+        tem_shots_total = False
         for s in raw:
             tipo = s.get("type", "").lower()
             h_val = s.get("home", "").replace("%", "").strip()
             a_val = s.get("away", "").replace("%", "").strip()
             if not h_val or not a_val:
                 continue
+            h_int, a_int = int(h_val), int(a_val)
+            # Pula entradas zeradas (apifootball retorna duplicatas 0x0)
+            if h_int == 0 and a_int == 0:
+                continue
             if "corner" in tipo:
-                stats["escanteios_h"], stats["escanteios_a"] = int(h_val), int(a_val)
-            elif "on target" in tipo:
-                stats["chutes_gol_h"], stats["chutes_gol_a"] = int(h_val), int(a_val)
-            elif "off target" in tipo:
-                stats["chutes_tot_h"] = stats.get("chutes_tot_h", 0) + int(h_val)
-                stats["chutes_tot_a"] = stats.get("chutes_tot_a", 0) + int(a_val)
-            elif "shots total" in tipo:
-                stats["chutes_tot_h"] = max(stats.get("chutes_tot_h", 0), int(h_val))
-                stats["chutes_tot_a"] = max(stats.get("chutes_tot_a", 0), int(a_val))
+                stats["escanteios_h"], stats["escanteios_a"] = h_int, a_int
+            elif "on target" in tipo or "shots on goal" in tipo:
+                stats["chutes_gol_h"], stats["chutes_gol_a"] = h_int, a_int
+            elif "shots total" in tipo or "total shots" in tipo:
+                stats["chutes_tot_h"] = h_int
+                stats["chutes_tot_a"] = a_int
+                tem_shots_total = True
+            elif "off target" in tipo and not tem_shots_total:
+                # Só soma Off Target se Shots Total não estiver disponível
+                stats["chutes_tot_h"] = stats.get("chutes_tot_h", 0) + h_int
+                stats["chutes_tot_a"] = stats.get("chutes_tot_a", 0) + a_int
             elif "red cards" in tipo:
-                stats["red_cards_h"], stats["red_cards_a"] = int(h_val), int(a_val)
+                stats["red_cards_h"], stats["red_cards_a"] = h_int, a_int
             elif tipo == "attacks":
-                stats["ataques_h"], stats["ataques_a"] = int(h_val), int(a_val)
+                stats["ataques_h"], stats["ataques_a"] = h_int, a_int
             elif tipo == "dangerous attacks":
-                stats["ataques_perigosos_h"], stats["ataques_perigosos_a"] = int(h_val), int(a_val)
+                stats["ataques_perigosos_h"], stats["ataques_perigosos_a"] = h_int, a_int
             elif "possession" in tipo or "ball possession" in tipo:
-                stats["posse_h"], stats["posse_a"] = int(h_val), int(a_val)
+                stats["posse_h"], stats["posse_a"] = h_int, a_int
         if "chutes_gol_h" in stats and "chutes_tot_h" not in stats:
             stats["chutes_tot_h"] = stats["chutes_gol_h"]
             stats["chutes_tot_a"] = stats["chutes_gol_a"]
