@@ -117,8 +117,8 @@ APIFOOTBALL_KEY = os.getenv("APIFOOTBALL_KEY", "")
 from datetime import datetime, timezone, timedelta
 import hashlib, re, unicodedata
 
-# ─── Flashscore: fonte complementar gratuita ───
-from flashscore_module import get_jogos_flashscore, get_stats_flashscore
+# ─── Bzzoiro v2: fonte principal (stats reais de dangerous_attack) ───
+from bzzoiro_module import get_jogos_bzzoiro, get_stats_bzzoiro, get_odds_bzzoiro, checar_resultado_bzzoiro
 
 # ─── Normalização de nomes de times (acentos, abreviações, prefixos) ────────────
 def norm_nome_time(nome):
@@ -1570,15 +1570,19 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
     return msg, keyboard
 
 def checar_resultado(sinal):
-    """Verifica se um sinal já enviado deu green ou red usando apifootball."""
+    """Verifica se um sinal ja enviado deu green ou red — prioriza Bzzoiro, fallback apifootball."""
     try:
-        fid_raw = str(sinal.get("fixture_id", "")).replace("apif_", "")
+        fid_raw = str(sinal.get("fixture_id", "")).replace("apif_", "").replace("bzz_", "")
         mercado = sinal.get("mercado")
         
-        # 1. Busca dados do jogo via apifootball get_events
+        # 1. Tenta Bzzoiro primeiro (auditoria propria)
+        res_bzz = checar_resultado_bzzoiro(sinal)
+        if res_bzz:
+            return res_bzz
+        
+        # 2. Fallback: apifootball get_events
         params = {"action": "get_events", "match_id": fid_raw, "APIkey": APIFOOTBALL_COM_KEY}
         r = requests.get(APIFOOTBALL_URL, params=params, timeout=10)
-        data = r.json()
         data = r.json()
         if not isinstance(data, list) or len(data) == 0:
             return None
@@ -1587,58 +1591,41 @@ def checar_resultado(sinal):
         status_raw = str(ev.get("match_status", "0") or "0").replace("'","").strip()
         is_final = ("finished" in status_raw.lower())
         
-        # Verifica se está no 2º tempo (para HT markets)
         is_2h = False
         if not is_final:
             import re as _re
             status_digits = _re.findall(r'\d+', status_raw)
             minuto_atual = int(status_digits[0]) if status_digits else 0
-            # So considera 2o tempo se minuto >= 50 (evita confundir acrescimos do 1o tempo)
             is_2h = minuto_atual >= 50 or "break" in status_raw.lower()
         
         if not (is_final or (mercado in ["HT", "LIMITEHT", "CORNER_HT"] and is_2h)):
             return None
-
-        # Placar Final
+        
         gh = int(ev.get("match_hometeam_score", 0) or 0)
         ga = int(ev.get("match_awayteam_score", 0) or 0)
         total_final = gh + ga
-
-        # Placar HT (apifootball retorna halftime score)
+        
         gh_ht = int(ev.get("match_hometeam_halftime_score", 0) or 0)
         ga_ht = int(ev.get("match_awayteam_halftime_score", 0) or 0)
         total_ht = gh_ht + ga_ht
-
-        # Lógica por Mercado
+        
         if mercado in ["HT", "LIMITEHT"]:
             return "green" if total_ht >= 1 else ("red" if (is_2h or is_final) else None)
-        
         elif mercado == "BTTS":
             return "green" if (gh >= 1 and ga >= 1) else ("red" if is_final else None)
-        
         elif mercado == "OFT":
             return "green" if total_final >= 2 else ("red" if is_final else None)
-            
         elif mercado == "OVERGOAL":
             gols_entrada = sinal.get("extra_val", 0)
             return "green" if total_final > gols_entrada else ("red" if is_final else None)
-            
         elif mercado in ["CORNER_HT", "CORNER_FT"]:
             stats = get_stats_apifootball_v3(fid_raw)
             c_final = max(0, stats.get("escanteios_h", 0)) + max(0, stats.get("escanteios_a", 0))
             c_entrada = sinal.get("extra_val", 0)
             if c_final > c_entrada: return "green"
             return "red" if is_final else None
-
         return None
     except: return None
-
-
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# COMANDOS TELEGRAM (/relatoriodiario e /radar)
-# ═══════════════════════════════════════════════════════════════════════════════
 def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=None):
     import base64 as _b64
     last_id = 0
@@ -1852,9 +1839,9 @@ def get_media_gols_historica(home_id, away_id):
 # LOOP PRINCIPAL
 # ═══════════════════════════════════════════════════════════════════════════════
 def run():
-    # ─── FONTE PRINCIPAL: Flashscore | fallback: ESPN + apifootball ───
-    BOT_SOURCE = "flashscore"
-    print(f"[Iniciando monitoramento — Fonte: Flashscore (principal) + ESPN + apifootball]")
+    # ─── FONTE PRINCIPAL: Bzzoiro v2 | fallback: ESPN + apifootball ───
+    BOT_SOURCE = "bzzoiro"
+    print(f"[Iniciando monitoramento — Fonte: Bzzoiro v2 (principal) + ESPN + apifootball]")
     sent      = load_sent()
     total_env = 0
     janela_id = datetime.now(BRT).strftime('%Y%m%d%H')
@@ -1863,25 +1850,26 @@ def run():
     # PASSO 1: Coleta — Flashscore como principal, ESPN + apifootball como fallback
     # ─────────────────────────────────────────────────────────────
     jogos_live = []
-    if BOT_SOURCE == "flashscore":
-        jogos_flash = get_jogos_flashscore(set())
-        print(f"[FLASH] {len(jogos_flash)} jogos ao vivo")
-        jogos_live.extend(jogos_flash)
+    if BOT_SOURCE == "bzzoiro":
+        # Bzzoiro v2: fonte principal com dados reais de dangerous_attack
+        jogos_bzz = get_jogos_bzzoiro(set())
+        print(f"[BZZOIRO] {len(jogos_bzz)} jogos ao vivo")
+        jogos_live.extend(jogos_bzz)
         # Fallback: ESPN complementa
         try:
             jogos_espn = get_jogos_espn(set())
             if jogos_espn:
                 print(f"[ESPN-FALLBACK] {len(jogos_espn)} jogos adicionais da ESPN")
-                nomes_flash = set()
-                for j in jogos_flash:
+                nomes_bzz = set()
+                for j in jogos_bzz:
                     hn = norm_nome_time(j["home"])
                     an = norm_nome_time(j["away"])
-                    nomes_flash.add(hashlib.md5(f"{hn}-{an}".encode()).hexdigest()[:16])
+                    nomes_bzz.add(hashlib.md5(f"{hn}-{an}".encode()).hexdigest()[:16])
                 for j in jogos_espn:
                     hn = norm_nome_time(j["home"])
                     an = norm_nome_time(j["away"])
                     chave = hashlib.md5(f"{hn}-{an}".encode()).hexdigest()[:16]
-                    if chave not in nomes_flash:
+                    if chave not in nomes_bzz:
                         jogos_live.append(j)
                         print(f"[ESPN-FALLBACK] Adicionado: {j['home']} x {j['away']} ({j['liga']})")
         except Exception as e:
@@ -1944,22 +1932,22 @@ def run():
 
         print(f"[Analisando] {h} x {a} | {placar} | {m}min")
 
-        # ─── Stats: Flashscore (principal) → ESPN (fallback) → apifootball (último) ───
+        # ─── Stats: Bzzoiro v2 (principal) → ESPN (fallback) → apifootball (último) ───
         fid_raw = j.get("fid_raw", fid)
         stats = {}
-        if BOT_SOURCE == "flashscore":
-            # Flashscore: stats principais
+        if BOT_SOURCE == "bzzoiro":
+            # Bzzoiro v2: stats principais com dangerous_attack real
             if not stats or not (stats.get("escanteios_h", -1) >= 0 and stats.get("escanteios_a", -1) >= 0):
                 try:
-                    fid_raw_flash = j.get("fid_raw", "")
-                    if fid_raw_flash and not fid_raw_flash.startswith("apif_") and len(fid_raw_flash) > 4:
-                        sa_flash = get_stats_flashscore(fid_raw_flash)
-                        if isinstance(sa_flash, dict) and sa_flash.get("escanteios_h", -1) >= 0:
-                            stats = sa_flash
-                            print(f"[FLASH-STATS] Stats Flashscore OK: esc {stats.get('escanteios_h')}x{stats.get('escanteios_a')}")
+                    bzz_id = j.get("bzzoiro_id") or fid_raw
+                    if bzz_id and str(bzz_id).isdigit():
+                        sa_bzz = get_stats_bzzoiro(bzz_id)
+                        if isinstance(sa_bzz, dict) and sa_bzz.get("escanteios_h", -1) >= 0:
+                            stats = sa_bzz
+                            print(f"[BZZOIRO-STATS] Stats Bzzoiro OK: esc {stats.get('escanteios_h')}x{stats.get('escanteios_a')} | atq_perig {stats.get('ataques_perigosos_h')}x{stats.get('ataques_perigosos_a')}")
                 except Exception as e:
-                    print(f"[FLASH-STATS ERRO] {e}")
-            # Fallback: ESPN stats (para ataques perigosos + odds)
+                    print(f"[BZZOIRO-STATS ERRO] {e}")
+            # Fallback: ESPN stats
             if not stats or not (stats.get("escanteios_h", -1) >= 0 and stats.get("escanteios_a", -1) >= 0):
                 try:
                     league_slug = j.get("league_slug", "")
@@ -1988,28 +1976,16 @@ def run():
                         stats = sa_name
                         print(f"[APIF-NAME] Stats por nome OK: esc {sa_name.get('escanteios_h')}x{sa_name.get('escanteios_a')}")
                 except: pass
-            # Se a Flashscore veio mas sem ataques_perigosos, calcula sinteticamente
-            # ESPN usa a fórmula: ataques_perigosos = shots + on_goal (chutes_tot + chutes_gol)
+            # Se a Bzzoiro veio mas sem ataques_perigosos, calcula sinteticamente
             if stats and stats.get("escanteios_h", -1) >= 0 and stats.get("ataques_perigosos_h", -1) < 0:
                 ch_tot_h = stats.get("chutes_tot_h", 0)
                 ch_tot_a = stats.get("chutes_tot_a", 0)
                 ch_gol_h = stats.get("chutes_gol_h", 0)
                 ch_gol_a = stats.get("chutes_gol_a", 0)
-                # Calcula sintético: chutes totais + chutes no alvo (mesma fórmula da ESPN)
                 stats["ataques_perigosos_h"] = ch_tot_h + ch_gol_h
                 stats["ataques_perigosos_a"] = ch_tot_a + ch_gol_a
                 if stats["ataques_perigosos_h"] > 0 or stats["ataques_perigosos_a"] > 0:
                     print(f"[ATQ-SINTETICO] Ataques perigosos calculados: {stats['ataques_perigosos_h']}x{stats['ataques_perigosos_a']} (chutes_tot + chutes_gol)")
-                # Tenta ESPN como fallback (se tiver league_slug) — pode ter dados mais refinados
-                try:
-                    league_slug = j.get("league_slug", "")
-                    if league_slug:
-                        sa_espn_extra = get_stats_espn(fid_raw, league_slug)
-                        if isinstance(sa_espn_extra, dict) and sa_espn_extra.get("ataques_perigosos_h", -1) >= 0:
-                            stats["ataques_perigosos_h"] = sa_espn_extra["ataques_perigosos_h"]
-                            stats["ataques_perigosos_a"] = sa_espn_extra.get("ataques_perigosos_a", 0)
-                            print(f"[ESPN-EXTRA] Ataques perigosos complementados via ESPN: {stats['ataques_perigosos_h']}x{stats['ataques_perigosos_a']}")
-                except: pass
 
         # Preenche defaults para campos que faltam
         for k in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a"]:
@@ -2035,16 +2011,16 @@ def run():
             print(f"[SKIP] {h} x {a} — sem stats reais (chutes, cantos ou ataques perigosos) em nenhuma API, pulando jogo")
             continue
 
-        # Favorito: odds da Flashscore (se disponível) → ESPN → apifootball (fallback)
+        # Favorito: odds da Bzzoiro v2 (se disponível) → ESPN → apifootball (fallback)
         odd_h = j.get("odd_h")
         odd_a = j.get("odd_a")
         fav_por_odds = False
 
-        # Flashscore: odds do jogo (se a fonte tiver)
+        # Bzzoiro: odds do jogo (se a fonte tiver)
         if odd_h and odd_a and odd_h > 1 and odd_a > 1:
             fav_final = "h" if odd_h <= odd_a else "a"
             fav_por_odds = True
-            print(f"[ODDS] {h} x {a} — odd Casa:{odd_h:.2f} Fora:{odd_a:.2f} (Flashscore)")
+            print(f"[ODDS] {h} x {a} — odd Casa:{odd_h:.2f} Fora:{odd_a:.2f} (Bzzoiro)")
         # Fallback: ESPN odds (do jogo ou stats)
         if not fav_por_odds:
             if odd_h and odd_a and odd_h > 1 and odd_a > 1:
