@@ -795,8 +795,8 @@ def get_stats_espn(fid_raw, league_slug):
         stats["yellow_cards_a"] = int(away_stats.get("yellow cards", 0))
         stats["red_cards_h"] = int(home_stats.get("red cards", 0))
         stats["red_cards_a"] = int(away_stats.get("red cards", 0))
-        stats["ataques_perigosos_h"] = int(home_stats.get("shots", 0) + home_stats.get("on goal", 0))
-        stats["ataques_perigosos_a"] = int(away_stats.get("shots", 0) + away_stats.get("on goal", 0))
+        stats["ataques_perigosos_h"] = int(home_stats.get("shots", 0) + home_stats.get("corner kicks", 0) + home_stats.get("crosses", 0))
+        stats["ataques_perigosos_a"] = int(away_stats.get("shots", 0) + away_stats.get("corner kicks", 0) + away_stats.get("crosses", 0))
         stats["faltas_h"] = int(home_stats.get("fouls", 0))
         stats["faltas_a"] = int(away_stats.get("fouls", 0))
 
@@ -1200,7 +1200,7 @@ def msg_universal(home, away, minuto, liga, n, mercado, entrada, placar, extra_v
         f"<b>📊 Estatísticas ao Vivo da Partida:</b>\n"
         f"<b>🚀 Chutes Totais: {chutes_h} | {chutes_a}</b>\n"
         f"<b>🎯 Chutes No Alvo: {alvo_h} | {alvo_a}</b>\n"
-        f"<b>⚔️ Ataques Totais: {atq_per_h} | {atq_per_a}</b>\n"
+        f"<b>⚔️ Ataques Perigosos: {atq_per_h} | {atq_per_a}</b>\n"
         f"<b>🚩 Escanteios: {cant_h} | {cant_a}</b>\n"
         f"{sep}\n"
         f"<b>💡 Análise Técnica da Partida:</b>\n"
