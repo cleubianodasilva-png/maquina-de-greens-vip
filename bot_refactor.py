@@ -1849,6 +1849,11 @@ def run():
     if not jogos_na_janela:
         print("[OK] Nenhum jogo na janela — aguardando próximo ciclo")
         save_sent(sent)
+        # Processa comandos (/assinar, /radar, etc) mesmo sem jogos
+        try:
+            processar_comandos_pendentes(TG_TOKEN, CHAT_ID, jogos_live, jogos_na_janela)
+        except Exception as e:
+            print(f"[CMD] Erro processando comandos: {e}")
         print("Finalizado. Enviados: 0")
         return
 
