@@ -664,5 +664,11 @@
     "resultado": "green",
     "mercado": "BTTS",
     "timestamp": "2026-07-23T17:00:28.708214-03:00"
+  },
+  {
+    "data": "2026-07-23",
+    "resultado": "green",
+    "mercado": "OFT",
+    "timestamp": "2026-07-23T17:00:30.857813-03:00"
   }
 ]
