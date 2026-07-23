@@ -773,18 +773,32 @@ def get_stats_espn(fid_raw, league_slug):
         away_stats = {}
         for s in teams[0].get("statistics", []):
             label = s.get("label", "").lower()
-            totals = s.get("totals", [])
+            totals = s.get("totals")
             if totals and len(totals) > 0:
                 try:
                     home_stats[label] = float(totals[0])
                 except:
                     home_stats[label] = 0
+            else:
+                # ⚠️ ESPN mudou API: totals pode ser null.
+                #    Fallback para displayValue (ex: "5" ou "60%")
+                dv = s.get("displayValue", "0")
+                try:
+                    home_stats[label] = float(dv.replace("%", "").replace(",", ""))
+                except:
+                    home_stats[label] = 0
         for s in teams[1].get("statistics", []):
             label = s.get("label", "").lower()
-            totals = s.get("totals", [])
+            totals = s.get("totals")
             if totals and len(totals) > 0:
                 try:
                     away_stats[label] = float(totals[0])
+                except:
+                    away_stats[label] = 0
+            else:
+                dv = s.get("displayValue", "0")
+                try:
+                    away_stats[label] = float(dv.replace("%", "").replace(",", ""))
                 except:
                     away_stats[label] = 0
 
@@ -1616,6 +1630,15 @@ def run():
                     print(f"[PROMIEDOS-STATS] Stats OK: esc {stats.get('escanteios_h')}x{stats.get('escanteios_a')} | chutes: {stats.get('chutes_tot_h')}/{stats.get('chutes_tot_a')}")
             except Exception as e:
                 print(f"[PROMIEDOS-STATS ERRO] {e}")
+
+        # ===== PASSO 4: RESGATE — Se ataques perigosos parecem sintéticos (Bzzoiro falhou), tenta direto =====
+        if not bzz_base.get("ataques_perigosos_h", 0) and not bzz_base.get("ataques_perigosos_a", 0):
+            if source == "bzzoiro" or source == "promiedos":
+                resgate = get_ataques_perigosos_bzzoiro(h, a)
+                if resgate and resgate.get("ataques_perigosos_h", 0) > 0:
+                    stats["ataques_perigosos_h"] = resgate["ataques_perigosos_h"]
+                    stats["ataques_perigosos_a"] = resgate["ataques_perigosos_a"]
+                    print(f"[RESGATE-BZZOIRO] Ataques Perigosos resgatados: {stats['ataques_perigosos_h']}x{stats['ataques_perigosos_a']}")
 
         # Preenche defaults para campos que faltam
         for k in ["chutes_tot_h","chutes_tot_a","chutes_gol_h","chutes_gol_a"]:
