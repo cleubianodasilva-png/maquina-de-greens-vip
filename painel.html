@@ -89,6 +89,15 @@ input:focus { border-color:#ffd700; outline:none; }
         <div class="field"><label>Escanteios Mínimos</label><input type="number" id="g-esc-min"></div>
         <div class="field"><label>Diferença Máx (Fav perdendo)</label><input type="number" id="g-diff-max"></div>
         <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="g-red-max"></div>
+        <div class="field"><label>Situação do Favorito</label>
+          <select id="g-situacao-fav">
+            <option value="">Desligado (usa de cada mercado)</option>
+            <option value="perdendo">Favorito Perdendo</option>
+            <option value="empatando">Favorito Empatando</option>
+            <option value="perdendo_ou_empatando">Fav Perdendo ou Empatando</option>
+            <option value="zebra">Zebra Ganhando</option>
+          </select>
+        </div>
         <div class="field"><label>BTTS Probabilidade Mín (%)</label><input type="number" id="g-btts-prob"></div>
       </div>
     </div>
@@ -116,6 +125,15 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m1-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m1-atq-perig"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m1-red-max"></div>
+      <div class="field"><label>Situação do Favorito</label>
+        <select id="m1-situacao-fav">
+          <option value="">Global (fallback)</option>
+          <option value="perdendo">Favorito Perdendo</option>
+          <option value="empatando">Favorito Empatando</option>
+          <option value="perdendo_ou_empatando">Fav Perdendo ou Empatando</option>
+          <option value="zebra">Zebra Ganhando</option>
+        </select>
+      </div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m1-diff-max"></div>
     </div>
   </div>
@@ -142,6 +160,15 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m2-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m2-atq-perig"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m2-red-max"></div>
+      <div class="field"><label>Situação do Favorito</label>
+        <select id="m2-situacao-fav">
+          <option value="">Global (fallback)</option>
+          <option value="perdendo">Favorito Perdendo</option>
+          <option value="empatando">Favorito Empatando</option>
+          <option value="perdendo_ou_empatando">Fav Perdendo ou Empatando</option>
+          <option value="zebra">Zebra Ganhando</option>
+        </select>
+      </div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m2-diff-max"></div>
       <div class="field"><label>BTTS Probabilidade Mín (%)</label><input type="number" id="m2-btts-prob"></div>
     </div>
@@ -169,6 +196,15 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m3-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m3-atq-perig"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m3-red-max"></div>
+      <div class="field"><label>Situação do Favorito</label>
+        <select id="m3-situacao-fav">
+          <option value="">Global (fallback)</option>
+          <option value="perdendo">Favorito Perdendo</option>
+          <option value="empatando">Favorito Empatando</option>
+          <option value="perdendo_ou_empatando">Fav Perdendo ou Empatando</option>
+          <option value="zebra">Zebra Ganhando</option>
+        </select>
+      </div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m3-diff-max"></div>
     </div>
   </div>
@@ -195,6 +231,15 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m4-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m4-atq-perig"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m4-red-max"></div>
+      <div class="field"><label>Situação do Favorito</label>
+        <select id="m4-situacao-fav">
+          <option value="">Global (fallback)</option>
+          <option value="perdendo">Favorito Perdendo</option>
+          <option value="empatando">Favorito Empatando</option>
+          <option value="perdendo_ou_empatando">Fav Perdendo ou Empatando</option>
+          <option value="zebra">Zebra Ganhando</option>
+        </select>
+      </div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m4-diff-max"></div>
       <div class="field" style="display:flex;flex-direction:row;align-items:center;gap:8px;">
         <label>Linha Dinâmica</label>
@@ -220,6 +265,15 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>APPM Total</label><input type="number" id="m5-appm-total" step="0.1"></div>
       <div class="field"><label>Escanteios Mínimos</label><input type="number" id="m5-esc-min"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m5-red-max"></div>
+      <div class="field"><label>Situação do Favorito</label>
+        <select id="m5-situacao-fav">
+          <option value="">Global (fallback)</option>
+          <option value="perdendo">Favorito Perdendo</option>
+          <option value="empatando">Favorito Empatando</option>
+          <option value="perdendo_ou_empatando">Fav Perdendo ou Empatando</option>
+          <option value="zebra">Zebra Ganhando</option>
+        </select>
+      </div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m5-diff-max"></div>
     </div>
   </div>
@@ -241,6 +295,15 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>APPM Total</label><input type="number" id="m6-appm-total" step="0.1"></div>
       <div class="field"><label>Escanteios Mínimos</label><input type="number" id="m6-esc-min"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m6-red-max"></div>
+      <div class="field"><label>Situação do Favorito</label>
+        <select id="m6-situacao-fav">
+          <option value="">Global (fallback)</option>
+          <option value="perdendo">Favorito Perdendo</option>
+          <option value="empatando">Favorito Empatando</option>
+          <option value="perdendo_ou_empatando">Fav Perdendo ou Empatando</option>
+          <option value="zebra">Zebra Ganhando</option>
+        </select>
+      </div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m6-diff-max"></div>
     </div>
   </div>
@@ -283,9 +346,9 @@ const MERCADOS={
 // Campos de cada mercado (prefixo m1..m6)
 const CAMPOS_MERCADO=['ativo','inicio','fim','periodo','placar','appm-time','appm-total',
   'media-partida','media-ht','media-ft','chutes-alvo','chutes-tot','atq-perig',
-  'esc-min','red-max','diff-max','btts-prob','linha-dinamica'];
+  'esc-min','red-max','diff-max','btts-prob','linha-dinamica','situacao-fav'];
 const CAMPOS_GLOBAIS=['appm-time','appm-total','media-partida','media-ht','media-ft',
-  'chutes-alvo','chutes-tot','atq-perig','esc-min','diff-max','red-max','btts-prob'];
+  'chutes-alvo','chutes-tot','atq-perig','esc-min','diff-max','red-max','btts-prob','situacao-fav'];
 
 function lerGlobal(){
   const g={ativo:document.getElementById('g-ativo').checked};
@@ -330,6 +393,8 @@ async function loadConfig(){
     sv('g-diff-max',g.diferenca_gols_fav_max);
     sv('g-red-max',g.max_red_card_fav);
     sv('g-btts-prob',g.btts_probabilidade_min);
+    sv('g-situacao-fav',g.situacao_favorito);
+    sv('g-ativo',g.ativo!==false);
     const merc=cfg.mercados||{};
     Object.values(MERCADOS).forEach(m=>{
       const md=merc[m.key]||{};
@@ -353,6 +418,7 @@ async function loadConfig(){
       sv(pref+'-diff-max',cr.diferenca_gols_fav_max);
       sv(pref+'-btts-prob',cr.btts_probabilidade_min);
       sv(pref+'-linha-dinamica',cr.linha_dinamica);
+      sv(pref+'-situacao-fav',cr.situacao_favorito);
     });
     st('✅ Pronto!','ok');
   }catch(e){st('❌ Erro: '+e.message,'err');}
@@ -380,6 +446,7 @@ async function salvarConfig(){
         max_red_card_fav:g['red-max'],
         btts_probabilidade_min:g['btts-prob']
       };
+      if(g['situacao-fav'])cfg.geral.situacao_favorito=g['situacao-fav'];
     }else{
       cfg.geral={};
     }
@@ -409,6 +476,7 @@ async function salvarConfig(){
       if(m['diff-max']!==null)cr.diferenca_gols_fav_max=m['diff-max'];
       if(m['btts-prob']!==null)cr.btts_probabilidade_min=m['btts-prob'];
       if(m['linha-dinamica']!==null)cr.linha_dinamica=m['linha-dinamica'];
+      if(m['situacao-fav'])cr.situacao_favorito=m['situacao-fav'];
       if(Object.keys(cr).length>0)mercado.criterios=cr;
       cfg.mercados[key]=mercado;
     });
