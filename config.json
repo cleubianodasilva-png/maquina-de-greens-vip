@@ -1,0 +1,75 @@
+{
+  "_comentario": "Configuração do Bot Máquina de Greens VIP. Edite pelo painel ou manualmente.",
+  "geral": {
+    "appm_min_por_time": 0.7,
+    "appm_min_total": 1.4,
+    "media_gols_minima": 2.2
+  },
+  "mercados": {
+    "over_05_ht": {
+      "ativo": true,
+      "nome": "Over 0.5 Gols HT",
+      "periodo": 1,
+      "minuto_inicio": 15,
+      "minuto_fim": 27,
+      "placar_valido": "0x0",
+      "favorito_empatando": true,
+      "bloquear_vermelho_fav": true,
+      "usar_media_gols": true
+    },
+    "ambas_marcam": {
+      "ativo": true,
+      "nome": "Ambas Marcam",
+      "periodo": 2,
+      "minuto_inicio": 55,
+      "minuto_fim": 75,
+      "placar_valido": "1x0_0x1",
+      "favorito_perdendo_1": true,
+      "bloquear_vermelho_fav": true,
+      "usar_media_gols": true
+    },
+    "over_15_ft": {
+      "ativo": true,
+      "nome": "Over 1.5 Gols FT",
+      "periodo": 2,
+      "minuto_inicio": 55,
+      "minuto_fim": 75,
+      "placar_valido": "1x0_0x1",
+      "favorito_perdendo_1": true,
+      "bloquear_vermelho_fav": true,
+      "usar_media_gols": true
+    },
+    "over_gol_partida": {
+      "ativo": true,
+      "nome": "Over Gol Partida",
+      "periodo": 2,
+      "minuto_inicio": 55,
+      "minuto_fim": 75,
+      "placares_validos": "0x0_1x1_0x1_1x0",
+      "favorito_empatando_ou_perdendo_1": true,
+      "bloquear_vermelho_fav": true,
+      "usar_media_gols": true,
+      "linha_dinamica": true
+    },
+    "escanteio_ht": {
+      "ativo": true,
+      "nome": "Escanteio HT",
+      "periodo": 1,
+      "minuto_inicio": 32,
+      "minuto_fim": 38,
+      "favorito_empatando_ou_perdendo_1": true,
+      "bloquear_vermelho_fav": true,
+      "usar_media_gols": false
+    },
+    "escanteio_ft": {
+      "ativo": true,
+      "nome": "Escanteio FT",
+      "periodo": 2,
+      "minuto_inicio": 82,
+      "minuto_fim": 88,
+      "favorito_empatando_ou_perdendo_1": true,
+      "bloquear_vermelho_fav": true,
+      "usar_media_gols": false
+    }
+  }
+}
