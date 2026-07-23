@@ -1438,6 +1438,7 @@ def check_status_command(total_jogos_live=0, jogos_live=None, jogos_na_janela=No
 _HIST_CACHE = {}
 def get_media_gols_historica(home_id, away_id):
     try:
+        chave = f"{home_id}_{away_id}"
         _HIST_CACHE[chave] = -1.0
         return -1.0
     except:
