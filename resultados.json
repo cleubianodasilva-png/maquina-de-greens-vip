@@ -1138,5 +1138,11 @@
     "resultado": "red",
     "mercado": "CORNER_FT",
     "timestamp": "2026-07-24T18:10:21.001893-03:00"
+  },
+  {
+    "data": "2026-07-24",
+    "resultado": "red",
+    "mercado": "CORNER_FT",
+    "timestamp": "2026-07-24T18:10:23.861081-03:00"
   }
 ]
