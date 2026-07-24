@@ -1,4 +1,4 @@
-const CACHE_NAME = 'painel-robos-v6';
+const CACHE_NAME = 'robos-vip-v7';
 const ASSETS = [
   'index.html',
   'painel.html',
