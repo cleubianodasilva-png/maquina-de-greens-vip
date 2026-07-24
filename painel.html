@@ -151,6 +151,7 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m1-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m1-atq-perig"></div>
       <div class="field"><label>Escanteios Mínimos</label><input type="number" id="m1-esc-min"></div>
+      <div class="field"><label>Posse de Bola Mín (%)</label><input type="number" id="m1-posse" step="0.1"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m1-red-max"></div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m1-diff-max"></div>
       <div class="field"><label>BTTS Probabilidade Mín (%)</label><input type="number" id="m1-btts-prob"></div>
@@ -191,6 +192,7 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m2-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m2-atq-perig"></div>
       <div class="field"><label>Escanteios Mínimos</label><input type="number" id="m2-esc-min"></div>
+      <div class="field"><label>Posse de Bola Mín (%)</label><input type="number" id="m2-posse" step="0.1"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m2-red-max"></div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m2-diff-max"></div>
       <div class="field"><label>BTTS Probabilidade Mín (%)</label><input type="number" id="m2-btts-prob"></div>
@@ -231,6 +233,7 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m3-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m3-atq-perig"></div>
       <div class="field"><label>Escanteios Mínimos</label><input type="number" id="m3-esc-min"></div>
+      <div class="field"><label>Posse de Bola Mín (%)</label><input type="number" id="m3-posse" step="0.1"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m3-red-max"></div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m3-diff-max"></div>
       <div class="field"><label>BTTS Probabilidade Mín (%)</label><input type="number" id="m3-btts-prob"></div>
@@ -271,6 +274,7 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m4-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m4-atq-perig"></div>
       <div class="field"><label>Escanteios Mínimos</label><input type="number" id="m4-esc-min"></div>
+      <div class="field"><label>Posse de Bola Mín (%)</label><input type="number" id="m4-posse" step="0.1"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m4-red-max"></div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m4-diff-max"></div>
       <div class="field"><label>BTTS Probabilidade Mín (%)</label><input type="number" id="m4-btts-prob"></div>
@@ -311,6 +315,7 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m5-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m5-atq-perig"></div>
       <div class="field"><label>Escanteios Mínimos</label><input type="number" id="m5-esc-min"></div>
+      <div class="field"><label>Posse de Bola Mín (%)</label><input type="number" id="m5-posse" step="0.1"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m5-red-max"></div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m5-diff-max"></div>
       <div class="field"><label>BTTS Probabilidade Mín (%)</label><input type="number" id="m5-btts-prob"></div>
@@ -351,6 +356,7 @@ input:focus { border-color:#ffd700; outline:none; }
       <div class="field"><label>Chutes Totais Mín</label><input type="number" id="m6-chutes-tot"></div>
       <div class="field"><label>Ataques Perigosos Mín</label><input type="number" id="m6-atq-perig"></div>
       <div class="field"><label>Escanteios Mínimos</label><input type="number" id="m6-esc-min"></div>
+      <div class="field"><label>Posse de Bola Mín (%)</label><input type="number" id="m6-posse" step="0.1"></div>
       <div class="field"><label>Cartão Vermelho Máx (Fav)</label><input type="number" id="m6-red-max"></div>
       <div class="field"><label>Diferença Gols Fav Máx</label><input type="number" id="m6-diff-max"></div>
       <div class="field"><label>BTTS Probabilidade Mín (%)</label><input type="number" id="m6-btts-prob"></div>
@@ -396,7 +402,7 @@ const MERCADOS={
 // Campos de cada mercado (prefixo m1..m6)
 const CAMPOS_MERCADO=['ativo','inicio','fim','periodo','placar','appm-time','appm-total',
   'media-partida','media-ht','media-ft','chutes-alvo','chutes-tot','atq-perig',
-  'esc-min','red-max','diff-max','btts-prob','linha-dinamica','situacao-fav'];
+  'esc-min','posse','red-max','diff-max','btts-prob','linha-dinamica','situacao-fav'];
 const CAMPOS_GLOBAIS=['appm-time','appm-total','media-partida','media-ht','media-ft',
   'chutes-alvo','chutes-tot','atq-perig','esc-min','diff-max','red-max','btts-prob','situacao-fav'];
 
@@ -556,6 +562,7 @@ async function salvarConfig(){
       if(m['chutes-tot']!==null)cr.chutes_totais_min=m['chutes-tot'];
       if(m['atq-perig']!==null)cr.ataques_perigosos_min=m['atq-perig'];
       if(m['esc-min']!==null)cr.escanteios_minimos=m['esc-min'];
+      if(m['posse']!==null)cr.posse_min=m['posse'];
       if(m['red-max']!==null)cr.max_red_card_fav=m['red-max'];
       if(m['diff-max']!==null)cr.diferenca_gols_fav_max=m['diff-max'];
       if(m['btts-prob']!==null)cr.btts_probabilidade_min=m['btts-prob'];
