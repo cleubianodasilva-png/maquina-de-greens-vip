@@ -2231,7 +2231,7 @@ def run():
             elif red_fav > ht_red_max:
                 print(f"[DIAG-HT-BARRA] {h} x {a} — favorito com cartão vermelho ({red_fav} > {ht_red_max}), pulando")
             elif not ht_appm_ok:
-                print(f"[DIAG-HT-BARRA] {h} x {a} — APPM insuficiente (casa={_appm_h} fora={_appm_a} total={_appm_total}, min {ht_appm_time}/{ht_appm_total}), pulando")
+                print(f"[DIAG-HT-BARRA] {h} x {a} — APPM insuficiente (casa={_appm_h} fora={_appm_a}, min {ht_appm_time}), pulando")
             elif not ht_media_ok:
                 print(f"[DIAG-HT-BARRA] {h} x {a} — média histórica {media_hist:.1f} < {ht_media}, pulando")
             elif not ht_chutes_alvo_ok:
