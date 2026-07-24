@@ -1,9 +1,11 @@
 {
   "name": "MÁQUINA DE GREENS VIP",
   "short_name": "GREENS VIP",
-  "start_url": "index.html",
+  "start_url": "painel.html?v=2",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
-  "icons": [{"src": "icon.jpg", "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable"}]
+  "icons": [
+    {"src": "icon.jpg", "sizes": "1024x1024", "type": "image/jpeg", "purpose": "any maskable"}
+  ]
 }
