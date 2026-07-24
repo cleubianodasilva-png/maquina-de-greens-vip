@@ -10,7 +10,8 @@
     "escanteios_minimos": "",
     "diferenca_gols_fav_max": "",
     "max_red_card_fav": "",
-    "btts_probabilidade_min": ""
+    "btts_probabilidade_min": "",
+    "appm_min_total": ""
   },
   "mercados": {
     "over_05_ht": {
