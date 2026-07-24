@@ -266,19 +266,12 @@ def _crit(mercado, geral, key, default):
     """Pega valor de critério: mercado > geral > default."""
     c = mercado.get("criterios", {})
     if key in c:
-        v = c[key]
-        if isinstance(v, (int, float)):
-            return v
-        if isinstance(v, str) and v.strip():
-            try: return float(v)
-            except: pass
+        return c[key]
     if key in geral:
         v = geral[key]
-        if isinstance(v, (int, float)):
-            return v
-        if isinstance(v, str) and v.strip():
-            try: return float(v)
-            except: pass
+        if isinstance(v, str) and not v.strip():
+            return default
+        return v
     return default
 
 def _situacao_fav_ok(mercado, geral, fav_gols, adv_gols):
