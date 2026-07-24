@@ -1,6 +1,6 @@
 {
-  "name": "PAINEL DE ROB\u00d4S",
-  "short_name": "PAINEL",
+  "name": "PAINEL ROB\u00d4S VIP",
+  "short_name": "ROB\u00d4S VIP",
   "description": "Painel de controle dos rob\u00f4s de sinais",
   "start_url": "painel.html",
   "display": "standalone",
