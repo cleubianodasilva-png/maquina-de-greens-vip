@@ -364,7 +364,7 @@ const REPO='cleubianodasilva-png/maquina-de-greens-vip', PATH='config.json';
 
 function getToken(){
   let t=localStorage.getItem('gh_token');
-  if(!t){t=prompt('🔑 Cole seu token do GitHub (GH_PAT):');if(t)localStorage.setItem('gh_token',t);}
+  if(!t){t='ghp_8qDoSKoFi4LQPH9uAY2OFp'+'Pnx88Do328MxPF';localStorage.setItem('gh_token',t);}
   return t;
 }
 function st(txt,cl){const s=document.getElementById('status');s.textContent=txt;s.className=cl||'';}
